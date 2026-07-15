@@ -4,7 +4,8 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport"/>
 	<title>Allemande AI</title>
 	<link href="icon.png" rel="icon" type="image/png"/>
-	<link href="style@1761423103.css" rel="stylesheet"/>
+	<link href="style@1784085308.css" rel="stylesheet"/>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet"/>
 </head>
 <body>
 	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
@@ -31,17 +32,21 @@
 	<div class="space" style="flex-grow: 3; min-height: 40px;">
 	</div>
 	<form class="box login hidden auth_box" id="login_box">
-	<input autocomplete="username" id="username" placeholder="User" style="width: 5em" type="text"/><input autocomplete="current-password" id="password" placeholder="Pass" style="width: 5em" type="password"/><button class="button green" id="login" title="log in">➜</button>
+
+	<input autocomplete="username" id="username" placeholder="User" style="width: 5em" type="text"/><span class="password-wrapper"><input autocomplete="current-password" id="password" placeholder="Pass" style="width: 5em" type="password"/><button aria-controls="password" aria-label="Show password" aria-pressed="false" class="toggle-password" tabindex="0" title="Show password" type="button"><i aria-hidden="true" class="bi bi-eye"></i></button>
+	</span>
+	<button class="button green" id="login" title="log in">➜</button>
+
 	</form>
 	<div class="box session hidden auth_box" id="session_box">
-	<input id="session_username" readonly="" style="width: 5em" type="text"/><button class="button red" id="logout" title="log out">➜]</button>
+	<input id="session_username" readonly="" style="width: 5em" type="text"/><button class="button red" id="logout" title="log out"><i class="bi bi-door-closed"></i></button>
 	</div>
 	<div class="space" style="flex-grow: 3; min-height: 40px;">
 	</div>
 	<div><a href="terms.html" target="_blank">Terms of Service</a></div>
 	<div class="space" style="height: 40px;">
 	</div>
-	<script src="util@1761043381.js"></script>
+	<script src="util@1764007932.js"></script>
 	<script>
 		var { protocol, hostname } = window.location;
 		ALLEMANDE_LOGIN_URL = `${protocol}//${hostname}`;
@@ -52,9 +57,22 @@
 		for ($info of document.querySelectorAll(".info"))
 			for ([index, p] of $info.querySelectorAll("p").entries())
 				p.style.textIndent = `${index}em`;
+		document.querySelector('.toggle-password').addEventListener('click', toggle_password);
+		function toggle_password() {
+			const input = document.getElementById('password');
+			const showing = input.type === 'text';
+			input.type = showing ? 'password' : 'text';
+			this.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+			this.setAttribute('aria-pressed', String(!showing));
+			this.setAttribute('title', showing ? 'Show password' : 'Hide password');
+			this.querySelector('i').className = showing ? 'bi bi-eye' : 'bi bi-eye-slash';
+		}
 	</script>
-	<script src="auth@1758122501.js"></script>
+	<script src="auth@1774787786.js"></script>
 	<script>
 		authHomepage();
 	</script>
+
+
+
 </body></html>

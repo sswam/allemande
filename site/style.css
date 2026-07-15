@@ -41,6 +41,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	flex-wrap: wrap;
 /*	white-space: nowrap; */
 	background-color: #112;
 	color: #aab;
@@ -100,6 +101,7 @@ input {
 	outline: none;
 	padding: 10px 15px;
 	margin: 7px;
+	min-width: 120px;
 }
 
 input:focus {
@@ -245,4 +247,32 @@ a {
 
 a:hover {
 	text-decoration: underline;
+}
+
+.password-wrapper {
+	position: relative;
+	display: inline-block;
+}
+.password-wrapper input {
+	padding-right: 24px;
+}
+.toggle-password {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	padding: 0 12px;
+	cursor: pointer;
+	line-height: 1;
+	color: inherit;
+}
+/* Hide Edge's built-in password reveal button */
+#password::-ms-reveal {
+	display: none;
+}
+
+button {
+	cursor: pointer;
 }
