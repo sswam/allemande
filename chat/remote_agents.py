@@ -112,7 +112,26 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     remote_messages = []
 
     # TODO images in system messages?
-    await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", None))
+    message_count_with_images, image_count = await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", None))
+
+    # Vision fallback
+    logger.info("*** Vision fallback ***")
+    vision_model = agent.get("vision_model")
+    # 1. is vision enabled for the agent and do we have a configured vision_model fallback?
+    # 2. do we need vision?  have to check messages
+    logger.info("  agent.get('vision'): %r", agent.get("vision"))
+    logger.info("  vision_model: %r", vision_model)
+    logger.info("  image_count: %r", image_count)
+    logger.info("  agent.get('images'): %r", agent.get("images", None))
+    if agent.get("vision") is not False and vision_model and image_count:
+        # 3. can current model do vision, have to make opts and load model info from llm.MODELS
+        opts = llm.Options(model=model)
+        logger.info("  model: %r", opts.model)
+        logger.info("  model vision: %r", llm.MODELS[opts.model].get("vision", False))
+        if not llm.MODELS[opts.model].get("vision", False):
+            # 4. if not, fall back to configured vision_model
+            service, model = vision_model.split(":")
+            logger.info("vision fallback for %s: using %s", name, vision_model)
 
     # preprocess markdown in messages for includes
     # and strip trailing .number from usernames

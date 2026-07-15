@@ -1022,10 +1022,10 @@ def chat_to_html():
         print(asyncio.run(message_to_html(message, bb_file)))
 
 
-async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int|None) -> None:
+async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int|None) -> tuple[int, int]:
     """Add images to a list of messages in-place."""
     if image_count_max == 0:
-        return
+        return 0, 0
 
     if image_count_max is None:
         # The default is to send one image from the most recent message
@@ -1103,6 +1103,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
 
     logger.info("Found %d messages with %d images", message_count_with_images, image_count)
 
+    return message_count_with_images, image_count
 
 def preprocess_cli():
     """Preprocess stdin and print to stdout"""
