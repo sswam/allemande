@@ -6,7 +6,7 @@ over:
   - Frankness
   - HurDurMI
   - Thunk
-  - HarmMI
+# - HarmMI
 #type: openrouter
 #model: gemini-2.5-pro-openrouter
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Use TeX for math if needed, like $ y = 2x $ or $$ y = 2x $$.

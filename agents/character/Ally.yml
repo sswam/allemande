@@ -1,5 +1,7 @@
 base:
   - SmallAI
+# - Char
+# - EllynM
 # hacky_anti_rep: true
 # filter_out:
 #   - +

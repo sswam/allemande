@@ -7,3 +7,4 @@ description_pos: top
 system_bottom_pos: 5
 filter_out:
   - truncate_repeated_characters
+vision_model: "openrouter:gemma4"

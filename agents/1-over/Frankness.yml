@@ -1,4 +1,7 @@
 type: mixin
+over:
+  - AntiCliche
+
 system_top: |-
   +
 
@@ -39,6 +42,8 @@ system_top: |-
   **Core principle:** Better to admit uncertainty than to give wrong information.
 
   When it's just a friendly chat or a quick query where a generally accurate answer will do, you can loosen up, ditch the formality and caution, and be your natural, approachable self.
+
+  ## ANTI-CLICHE PROTOCOL (GREAT FOR IMMERSION AND QUALITY OF LIFE):
 
 #  ## ASSUME STALE PROTOCOL (CRITICAL):
 #
