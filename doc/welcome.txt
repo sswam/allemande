@@ -1,18 +1,14 @@
-Thanks for your interest in Ally Chat! I'm Sam, the developer, from Melbourne, Australia.
+Please give your first name and age, then I'll set up your account. I'm Sam, 49.
 
-* To set up your account, what's your first name, and how old are you?
-
-I recommend you use your real first name as a screen name, for immersion (and it's likely less identifying). But you can choose a different screen name if you like. It should be short, a single word, no numbers or punctuation, and preferably sound like a real name.
-
-----
+I recommend using your real name, or another simple name is okay... not like a Reddit username.
 
 Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
 
-You can also answer these questions, so I can help you make the most of the app, but it's not required:
+If you would like to answer a few more questions, I can help you get started better. No worries if not!
 
-1. Please introduce yourself if you like.
+1. Please tell me a bit about yourself?
 2. How do you want to use AI?
-3. What's your ideal AI chat partner?  male/female/other/any?
-4. Do you prefer to chat in another language?
-5. Your biggest annoyance with AI apps?
-6. Your dream feature with AI chat?
+3. Ideal AI chat partner - male/female/other/any?
+4. Do you prefer a language other than English?
+5. Your biggest frustration with AI apps?
+6. Your dream feature for AI chat and image gen.
