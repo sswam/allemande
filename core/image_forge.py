@@ -131,7 +131,7 @@ def lookup_hq(value):
 
 
 QUALITY_MIN = 0
-QUALITY_MAX = 9   # TODO drop to 4 again if it's a problem! secret feature...
+QUALITY_MAX = 5
 
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
@@ -141,10 +141,11 @@ def process_hq_macro(config: dict, sets: dict) -> dict:
     if hq == 0:
         # hq=0 - disable adetailer, no hires
         config["adetailer"] = None
-        config["hires"] = 0.0
+        # config["hires"] = 0.0  # Allow hires to be set separately
     elif hq == 1:
         # hq=1 - keep adetailer from config, no hires fix
-        config["hires"] = 0.0
+        # config["hires"] = 0.0  # Allow hires to be set separately
+        pass
     else:
         # hq != 1 - set hires to hq value
         config["hires"] = hq
@@ -197,10 +198,11 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         logger.info("limiting hires to %.2f", hires)
         config["hires"] = hires
 
-    # limit steps to MAX_STEPS
-    if config.get("steps", 15) > MAX_STEPS:
-        logger.info("limiting steps to %d", MAX_STEPS)
-        config["steps"] = MAX_STEPS
+    # limit steps to config["max_steps"] or MAX_STEPS
+    max_steps = min(MAX_STEPS, config.get("max_steps", MAX_STEPS))
+    if config.get("steps", 15) > max_steps:
+        logger.info("limiting steps to %d", max_steps)
+        config["steps"] = max_steps
 
     return config
 
@@ -223,7 +225,7 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
+def apply_shortcut(sets: dict[str, str], shape: str, quality: int, steps: int|None):
     """Apply a shortcut to the sets macro"""
     add = {}
 
@@ -243,6 +245,10 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     add["hq"] = str(lookup_hq(quality))
 
     add["steps"] = QUALITY_STEPS.get(quality, "15")
+
+    # if steps was provided, scale to it, e.g. for Krea 2 Turbo
+    if steps:
+        add["steps"] = str(round(int(add["steps"]) * steps / 15))
 
     logger.info("HQ: quality=%s hq=%s steps=%s", quality, add["hq"], add["steps"])
 
@@ -383,6 +389,8 @@ async def process_image_queue():
                             ad_mask_k_largest=job.config.get("ad_mask_k_largest", 0),
                             model=job.config.get("model", None),
                             clip_skip=job.config.get("clip_skip"),
+                            modules=job.config.get("modules", None),
+                            preset=job.config.get("preset", None),
                             **img2img_kwargs,
                             **job.regional_kwargs,
                         )
@@ -427,6 +435,7 @@ async def complete_batch(job: ImageJob):
 
 def estimate_job_weight(job: ImageJob) -> float:
     """Estimate the weight of a job compared to the base job"""
+    # TODO adjust for krea 2 and other heavy models
     job_weight = 1.0
 
     log = logger.debug
@@ -614,7 +623,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
 
         quality = clamp(quality, QUALITY_MIN, QUALITY_MAX)
 
-        apply_shortcut(sets, shape, quality)
+        apply_shortcut(sets, shape, quality, config.get("steps"))
         need_update_macros = True
 
     # Process settings

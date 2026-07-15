@@ -102,6 +102,8 @@ async def request(
     restart_on_fail: bool = True,  # XXX was True, False
     ad_checkpoint: str|None = None,
     port: int|None = 7860,
+    modules: str|list|None = None,
+    preset: str|None = None,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -122,7 +124,6 @@ async def request(
         prompt, negative_prompt = pony_biolerplate(pony, prompt, negative_prompt)
 
     params: dict[str, Any] = {
-        "infotext": "",  # suppress a warning
         "prompt": prompt,
         "negative_prompt": negative_prompt,
         "sampler_name": sampler_name,
@@ -140,6 +141,13 @@ async def request(
 
     if clip_skip:
         params["override_settings"]["CLIP_stop_at_last_layers"] = clip_skip
+
+    params["override_settings"]["forge_preset"] = preset or "xl"
+
+    if isinstance(modules, str):
+        modules = json.loads(modules)
+
+    params["override_settings"]["forge_additional_modules"] = modules or []
 
     if hires:
         hires_fix_add_params(params, hires)
@@ -245,12 +253,15 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
     args = [True, False]
     params["alwayson_scripts"]["ADetailer"] = {"args": args}
     for model in adetailer:
+        ad_denoising_strength = 0.4
+        # hack, hands and feet want lower denoising_strength I think
+        if re.search(r"foot|hand", model, flags=re.IGNORECASE) :
+            ad_denoising_strength = 0.3
         # ad_checkpoint only for face at the moment
         ad_use_checkpoint = bool(ad_checkpoint and model.startswith("face"))
         args.append(
             {
-#                "ad_denoising_strength": 0.3,
-                "ad_denoising_strength": 0.3,
+                "ad_denoising_strength": ad_denoising_strength,
                 "ad_cfg_scale": 7,
                 "ad_checkpoint": ad_checkpoint if ad_use_checkpoint else "Use same checkpoint",
                 # "ad_clip_skip": 1,
@@ -379,6 +390,8 @@ def setup_args(arg):
     arg("--clip-skip", help="clip skip", type=int)
     arg("--ad-checkpoint", help="checkpoint for adetailer", type=str)
     arg("--port", help="webui API port", type=int)
+    arg("--modules", help="additional modules (text encoder, VAE)", type=str)
+    arg("--preset", help="forge preset (e.g. krea)", type=str)
 
 
 if __name__ == "__main__":
