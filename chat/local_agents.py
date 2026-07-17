@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from functools import lru_cache
 from datetime import datetime
+import shutil
 
 import regex
 from num2words import num2words  # type: ignore
@@ -126,13 +127,19 @@ def get_fulltext(args, model_name, history, history_start, invitation):
     return fulltext, history_start, n_tokens
 
 
-async def client_request(portal, input_text, config=None, timeout=None):
+async def client_request(portal, input_text, config=None, timeout=None, files=None):
     """Call the core server and get a response."""
 
     req = await portal.prepare_request(config)
 
     req_input = req / "request.txt"
     req_input.write_text(input_text, encoding="utf-8")
+
+    file_i = 0
+    for file in (files or []):
+        suffix = Path(file).suffix
+        shutil.copy(file, req/f"input_{file_i}{suffix}")
+        file_i += 1
 
     await portal.send_request(req)
 
@@ -405,7 +412,7 @@ async def local_agent(c, agent, _query) -> str:
                 if v not in gen_config:
                     gen_config[v] = defaults[v]
 
-            for v in ["seed", "width", "height", "steps", "cfg_scale", "count", "pag", "hires", "hq", "clip_skip"]:
+            for v in ["seed", "width", "height", "steps", "cfg_scale", "count", "pag", "hires", "hq", "clip_skip", "denoise"]:
                 if v in unp_vars:
                     gen_config[v] = unp_vars[v]
         except Exception as e:
@@ -444,7 +451,7 @@ async def local_agent(c, agent, _query) -> str:
 
     t0 = datetime.now()
 
-    response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+    response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT, files=c.images)
 
     duration = (datetime.now() - t0).total_seconds()
 
@@ -474,7 +481,7 @@ async def local_agent(c, agent, _query) -> str:
         return (1, 0, path.name)
 
     for resp_file in sorted(resp.iterdir(), key=sort_by_seed):
-        if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
+        if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"] or resp_file.name.startswith("input_"):
             continue
 
         # we could rely on metadata extraction to get the prompts now

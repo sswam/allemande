@@ -25,3 +25,4 @@ class Context:
     skip: Skip|None
     room: ally_room.Room
     local_visual_dir: str|None
+    images: list[str]

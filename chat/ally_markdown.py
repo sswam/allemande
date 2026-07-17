@@ -1038,7 +1038,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         # First alternative: Markdown image syntax
         !             # Literal exclamation mark
         \[            # Opening square bracket
-        [^]]*         # Any characters except closing bracket
+        .*?           # Any characters, as few as possible
         \]            # Closing square bracket
         \(            # Opening parenthesis
         (.*?)         # First capturing group: URL (non-greedy match)
@@ -1053,6 +1053,8 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         ([^"<>]*?)    # Second capturing group: URL (non-greedy match)
         "             # Closing quote
     '''
+
+    #   [^]]*         # Any characters except closing bracket; but there can be e.g. [T] in there
 
     logger.debug("Checking messages for images")
 

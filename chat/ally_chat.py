@@ -239,13 +239,16 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
 
             directed_poke, message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
-            c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
-
             hidden_directions = False
             if not directed_poke:
                 hidden_directions = handle_hidden_directions(message, history, history_messages, file, args, last_message_id)
 
             hidden = directed_poke or hidden_directions
+
+            # image to image support
+            images = await get_input_images(history, config, file)
+
+            c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir, images)
 
             count = await run_each_bot(c, bots, hidden)
         finally:
@@ -264,6 +267,31 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
                 logger.exception("Error processing room %s", room.name, exc_info=True)
     else:
         return await _process_room_2()
+
+
+async def get_input_images(history, config, file) -> list[str]:
+    """ Get recent input images from history """
+    images = []
+    if not history:
+        return images
+
+    # A somewhat illogical overloading of this setting agents.all.images :/
+    # Only ever looks at last 2 messages. Does not look at agent-specific setting.
+    images_setting = config.get("agents", {}).get("all", {}).get("images")
+    if images_setting:
+        input_image_messages = history[-2:]
+    elif images_setting is None:
+        input_image_messages = history[-1:]
+    else:
+        return []
+
+    input_image_messages = list(bb_lib.lines_to_messages(input_image_messages))
+
+    message_count_with_images, image_count = await ally_markdown.add_images_to_messages(file, input_image_messages, images_setting)
+    for m in input_image_messages:
+        images += m.get("images", [])
+
+    return images
 
 
 def load_config(room):
