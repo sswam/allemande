@@ -25,7 +25,7 @@ __version__ = "0.1.0"
 
 logger = main.get_logger()
 
-API_URL = "http://127.0.0.1:$PORT/sdapi/v1/txt2img"
+API_URL = "http://127.0.0.1:$PORT/sdapi/v1/"
 MAX_RETRIES = 5
 RETRY_DELAY = 10
 
@@ -34,6 +34,10 @@ async def generate_image(session, port, params, restart_on_fail=False) -> dict[s
     """Send a request to the API and return the response."""
     max_retries = MAX_RETRIES if restart_on_fail else 1
     api_url = API_URL.replace("$PORT", str(port))
+    if "init_images" in params:
+        api_url += "img2img"
+    else:
+        api_url += "txt2img"
     for attempt in range(max_retries):
         try:
             async with session.post(api_url, json=params) as response:
@@ -104,6 +108,9 @@ async def request(
     port: int|None = 7860,
     modules: str|list|None = None,
     preset: str|None = None,
+    img2img: bool = False,
+    input_images: list[str]|None = None,
+    denoise: float = 1.0,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -135,6 +142,11 @@ async def request(
         "do_not_save_grid": True,
         "override_settings": {},
     }
+
+    if img2img:
+        params["denoising_strength"] = denoise
+        init_images = [load_file_base64(image_path) for image_path in input_images]
+        params["init_images"] = init_images
 
     if model:
         params["override_settings"]["sd_model_checkpoint"] = model
@@ -206,6 +218,13 @@ async def request(
     logger.debug("Done")
 
     return seed
+
+
+def load_file_base64(path: str) -> str:
+    """ Load a file and return as base64 encoded """
+    with open(path, "rb") as file:
+        encoded_string = base64.b64encode(file.read()).decode('utf-8')
+    return encoded_string
 
 
 def pony_biolerplate(pony, prompt, negative_prompt):

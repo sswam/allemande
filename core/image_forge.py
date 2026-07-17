@@ -277,6 +277,7 @@ class ImageJob:
     portal: Path
     request_time: float
     duration: float
+    input_images: list[str]
 
 
 # Global priority queue
@@ -318,15 +319,6 @@ def ensure_queue_not_in_past(current_time: float):
         image_queue = new_queue
 
 
-def find_source_image(d: Path) -> Path | None:
-    """Find a source image file (source.*) in the directory for img2img"""
-    for pattern in ["source.*"]:
-        matches = list(d.glob(pattern))
-        if matches:
-            return matches[0]
-    return None
-
-
 async def process_image_queue():
     """Process jobs from the image queue"""
     global job  # pylint: disable=global-statement
@@ -359,15 +351,16 @@ async def process_image_queue():
                         logger.debug("image prompt:\n%s", job.prompt)
 
                         # Check for img2img mode
-                        source_image = find_source_image(job.d)
                         img2img_kwargs = {}
-                        if source_image:
-                            logger.info("img2img mode detected with source image: %s", source_image)
+                        if job.input_images:
+                            logger.info("img2img mode detected with input images: %r", job.input_images)
                             # TODO: Placeholder - need to pass image data to forge_client
                             # img2img_kwargs["init_images"] = [...]
                             # img2img_kwargs["denoising_strength"] = job.config.get("denoising_strength", 0.75)
-                            img2img_kwargs["img2img_mode"] = True
-                            img2img_kwargs["source_image_path"] = str(source_image)
+                            img2img_kwargs["img2img"] = True
+                            img2img_kwargs["input_images"] = job.input_images
+                            img2img_kwargs["denoise"] = job.config.get("denoise", 0.5)
+                            logger.info("denoise: %r", img2img_kwargs["denoise"])
 
                         await forge_client.request(
                             output=str(job.d / f"{job.output_stem}_{job.seed}"),
@@ -489,7 +482,7 @@ def get_user_job_penalty(usage: float) -> float:
 
 
 async def enqueue_image_jobs(
-    d: Path, prompt: str, negative_prompt: str, output_stem: str, config: dict, regional_kwargs: dict, portal: Path
+        d: Path, prompt: str, negative_prompt: str, output_stem: str, config: dict, regional_kwargs: dict, portal: Path, input_images: list[str]
 ) -> int:
     """Enqueue image generation jobs into the priority queue"""
     global day_start
@@ -573,6 +566,7 @@ async def enqueue_image_jobs(
             portal=portal,
             request_time=current_time,
             duration=0,
+            input_images=input_images,
         )
 
         weight = estimate_job_weight(new_job)
@@ -715,6 +709,8 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
+        input_images = [str(p) for p in collect_input_files(d)]
+
         room = config.get("room", None)
 
         # Process macros
@@ -740,7 +736,7 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
         if fmt not in ("jpg", "png"):
             raise ValueError(f"unknown format: {fmt}")
 
-        seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal)
+        seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal, input_images)
 
         logger.debug("seed is not used!  %s", seed)
     except (Exception, PermissionError, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
@@ -750,6 +746,20 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
     finally:
         if log_handler:
             logger.removeHandler(log_handler)
+
+
+def collect_input_files(directory: Path) -> list[Path]:
+    """ Collect input files input_X.* """
+    files = []
+    i = 0
+    while True:
+        # Find all files starting with input_X.
+        matches = list(directory.glob(f'input_{i}.*'))
+        if not matches:
+            break
+        files.extend(matches)
+        i += 1
+    return files
 
 
 def convert_images_to_jpeg(portal: Path, req: str, d: Path, quality: int = 95):
