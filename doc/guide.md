@@ -982,7 +982,6 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-caret-left"></i> | `Ctrl+,` | Prev | Previous page |
 | <i class="bi-caret-right"></i> | `Ctrl+.` | Next | Next page, numbered like chat-0, chat-1 ... |
 | <i class="bi-skip-end"></i> | `Ctrl+]` | Last | Go to last numbered page |
-|  | `Ctrl+\` | New | Go to new numbered page beyond last one |
 
 ### Room Operations Submenu
 

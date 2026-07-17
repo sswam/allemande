@@ -146,3 +146,6 @@ You can set a custom mission file name to use in room options. Omit the .m suffi
 
 1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
    Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)
+
+
+|  | `Ctrl+\` | New | Go to new numbered page beyond last one |

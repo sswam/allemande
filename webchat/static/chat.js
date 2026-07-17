@@ -1629,7 +1629,7 @@ function setup_main_ui_shortcuts() {
     ['ctrl+.', () => set_room(room_next()), 'Go to next room'],
     ['ctrl+,', () => set_room(room_prev()), 'Go to previous room'],
     ['ctrl+]', async () => set_room(await room_last()), 'Go to last room'],
-    ['ctrl+\\', async () => set_room(await room_last(1)), 'Go beyond last room'],
+//    ['ctrl+\\', async () => set_room(await room_last(1)), 'Go beyond last room'],
   ]);
 
   add_shortcuts(shortcuts.message, [
