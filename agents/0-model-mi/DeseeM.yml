@@ -1,4 +1,4 @@
 type: deepseek
-model: deepseek-chat
+model: deepseek-v4-flash
 thinking_level: null
 # high / max

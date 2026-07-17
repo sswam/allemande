@@ -344,10 +344,12 @@ MODELS = {
         "cost_in": 0.20,
         "cost_out": 0.77,
     },
-    "deepseek-chat": {
-        "aliases": ["desee"],
+    "deepseek-v4-flash": {
+        "aliases": ["desee", "deepseek-chat"],
         "vendor": "deepseek",
         "id": "deepseek-v4-flash",
+        # "vendor": "openrouter",
+        # "id": "deepseek/deepseek-v4-flash",
         "description": "deepseek-chat points to deepseek-v4-flash",
         "cost_in": 0.14,
         "cost_out": 0.28,
@@ -599,6 +601,6 @@ MODEL_FALLBACKS = {
     "venice:*": "google:gemini-2.5-flash",
 }
 
-MODEL_FALLBACKS = {
-    "*:*": "venice:venice-uncensored",
-}
+# MODEL_FALLBACKS = {
+#     "*:*": "venice:venice-uncensored",
+# }

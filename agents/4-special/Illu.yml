@@ -9,7 +9,7 @@ poke_if:
 # type: openrouter
 # model: gemma4m
 type: deepseek
-model: deepseek-chat
+model: deepseek-v4-flash
 # type: google
 # model: gemini-2.0-flash
 # type: openrouter
