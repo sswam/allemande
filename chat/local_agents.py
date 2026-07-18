@@ -11,6 +11,7 @@ import shutil
 
 import regex
 from num2words import num2words  # type: ignore
+from PIL import Image
 
 import conductor
 import chat
@@ -408,6 +409,13 @@ async def local_agent(c, agent, _query) -> str:
             logger.debug("image prompt after running unprompted: %r", fulltext2)
 
             defaults = { "steps": 15, "width": 768, "height": 1024 }
+
+            # for img2img, default to input image size, can zoom
+            if c.images:
+                zoom = float(unp_vars.get("zoom", 1.0))
+                with Image.open(c.images[0]) as img:
+                    defaults["width"], defaults["height"] = round(img.width * zoom), round(img.height * zoom)
+
             for v in defaults:
                 if v not in gen_config:
                     gen_config[v] = defaults[v]

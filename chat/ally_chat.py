@@ -280,6 +280,8 @@ async def get_input_images(history, config, file) -> list[str]:
     images_setting = config.get("agents", {}).get("all", {}).get("images")
     if images_setting:
         input_image_messages = history[-2:]
+        # Forge seems to be limited to one input image.
+        images_setting = 1
     elif images_setting is None:
         input_image_messages = history[-1:]
     else:
