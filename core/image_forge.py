@@ -175,9 +175,9 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         width = int(width * scale)
         height = int(height * scale)
 
-    # width and height must be multiples of 64
-    width = width // 64 * 64
-    height = height // 64 * 64
+    # width and height must be multiples of 64, round to nearest
+    width = (width + 32) // 64 * 64
+    height = (height + 32) // 64 * 64
 
     # limit hires fix by pixels
     hires = config.get("hires", 1.0)
