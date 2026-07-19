@@ -17,6 +17,8 @@ def extract_tool_calls(content: str) -> list[str]:
 
     content = re.sub(r"(\A\w.*?:|^)\t", "", content, flags = re.MULTILINE)
 
+    # logger.info("extract_tool_calls 2: %s", content)
+
     matches = re.findall(r"""
     ^`+\s*@\w.*?`+
     |
@@ -25,7 +27,7 @@ def extract_tool_calls(content: str) -> list[str]:
 
     matches = [m.strip(" \n\t`") for m in matches]
 
-    # logger.info("extract_tool_calls 2: %r", matches)
+    # logger.info("extract_tool_calls 3: %r", matches)
     return matches
 
 

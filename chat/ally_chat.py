@@ -479,7 +479,7 @@ def load_agent_mission(room, bot, base_mission, args, agent=None):
 
 def prepare_query(history, agent, bot, query=None):
     """Prepare query and history for agent."""
-    if query:
+    if query is not None:
         history = [query]
         return query, history
 

@@ -521,8 +521,8 @@ def add_configured_image_prompts(fulltext, configs):
     for config in configs:
         if "image_prompt_template" in config:
             positive = str(config["image_prompt_template"]).replace("%s", positive)
-        if "image_prompt_negative_template" in config:
-            negative = str(config["image_prompt_negative_template"]).replace("%s", negative)
+        if "image_prompt_template_neg" in config:
+            negative = str(config["image_prompt_template_neg"]).replace("%s", negative)
     positive = re.sub(r'\s\s+', ' ', positive.strip())
     negative = re.sub(r'\s\s+', ' ', negative.strip())
     fulltext = positive
