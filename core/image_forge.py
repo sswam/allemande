@@ -176,8 +176,9 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         height = int(height * scale)
 
     # width and height must be multiples of 64, round to nearest
-    width = (width + 32) // 64 * 64
-    height = (height + 32) // 64 * 64
+    # Maybe this doesn't matter now, so disabled.
+    # width = (width + 32) // 64 * 64
+    # height = (height + 32) // 64 * 64
 
     # limit hires fix by pixels
     hires = config.get("hires", 1.0)
@@ -371,6 +372,8 @@ async def process_image_queue():
                             scheduler=job.config.get("scheduler", "Karras"),
                             steps=min(job.config.get("steps", 15), MAX_STEPS),
                             cfg_scale=job.config.get("cfg_scale", 7.0),
+                            cfg_scale_raw=job.config.get("cfg_scale_raw", None),
+                            resize=job.config.get("resize", "pad"),
                             width=job.config.get("width", 1024),
                             height=job.config.get("height", 1024),
                             count=1,

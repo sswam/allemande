@@ -85,6 +85,7 @@ async def request(
     scheduler: str = "Karras",
     steps: int = 15,
     cfg_scale: float = 7,
+    cfg_scale_raw: float|None = None,
     width: int = 1024,
     height: int = 1024,
     count: int = 1,
@@ -111,6 +112,7 @@ async def request(
     img2img: bool = False,
     input_images: list[str]|None = None,
     denoise: float = 1.0,
+    resize: str = "pad",
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -143,10 +145,21 @@ async def request(
         "override_settings": {},
     }
 
+    if cfg_scale_raw:
+        params["cfg_scale"] = cfg_scale_raw
+        params["distilled_cfg_scale"] = cfg_scale
+
     if img2img:
         params["denoising_strength"] = denoise
         init_images = [load_file_base64(image_path) for image_path in input_images]
         params["init_images"] = init_images
+        resize_map = {
+            "stretch": 0,
+            "crop": 1,
+            "pad": 2,
+            "latent": 3,  # yuk!
+        }
+        params["resize_mode"] = resize_map.get(resize, resize_map["pad"])
 
     if model:
         params["override_settings"]["sd_model_checkpoint"] = model
@@ -389,6 +402,7 @@ def setup_args(arg):
     arg("--scheduler", help="scheduler")
     arg("-i", "--steps", type=int, help="number of steps")
     arg("-C", "--cfg-scale", type=float, help="cfg scale")
+    arg("--cfg-scale-raw", type=float, help="cfg scale raw")
     arg("-W", "--width", type=int, help="image width")
     arg("-H", "--height", type=int, help="image height")
     arg("-c", "--count", type=int, help="number of images to generate")
@@ -411,6 +425,7 @@ def setup_args(arg):
     arg("--port", help="webui API port", type=int)
     arg("--modules", help="additional modules (text encoder, VAE)", type=str)
     arg("--preset", help="forge preset (e.g. krea)", type=str)
+    arg("--resize", help="resize mode for img2img: stretch, crop, pad", type=str)
 
 
 if __name__ == "__main__":
