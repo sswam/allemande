@@ -1,13 +1,14 @@
 base: Novi
-over: []
-type: llm_llama
-model: default
-specialist: true
-stop_regexs:
-  - \bSTOP\b
-system_bottom: |-
-  +
 
-  - IMPORTANT: End your piece of narrative with the word STOP on a line by itself. Or just stop.
-allow_play_script: True
-system_bottom_pos: 5
+# over: []
+# type: llm_llama
+# model: default
+# specialist: true
+# stop_regexs:
+#   - \bSTOP\b
+# system_bottom: |-
+#   +
+# 
+#   - IMPORTANT: End your piece of narrative with the word STOP on a line by itself. Or just stop.
+# allow_play_script: True
+# system_bottom_pos: 5
