@@ -27,6 +27,7 @@ import shlex
 from watchfiles import awatch, Change
 import regex
 from num2words import num2words
+from deepmerge import always_merger
 
 from ally import yaml
 import atail  # type: ignore
@@ -299,8 +300,13 @@ async def get_input_images(history, config, file) -> list[str]:
 def load_config(room):
     """Load and return configuration from room."""
     config_file = room.find_resource_file("yml", "options")
+    config_file_2 = room.find_resource_file("yml", "options", try_room_name=False)
     logger.debug("config_file: %r", config_file)
     config = config_read(config_file)
+    if config_file_2 and config_file_2 != config_file:
+        config_2 = config_read(config_file_2)
+        always_merger.merge(config_2, config)  # modifies config_2
+        config = config_2
     logger.debug("config: %r", config)
     return config
 

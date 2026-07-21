@@ -3467,6 +3467,7 @@ async function get_options() {
   const name = data?.users?.[user]?.name ?? "";
   const artist = data?.artist ?? (room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW);
   const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
+  const show = data?.agents?.all?.show ?? true;
 
   // recall button is complex
   const recap = data?.agents?.all?.recap ?? true;
@@ -3489,6 +3490,7 @@ async function get_options() {
   $id("opt_name").value = name;
   $id("opt_artist").value = artist;
   $id("opt_writer").value = writer;
+  active_set("opt_show", show);
   active_set("opt_recall", recall);
   active_set("opt_memorize", memorize);
 
@@ -3638,6 +3640,20 @@ function opt_writer_changed() {
   if (embed) return;
   const writer = $id("opt_writer").value;
   $id("writer").classList.toggle("hidden", writer === "");
+}
+
+async function opt_show(ev) {
+  const show = active_toggle("opt_show")
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          show: Boolean(show),
+        }
+      }
+    }
+  });
 }
 
 async function opt_recall(ev) {
@@ -4744,6 +4760,7 @@ export async function init() {
   $on($id("opt_name"), "change", opt_name);
   $on($id("opt_artist"), "change", opt_artist);
   $on($id("opt_writer"), "change", opt_writer);
+  $on($id("opt_show"), "click", opt_show);
   $on($id("opt_recall"), "click", opt_recall);
   $on($id("opt_memorize"), "click", opt_memorize);
   $on($id("opt_cancel"), "click", () => set_controls());

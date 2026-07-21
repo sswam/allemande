@@ -436,7 +436,7 @@ class Agent:
                 "ART_MODEL_PROMPT": art_model_prompt,
             })
 
-        if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", []):
+        if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", [], with_over=with_over):
             seed = self.get("unp_seed")
             try:
                 logger.info("Applying Unprompted for agent %r key %s", self.name, key)
@@ -540,6 +540,11 @@ class Agent:
         over_names = self.get("over", [], with_over=False)
         if over_names and isinstance(over_names, str):
             over_names = [over_names]
+
+        # A hack to disable ShowMI mixins, which help a character generate images
+        if not self.get("show", True, with_over=False):
+            over_names = [x for x in over_names if not x.startswith("ShowMI")]
+
         over = []
         for name in uniqo(over_names):
             if name == "+":
@@ -549,6 +554,7 @@ class Agent:
                 over.append(agent)
             else:
                 logger.debug("Over agent %s not found for %s", name, self.name)
+
         return over
 
     def set(self, key: str, value):
