@@ -309,7 +309,10 @@ export function format(obj, indent = 0) {
         }
     }
 
-    return lines.join('\n').trimEnd() + '\n';
+    let yaml_str = lines.join('\n').trimEnd();
+    if (yaml_str)
+        yaml_str += "\n";
+    return yaml_str;
 }
 
 // ---------- CLI ----------

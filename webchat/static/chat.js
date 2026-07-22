@@ -2546,8 +2546,8 @@ function edit_get_text() {
 async function edit_changed() {
   if (edit_agent_mode())
     await edit_agent_update_text();
-  // console.log("orig", editor_text_orig);
-  // console.log("new ", edit_get_text());
+  // console.log("orig [", editor_text_orig, "]");
+  // console.log("new [", edit_get_text(), "]");
   return edit_get_text() !== editor_text_orig;
 }
 
@@ -2644,8 +2644,13 @@ async function edit_reset() {
   edit_set_text(editor_text_orig);
 }
 
-function edit_clear() {
+async function edit_clear() {
+  if (!await Prompts.confirm("Delete this file?")) return false;
+  editor_text_orig = "";
   edit_set_text("");
+  if (edit_agent_mode())
+    edit_agent_reset();
+  await edit_save_and_close();
 }
 
 async function edit_close_back(ev) {
@@ -2799,7 +2804,7 @@ function convert_agent_for_simple_editor(agent) {
     model = "MediumAI";
   if (model == "SmallAI") {
     type = "Char";
-    model = "Small";
+    model = "Medium"; // removed Small at the moment
   } else if (model == "MediumAI") {
     type = "Char";
     model = "Medium";
@@ -2821,7 +2826,7 @@ function convert_agent_for_simple_editor(agent) {
   else if (type)
     agent.base = [type];
   else
-    agent.base = [];
+    delete agent.base;
 
   return agent;
 }
