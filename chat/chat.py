@@ -511,10 +511,10 @@ def add_configured_image_prompts(fulltext, configs):
             mappings_1 |= config["image_prompt_map_1"]
         if "image_prompt_map" in config:
             mappings |= config["image_prompt_map"]
-        if "image_prompt_negative_map_1" in config:
-            mappings_neg_1 |= config["image_prompt_negative_map_1"]
-        if "image_prompt_negative_map" in config:
-            mappings_neg |= config["image_prompt_negative_map"]
+        if "image_prompt_map_neg_1" in config:
+            mappings_neg_1 |= config["image_prompt_map_neg_1"]
+        if "image_prompt_map_neg" in config:
+            mappings_neg |= config["image_prompt_map_neg"]
     positive = re_map.apply_mappings(positive, mappings, mappings_1)
     negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
 

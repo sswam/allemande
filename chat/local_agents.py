@@ -380,9 +380,9 @@ async def local_agent(c, agent, _query) -> str:
         gen_config["stop_regexs"].extend(agent.get("stop_regexs", []))
 
     if image_agent:
-        fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, c.config])
+        fulltext2 = fulltext
         fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), c.config.get("vmacs")])
-        logger.debug("image prompt after adding configured: %r", fulltext2)
+        logger.debug("image prompt after soma: %r", fulltext2)
 
         # symlink local_visual_dir to templates_request
         # this means NO YIELDING until we finish this stuffs!
@@ -407,6 +407,9 @@ async def local_agent(c, agent, _query) -> str:
             fulltext2, unp_vars = unprompted(fulltext2, seed)
             input_count = len(fulltext2)
             logger.debug("image prompt after running unprompted: %r", fulltext2)
+
+            fulltext2 = chat.add_configured_image_prompts(fulltext2, [agent, c.config])
+            logger.debug("image prompt after adding configured: %r", fulltext2)
 
             defaults = { "steps": 15, "width": 768, "height": 1024 }
 
