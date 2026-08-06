@@ -792,6 +792,8 @@ async def room_changed(file_path, request_index, change_type, old_size, new_size
         logger.exception("Processing file failed: %r", file_path, exc_info=True)
 
 
+LOCAL_AGENT_PATTERN = re.compile(r'^' + re.escape(str(settings.PATH_ROOMS)) + r'/.*?/agents/')
+
 def check_file_type(path):
     """Check the file type, either room or agent."""
     ext = Path(path).suffix
@@ -801,6 +803,8 @@ def check_file_type(path):
         return "agent"
     if ext == ".yml" and path.startswith(str(settings.PATH_ROOMS/"agents")+"/"):
         return "agent"
+    if ext == ".yml" and LOCAL_AGENT_PATTERN.match(path):
+        return "local_agent"
     if ext in [".safetensors"] and path.startswith(str(settings.PATH_ROOMS)+"/"):
         return "contrib"
     return None
@@ -884,6 +888,11 @@ async def watch_loop(args):
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
                     agents.write_agents_dict(settings.PATH_ROOMS / ".agents_global.yml")
+                elif file_type == "local_agent":
+                    # load_local_agents to re-create local agents.yml for voices
+                    dummy_room_path = re.sub(r'(.*)/agents/.*', r'\1/chat.bb', file_path)
+                    dummy_room = ally_room.Room(path=Path(dummy_room_path))
+                    load_local_agents(dummy_room, agents, None)
                 elif file_type == "contrib" and change_type == Change.added:
                     move_contrib(file_path)
                 else:
