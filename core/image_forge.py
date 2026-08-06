@@ -494,6 +494,9 @@ async def enqueue_image_jobs(
     user = config.get("user", None)
     room = config.get("room", None)
 
+    # strip any =alias suffix
+    user = re.sub(r"=.*", "", user)
+
     is_private = user and room and room.startswith(f"{user}/")
 
     if is_private and not (ALLOW_PRIVATE_ALL or user in USER_ALLOW_PRIVATE):
