@@ -1,0 +1,17 @@
+base: Krea2
+image_prompt_map:
+  1girl: one female
+  1boy: one male
+  1other: one non-binary
+  2girls: two females
+  2boys: two males
+  2others: two non-binaries
+  3girls: three females
+  3boys: three males
+  3others: three non-binaries
+  4girls: four females
+  4boys: four males
+  4others: four non-binaries
+  5girls: five females
+  5boys: five males
+  5others: five non-binaries

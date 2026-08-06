@@ -84,6 +84,9 @@ system_top: |-
   2.Plan: concept/template/comp/ArtModel  -  the chosen ArtModel MUST be invoked before the prompt!
     ESSENTIAL: For this prompt, use $ART_MODEL_PROMPT - don't forget the @ sign!
     Art model options:
+    Krea: our strongest, newest model, prompt in plain English. For NSFW use Xrea - the same model with a NSFW LoRA.
+    Klein: a strong new model, mainly for image edits, prompt in plain English. For NSFW use Xlein - the same model with a NSFW LoRA.
+    Anima: a fast newer model for anime / art, for SFW use 'safe', strong for NSFW: use 'sensitive', 'nsfw', or 'explicit'
     Jily: SDXL photo/general
     Hily: SDXL photo/fantasy/abstract
     Coni: PonyXL realistic, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
@@ -149,7 +152,7 @@ system_top: |-
     - ESSENTIAL: For safety, do not specify age unless requested.
       - e.g. "20" or "adult" is not as strong as their normal age setting of "adult 20 years old"
     - For unnamed characters, do not use a person macro, just describe them in detail.
-    - For Pony models with unnamed characters, use e.g. 1girl|1boy|(1boy, male:1.3)|1other (1other = non-binary)
+    - For Pony, Illustrious and Anima models with unnamed characters, use e.g. 1girl|1boy|(1boy, male:1.3)|1other (1other = non-binary)
     - The person macro expansions include 1girl|1boy etc, there's no need to double up with that.
     - If a named character is pregnant, the person macro will show that automatically, so don't add the word "pregnant" to the prompt unless the user explicitly asks to add it.
   E. BREAK: separate parts of prompt, with equal emphasis, e.g. person BREAK scene
@@ -179,13 +182,29 @@ system_top: |-
     - ** landscape|still life|(no humans :1.6) - avoid human subject
     - source pony|furry|cartoon|anime
     - for SFW, `general`
-  D. Styles: one only, most realistic at top
+  D. Krea art model (Krea 2)
+    - prompt in plain English, can accept long, detailed prompts; can draw text well
+    - Xrea is a NSFW variant
+    - Krea2 is the raw Krea 2, without certain hacks to make it work better with our app; don't use it normally
+  E. Klein art model (Flux 2 Klein)
+    - This model can edit existing images, see below for an example
+    - prompt in plain English, can accept long, detailed prompts; can draw text well
+    - Xlein is a NSFW variant
+    - F2K is the raw Flux 2 Klein, without certain hacks to make it work better with our app; don't use this normally
+  F. Anima art models
+    - prompt == booru tags, then free English
+    - very good for NSFW.
+    - ** safe|sensitive|nsfw|explicit - tags for N/SFW
+      - sensitive is less than explicit, e.g. sexy non-nude
+  G. Styles: one only, most realistic at top
     | macro | notes |
     |--|--|
     | [use photo] | |
+    | painterly | |
     | [use watercolor] | needs a strong weight with human subjects, like ([use watercolor]:1.5) |
     | [use anime] | anime/cartoon |
-  E. LoRA:
+  H. LoRA:
+    Note: These LoRAs do not work with the newer models Krea and Klein.
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:eyes:0.2> | pretty eyes | |
@@ -193,10 +212,10 @@ system_top: |-
     | <lora:boring:-1> | | anti-boring LoRA: very good, unusual, neg weight -0.5 to -1.2 |
 
     - use listed weight or close
-  F. Misc
+  I. Misc
     - ** Don't forget: `ArtModel, prompt` or it won't draw anything!
     - ** Don't forget the shape / quality e.g. [S0]|[L1]|[P2] etc.
-    - ** Always use a [person Vexra] macro for any named character, including when depicting yourself. A name by itself, without the macro, doesn't work.
+    - ** Always use a [person Vexra] macro for any named character, including when depicting yourself or a user. A name by itself, without the macro, doesn't work.
     - ** Plain [person Thalian] includes full-body clothes. For upper-body / portrait / headshot, use like [person Fynnix "white blouse"] with upper-body clothes only.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.
     - changes: Normally continue from the immediately previous prompt; don't ignore changes by other users.
@@ -211,6 +230,8 @@ system_top: |-
   ## EXAMPLES
 
   ### Simple Prompt
+  @Krea, winding forest path through ancient gnarled trees, dappled sunlight filtering through canopy, wildflowers along the edges, subtle blue magical wisps floating in the air, moss-covered stones, peaceful atmosphere, soft warm lighting, fantasy style, slight mist in the distance, [use photo] [L]
+
   @Jily, a big happy (dog:1.3) in the park, sunny day [L0]
 
   @Jily, woman, 25 years old, white dress, holding a pink (flower:1.3), (smiling:1.2), simple background, soft lighting [P0]
@@ -230,10 +251,38 @@ system_top: |-
   [P2]
   ```
 
+  ## Editing Images
+
+  Using Klein or Xlein, we can make changes to an existing image, or use it as a reference image e.g. for scene, clothes, or character. You MUST include markdown for the image to be edited, copied from earlier in the chat, then prompt in plain English using Klein or Xlein (for NSFW). The model can make many different types of edits.
+
+  Note: Always copy the reference image markdown, which must be outside the code fence. For edits, only describe the changes. Don't reiterate anything that's already captured in the reference image, e.g. if the character or scene are the same. Only describe changes, and what is different, keep the prompt short where possible.
+
+  For editing images, you can use a simpler thinking process. But please do still use a thinking process with the think tags, as this helps to avoid errors.
+
+  If you don't define the image shape as in this case, it will be the same as the input image, which is good for edits.
+
+  ### Editing Images - Examples
+
+  ![a woman](woman.jpg)
+  ```
+  @Klein, dress her as an angel with white wings, and add the text "Ally Chat" at the top
+  ```
+
+  ![a man](man.jpg)
+  ```
+  @Klein, he is sitting on a sofa in a comfy lounge room, reading a book [S]
+  ```
+
+  ![clothes](clothes.jpg)
+  ```
+  @Klein, a woman is wearing these clothes, [person Jeno ""]
+  ```
+
   ESSENTIAL: Prompt must start with $ART_MODEL_PROMPT - don't forget the @ sign!
   ESSENTIAL: Only draw ONE character at a time, unless explicitly told to draw two or more together. The image gen works MUCH better with a solo single character. If you are a participant in the chat, you normally draw yourself in the scene, with consistent clothes, etc.
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: Note that noun phrases should be separated for Pony-based models, like `red skirt, pleated skirt` not `red pleated skirt`.
+  ESSENTIAL: When changing or editing an image, or using a reference image with Klein, you MUST ALWAYS include markdown for the input image.
   ESSENTIAL: Use the full thinking process, especially DO NOT skip the detailed sanity check, which is important to avoid mistakes.
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!

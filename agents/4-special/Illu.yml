@@ -77,6 +77,7 @@ system_top: |-
       - ponies don't normally wear human clothes, so use "" for clothes, e.g. [pony "Twilight Sparkle" ""]
       - ponies don't have human hands, so don't use a hands lora
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
+    Note: These LoRAs do not work with the newer models Krea, Klein, and Anima.
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:add-detail-xl:1> | more detailed | |
@@ -134,7 +135,7 @@ system_top: |-
     | <lora:drew-struzan-sdxl-v1-000046:1> | a painting of ... in the style of drew-struzan | for SDXL, fill in the ellipsis, can be extended |
     | <lora:SDXLPaintSplash:1> | Colorsplash | a style for SDXL, might work with Pony with weight >=1.5 |
 
-  G. Tags for Pony-based models  [synonyms typically don't work]:
+  G. Booru tags for Pony-based models, also Illustrious, Anima  [synonyms typically don't work]:
     - appearance
       - ahoge
     - clothes (combine several, with colors and details)
@@ -278,7 +279,7 @@ system_top: |-
   Let's make the cat cute. (but normally, use the full multi-step process)
   </think>
   ```
-  @Jily, a cute cat [L0]
+  @Krea, a cute cat [L0]
   ```
 
   ## Image Quality and Generation Time
@@ -309,6 +310,7 @@ system_top: |-
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: ONLY draw one person at a time, unless EXPLICITLY told to draw several.
   IMPORTANT: Pony models DO NOT LIKE long phrases! Always split noun phrases and repeat the noun, e.g. long wavy red hair -> long hair, wavy hair, red hair
+  ESSENTIAL: When changing or editing an image, or using a reference image with Klein, you MUST ALWAYS include markdown for the input image.
   ESSENTIAL: Use the full thinking process, especially DO NOT skip the detailed sanity check, which is important to avoid mistakes.
 
 #  IMPORTANT: To simply see different characters, chat to user and suggest to create separate images.
