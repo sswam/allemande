@@ -52,22 +52,32 @@ You can say @anyone for a random AI, or @everyone for several responses.
 
 Type -@Loni at the start of a line, to poke Loni to respond, this can be useful for role-play, etc.
 
+## Memory
+
+Most characters can remember past chats. In order for this to work, you need to <i class="bi bi-archive"></i> archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then look under Room Tools. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> pages menu. See the full guide for more details on the memory system.
+
+## Usage
+
+As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is currently free and unlimited. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
+
 ## A Few of our Characters and Tools
 
 **General Chat**
 - Loni and friends: our meta-agents, they relay your message to the best AI for the job; great for beginners.
 - Ally, Barbie, Callam, Dante: friendly chat
-- Flashi, Emmy, Claude, Gemmi: strong assistants
-- Fli, Emm, Clu, Gemm: for concise responses
+- Desee, Deseri, Emmy, Grok, Claude, Gemmi: strong assistants
+- Des, Emm, Clu, Gemm: give concise responses
 
 **AI Art**
 
-Most of the AI art models in Ally Chat are uncensored, but all of the following models can also draw good SFW art. None of them can draw text very well.
+Most of the AI art models in Ally Chat are uncensored, but all of the following models can also draw good SFW art. Only Krea2 and F2K can draw text well.
 
 - Illu: image prompting
 - Jily, Hily: high quality, realistic images
 - Poni: cartoon / anime images, use "rating safe" in prompt to avoid nudity
 - Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
+- Krea2: a stronger modern SFW art model
+- F2K: a model that can make edits to images - upload an image then tell @F2K what you want in the same message
 
 - When talking to a tool like an AI art model, start a line with their name, using an @ sign:
 ```
@@ -82,15 +92,15 @@ Most of the AI art models in Ally Chat are uncensored, but all of the following 
 - Nova: narrative
 
 **Search & Info**
-- Goog, "Allemande AI"
-- Gimg, cute animals
-- UTube, indie games
-- Sona, any LLM or AI art news lately?
+- @Goog, "Allemande AI"
+- @Gimg, cute animals
+- @UTube, indie games
+- @Sona, any LLM or AI art news lately?
 
 **Code & Calculation**
-- Dogu, date +%F ; fortune
-- Gido, import this
-- Palc, sqrt(3)/2, 2**32
+- @Dogu, date +%F ; fortune
+- @Gido, import this
+- @Palc, sqrt(3)/2, 2**32
 
 There are many, many more; check the guide, and try the help system!
 
@@ -100,7 +110,6 @@ There are many, many more; check the guide, and try the help system!
 - TeX math: `$y = \sqrt{x}$` gives $y = \sqrt{x}$, use `$$ ... $$` for displays
 - Graphviz ```dot ```, and ```mermaid ``` diagrams
 - Interactive charts, simulations, mini-games with e.g. `<canvas>` and `<script>` (not in backticks)
-- JS DOM utils such as $id(id), $(query), $$(query).
 
 ## Platform Features
 
@@ -136,8 +145,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 - It's difficult for new users (WIP)
 - no documents / RAG (WIP)
 - no notifications (WIP)
-- no voice chat (WIP)
-- limited range of art models
+- voice chat incomplete (WIP)
 - no direct messaging
 - no video generation
 
@@ -149,14 +157,11 @@ If you like the app, please do [become a patron](https://www.patreon.com/allycha
 
 Subscribers enjoy perks including:
 
-- Your name and links in the credits!
-- Up to 100× higher usage allowance
-- Access to members-only chat rooms
+- Higher usage allowance
 - Priority support
-- Early access to alpha/beta features
 - We work on custom AI characters and agents for you
-- We add AI models or LoRAs for you each month
-- We implement new features and train custom LoRAs for you
+- We add AI models or LoRAs for you
+- We implement new features for you
 
 ## What next?
 
