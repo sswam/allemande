@@ -31,6 +31,13 @@ forward_deny:
   - Basp
   - Ilus
   - Irus
+  - Krea2
+  - Krea
+  - Xrea
+  - F2K
+  - Klein
+  - Xlein
+  - Anima
 forward_if_code: Illu
 forward_if_image: Illu
 forward_if_blank: Illu
