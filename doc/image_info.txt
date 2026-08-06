@@ -1,0 +1,19 @@
+The [L] asks for a landscape image. Once you have the prompt working well, you can try [L2] which makes a bigger image with higher quality. There are other options for different aspect ratios:
+
+[V] very tall
+[v]
+[T] tall
+[t]
+[P] portrait (the default)
+[p]
+[S] square
+[l]
+[L] landscape
+[w]
+[W] wide
+[x]
+[X] extra wide
+
+the lower case options are in between. The main ones I use are [P], [S], [L] but [W] is also good for monitor wallpaper, and [T] or maybe [v] or [V] for phone wallpaper.
+
+You can add a 2 to any of them for higher quality, like [L2] [P2] [S2] etc. There are other quality options, but none (0) or 2 are the best ones to use.
