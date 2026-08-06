@@ -10,6 +10,7 @@
 !*.base
 !*.css
 !*.js
+!mission.m.*
 
 .*
 
