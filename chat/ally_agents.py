@@ -413,7 +413,7 @@ class Agent:
                 name_fullname_aliases += f". I'm also known as {aliases_s}"
 
             # art model preference
-            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Jily, ` or another art model")
+            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Krea, ` or another art model")
             if "@" not in art_model_prompt:
                 art_model_prompt = f"`@{art_model_prompt}` (preferred art model)"
 
