@@ -305,24 +305,33 @@ remove-user() {
 }
 
 restore-user() {
-	local user=${1:-}
+	local user=${1:-}      # Old username plus -* suffix, dirname under users-removed
 	local new_user=${2:-}  # Optional: new username to restore to
 
 	if [ -z "$user" ]; then
 		read -r -p "Username: " user
 	fi
 
-	# If new_user is provided, use it; otherwise restore to original name
-	local target_user="${new_user:-$user}"
+	# If new_user is provided, use it; otherwise restore to original name, without any -* suffix
+	local target_user
+	if [ -n "$new_user" ]; then
+		target_user="$new_user"
+	else
+		target_user="${user%-*}"
+	fi
 
 	# Check if target user already exists
 	if grep -q "^$target_user:" .htpasswd; then
 		die "User $target_user already exists in htpasswd"
 	fi
 
-	# Find the most recent removed user directory
+	# # Find the most recent removed user directory
+	# local removed_dir
+	# removed_dir=$(find ~/users-removed -maxdepth 1 -type d \( -name "$user" -o -name "$user-*" \) 2>/dev/null | sort -V | tail -n1)
+
+	# Use the exact directory specified including -* suffix
 	local removed_dir
-	removed_dir=$(find ~/users-removed -maxdepth 1 -type d \( -name "$user" -o -name "$user-*" \) 2>/dev/null | sort -V | tail -n1)
+	removed_dir=~/users-removed/"$user"
 
 	if [ -z "$removed_dir" ]; then
 		die "No removed user directory found for $user"
