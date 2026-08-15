@@ -901,8 +901,8 @@ type: visual
 | xAI           | Grok 4 Fast           | Gok     | $0.20  | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
 | xAI           | Grok Code Fast        | Groc    | $0.20  | $1.50  | Specialized fast model optimized for code generation and analysis.                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | $0.20  | $0.80  | DeepSeek's classic creative and intelligent chat model.                                                          |
-| DeepSeek      | DeepSeek V4 Flash     | Desee   | $0.14  | $0.28  | DeepSeek's fast, creative and intelligent chat model.                                                            |
-| DeepSeek      | DeepSeek V4 Pro       | Deseri  | $0.435 | $0.87  | DeepSeek's strongest model.                                                                                      |
+| DeepSeek      | DeepSeek V4 Flash     | Desee   | $0.22  | $0.66  | DeepSeek's fast, creative and intelligent chat model.                                                            |
+| DeepSeek      | DeepSeek V4 Pro       | Deseri  | $0.66  | $1.98  | DeepSeek's strongest model.                                                                                      |
 | Alibaba Cloud | QwQ 32B               | Qwen    | $0.15  | $0.58  | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | $2     | $6     | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
 | Mistral+      | Venice Uncensored 1.1 | Veni    | $0.20  | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |

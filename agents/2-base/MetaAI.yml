@@ -1,5 +1,6 @@
 # MetaAI is our base agent for AI meta-agents with a wide range of capabilities
-base: DeseeM
+base: GemM
+# base: DeseeM
 over:
   - Period
 poke_if:

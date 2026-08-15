@@ -351,16 +351,16 @@ MODELS = {
         # "vendor": "openrouter",
         # "id": "deepseek/deepseek-v4-flash",
         "description": "deepseek-chat points to deepseek-v4-flash",
-        "cost_in": 0.14,
-        "cost_out": 0.28,
+        "cost_in": 0.22,
+        "cost_out": 0.66,
     },
     "deepseek-v4-pro": {
         "aliases": ["deseri"],
         "vendor": "deepseek",
         "id": "deepseek-v4-pro",
         "description": "deepseek-v4-pro",
-        "cost_in": 0.435,
-        "cost_out": 0.87,
+        "cost_in": 0.66,
+        "cost_out": 1.98,
     },
     "llama-3.1-8b": {
         "aliases": ["ellie"],
@@ -520,7 +520,15 @@ MODELS = {
         "description": "MoonshotAI: Kimi K2.5",
         "cost_in": 0.45,
         "cost_out": 2.5,
-    }
+    },
+    "kimi3": {
+        "aliases": ["kimi-k3"],
+        "vendor": "openrouter",
+        "id": "moonshotai/kimi-k3",
+        "description": "MoonshotAI: Kimi K3",
+        "cost_in": 3,
+        "cost_out": 15,
+    },
 }
 
 default_model = "claude"

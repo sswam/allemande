@@ -1,4 +1,5 @@
-base: DeseeM
+base: GemM
+# base: DeseeM
 # type: openai
 # model: o4-mini
 specialist: true
