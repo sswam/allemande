@@ -1,0 +1,2 @@
+base: Anima
+image_prompt_template: "photorealistic, %s <lora:areal:1>"
