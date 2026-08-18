@@ -20,6 +20,7 @@ logger = logs.get_logger()
 
 def memory_build(folder: str, agent: str) -> None:
     """Build a FAISS memory index from all *.<agent>.s files in the folder."""
+    agent = agent.lower()
     folder_path = Path(folder)
     db_path = str(folder_path / agent)
 
