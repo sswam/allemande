@@ -637,7 +637,7 @@ class Agent:
         """Update the visual prompts for an agent."""
         visual = self.get("visual")
         logger.debug("update_visual: %r %r", self.name, visual)
-        if not visual:
+        if not visual or not isinstance(visual, dict):
             return
 
         all_names = self.get_all_names()
