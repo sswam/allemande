@@ -131,7 +131,7 @@ def lookup_hq(value):
 
 
 QUALITY_MIN = 0
-QUALITY_MAX = 5
+QUALITY_MAX = 2  # was 5
 
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
@@ -495,7 +495,8 @@ async def enqueue_image_jobs(
     room = config.get("room", None)
 
     # strip any =alias suffix
-    user = re.sub(r"=.*", "", user)
+    if user:
+        user = config["user"] = re.sub(r"=.*", "", user)
 
     is_private = user and room and room.startswith(f"{user}/")
 
