@@ -1,0 +1,20 @@
+--- math_functions.h.orig	2026-08-11 03:35:31.367662716 +1000
++++ math_functions.h	2026-08-11 03:38:16.460514648 +1000
+@@ -626,7 +626,7 @@
+  *
+  * \note_accuracy_double
+  */
+-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rsqrt(double x);
++extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rsqrt(double x) noexcept (true);
+ 
+ /**
+  * \ingroup CUDA_MATH_SINGLE
+@@ -650,7 +650,7 @@
+  *
+  * \note_accuracy_single
+  */
+-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rsqrtf(float x);
++extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rsqrtf(float x) noexcept (true);
+ 
+ #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
+ namespace std {

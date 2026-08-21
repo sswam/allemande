@@ -1,0 +1,19 @@
+--- target.orig	2026-08-11 03:41:41.996592127 +1000
++++ target	2026-08-11 03:46:00.829448232 +1000
+@@ -240,4 +240,16 @@
+ 
+ #include <nv/detail/__target_macros>
+ 
++// Sam: hack to fix missing __assert_fail
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++extern void __assert_fail(const char *__assertion, const char *__file, 
++                          unsigned int __line, const char *__function) 
++                          noexcept __attribute__((__noreturn__));
++#if defined(__cplusplus)
++}
++#endif
++
+ #endif // __NV_TARGET_H
