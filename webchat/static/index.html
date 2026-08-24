@@ -105,7 +105,7 @@
 		<div id="messages_overlay" class="fill"></div>
 	</div>
 
-	<textarea id="view_edit" class="view editor grow hidden"></textarea>
+	<textarea id="view_edit" class="view editor grow hidden" aria-label="edit file"></textarea>
 
 	<div id="view_edit_agent" class="view grow col gap hidden">
 		<div class="row wide gap">
@@ -159,7 +159,7 @@
 				document.getElementById("inputrow").style.flexBasis = input_row_height + "px";
 		</script>
 
-		<textarea id="content" name="content" class="input content_input grow" placeholder=" "></textarea>
+		<textarea id="content" name="content" class="input content_input grow" aria-label="message input" placeholder=" "></textarea>
 		<math-field id="math_input" class="input hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>

@@ -186,7 +186,7 @@ async function _import_real(id, src) {
 
   // Call the init function if it exists; may be async or not
   if (module.init) 
-    await Promise.resolve(module.init());                                      
+    await Promise.resolve(module.init());
 
   // Resolve all pending load promises
   for (const resolve of callbacks)
@@ -491,4 +491,49 @@ async function wait_for(predicate, timeout) {
   }
 
   // console.log("wait_for", count);
+}
+
+// accessibility support -----------------------------------------------------
+
+// fix accessibility of buttons and other form elements, adding aria-label based on title
+function fix_accessibility() {
+  const back_elements = $$("button.back:not([title])");
+  for (const el of back_elements) {
+    el.setAttribute("title", "back");
+  }
+
+  const cancel_elements = $$("button.cancel:not([title])");
+  for (const el of cancel_elements) {
+    el.setAttribute("title", "cancel");
+  }
+
+  const elements = $$("button[title], a.button[title], input[title], textarea[title]");
+
+  for (const el of elements) {
+    const title_text = el.getAttribute("title");
+    const tag_name = el.tagName.toLowerCase();
+
+    // Apply the accessible name
+    el.setAttribute("aria-label", title_text);
+
+    if (tag_name === "button" || tag_name === "a") {
+      // Find and hide Bootstrap icon font elements
+      const iIcon = el.querySelector("i");
+      if (iIcon) {
+        iIcon.setAttribute("aria-hidden", "true");
+      }
+
+      // Find and hide custom SVG elements
+      const svgIcon = el.querySelector("svg");
+      if (svgIcon) {
+        svgIcon.setAttribute("aria-hidden", "true");
+        svgIcon.setAttribute("focusable", "false");
+      }
+    }
+  }
+}
+
+function setTitle($el, title) {
+  $el.title = title;
+  $el.setAttribute("aria-label", title)
 }

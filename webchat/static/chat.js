@@ -847,10 +847,10 @@ function message_changed(ev) {
   const $send = $id("send");
   if ($content.value == "") {
     $send.innerHTML = icons["poke"];
-    $send.title = `poke the chat: ${Alt}+enter`;
+    setTitle($send, `poke the chat: ${Alt}+enter`);
   } else {
     $send.innerHTML = icons["send"];
-    $send.title = "send your message" + (simple ? "" : ": ctrl+enter");
+    setTitle($send, "send your message" + (simple ? "" : ": ctrl+enter"));
   }
   if (simple) {
     const old_flexBasis = $inputrow.style.flexBasis;
@@ -1100,14 +1100,14 @@ function show_room_privacy() {
     return go_home();
   if (access_denied) {
     $privacy.innerHTML = icons["access_denied"];
-    $privacy.title = "denied";
+    setTitle($privacy, "denied");
     clear_messages_box();
   } else if (is_private) {
     $privacy.innerHTML = icons["access_private"];
-    $privacy.title = "private";
+    setTitle($privacy, "private");
   } else {
     $privacy.innerHTML = icons["access_public"];
-    $privacy.title = "public";
+    setTitle($privacy, "public");
   }
 
   if (is_private) {
@@ -1918,7 +1918,7 @@ async function setup_nav_buttons() {
   const target_room = nsfw_button_go_to_sfw ? config.PUBLIC_ROOM : config.NSFW_ROOM;
   const target_room_desc = nsfw_button_go_to_sfw ? "SFW" : "NSFW";
   $nav_nsfw.href = "/" + query_to_hash(target_room);
-  $nav_nsfw.title = `Go to the main ${target_room_desc} room: ${target_room}`;
+  setTitle($nav_nsfw, `Go to the main ${target_room_desc} room: ${target_room}`);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -3028,31 +3028,31 @@ async function view_options_apply() {
   const $view_standard = $id("view_standard");
   if (view_options.advanced == -1) {
     $view_standard.innerHTML = icons["view_mode_simple"]
-    $view_standard.title = "simple mode: click for standard mode";
+    setTitle($view_standard, "simple mode: click for standard mode");
   } else if (view_options.advanced == 0) {
     // NOTE: not currently a thing
     $view_advanced.innerHTML = icons["view_mode_not_advanced"]
     $view_standard.innerHTML = icons["view_mode_standard"]
-    $view_advanced.title = "standard mode: click for advanced mode";
-    $view_standard.title = "standard mode";
+    setTitle($view_advanced, "standard mode: click for advanced mode");
+    setTitle($view_standard, "standard mode");
   } else if (view_options.advanced == 1) {
     // $view_advanced.innerHTML = icons["view_mode_advanced"]
     $view_standard.innerHTML = icons["view_mode_standard"]
-    $view_standard.title = "advanced mode";
+    setTitle($view_standard, "advanced mode");
     $view_advanced.innerHTML = icons["view_mode_boffin_off"]
-    $view_advanced.title = "advanced mode: click for boffin mode";
+    setTitle($view_advanced, "advanced mode: click for boffin mode");
   } else {
     $view_advanced.innerHTML = icons["view_mode_boffin"]
-    $view_advanced.title = "boffin mode";
+    setTitle($view_advanced, "boffin mode");
   }
 
   const $edit_advanced = $id("edit_advanced");
   if (view_options.edit_advanced > 0) {
     $edit_advanced.innerHTML = icons["edit_advanced"];
-    $edit_advanced.title = "advanced editor";
+    setTitle($edit_advanced, "advanced editor");
   } else {
     $edit_advanced.innerHTML = icons["edit_simple"];
-    $edit_advanced.title = "simple editor";
+    setTitle($edit_advanced, "simple editor");
   }
 
   const cl = document.body.classList;
@@ -3141,7 +3141,7 @@ async function view_options_apply() {
     const sort_icon = "sort_" + view_options.dir_sort;
     const $dir_sort = $id("dir_sort");
     $dir_sort.innerHTML = icons[sort_icon];
-    $dir_sort.title = "sort: " + view_options.dir_sort;
+    setTitle($dir_sort, "sort: " + view_options.dir_sort);
   }
   show("dir_sort", type === "dir");
   show("pages", type !== "dir");
@@ -3686,16 +3686,16 @@ function opt_recall_update_button(recall) {
   const $opt_recall = $id('opt_recall');
   if (recall == 0) {
     $opt_recall.innerHTML = icons["opt_recall"]
-    $opt_recall.title = "recall: none";
+    setTitle($opt_recall, "recall: none");
   } else if (recall == 1) {
     $opt_recall.innerHTML = icons["opt_recall_1"]
-    $opt_recall.title = "recall: recap of this chat";
+    setTitle($opt_recall, "recall: recap of this chat");
   } else if (recall == 2) {
     $opt_recall.innerHTML = icons["opt_recall_2"]
-    $opt_recall.title = "recall: recap of this chat, and recent chats";
+    setTitle($opt_recall, "recall: recap of this chat, and recent chats");
   } else if (recall == 3) {
     $opt_recall.innerHTML = icons["opt_recall_3"]
-    $opt_recall.title = "recall: recap of this chat, recent chats, and relevant older chats";
+    setTitle($opt_recall, "recall: recap of this chat, recent chats, and relevant older chats");
   }
 }
 
@@ -4204,11 +4204,11 @@ function update_room_status(data) {
   const $scroll_end_2 = $id("scroll_end_2");
   if (data.scroll_at_end) {
     $scroll_end_2.innerHTML = icons["scroll_home"];
-    $scroll_end_2.title = "start of room: home";
+    setTitle($scroll_end_2, "start of room: home");
     $scroll_end_2.classList.add("active");
   } else {
     $scroll_end_2.innerHTML = icons["scroll_end"];
-    $scroll_end_2.title = "end of room: end";
+    setTitle($scroll_end_2, "end of room: end");
     $scroll_end_2.classList.remove("active");
   }
 }
@@ -4380,6 +4380,7 @@ let view_prev;
 async function usage() {
   if (view == "view_usage") {
     $id("usage").classList.remove("back");
+    setTitle($id("usage"), "usage");
     set_view(view_prev);
     return;
   }
@@ -4388,6 +4389,7 @@ async function usage() {
   $id("view_usage").innerHTML = "";
   set_view("view_usage");
   $id("usage").classList.add("back");
+  setTitle($id("usage"), "back");
 
   function escapeHtml(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -4505,8 +4507,8 @@ async function usage() {
     let html = `
       ${patreon}
       <div style="display: flex; gap: var(--pad);">
-  			<button id="usage_prev" title="previous month"><i class="bi bi-caret-left-fill i20"></i></button>
-  			<button id="usage_next" title="next month"><i class="bi bi-caret-right-fill i20"></i></button>
+        <button id="usage_prev" title="previous month" aria-label="previous month"><i class="bi bi-caret-left-fill i20"></i></button>
+        <button id="usage_next" title="next month" aria-label="next month"><i class="bi bi-caret-right-fill i20"></i></button>
       </div>
       <h3>Usage for ${month_display}</h3>
       <p><strong>Total: ${formatCost(summary.totalCost)}</strong></p>
@@ -4649,6 +4651,7 @@ export async function init() {
 
   setup_help();
   await setup_icons();
+	fix_accessibility();
   // load_filter();
 
   // The controls layout used to work in Chrome without the hack,
