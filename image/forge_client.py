@@ -26,7 +26,7 @@ __version__ = "0.1.0"
 logger = main.get_logger()
 
 API_URL = "http://127.0.0.1:$PORT/sdapi/v1/"
-MAX_RETRIES = 5
+MAX_RETRIES = 10
 RETRY_DELAY = 10
 
 
