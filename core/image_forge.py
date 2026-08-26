@@ -51,7 +51,7 @@ MAX_STEPS = 150  # 30
 TIME_EPSILON = 0.001  # a small time to add to distinguish job order
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
 JOB_BASE_TIME = 60 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
-JOB_PRIVATE_PENALTY = 2
+JOB_PRIVATE_PENALTY = 1  # 2  -  1 means disabled
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
@@ -341,7 +341,7 @@ async def process_image_queue():
             if start_time - job.request_time > MAX_JOB_DELAY:
                 # Don't process the job if it has been in the queue for too long, as the client will have timed out
                 logger.info("skipping old job: %.0f seconds old, more than %.0f seconds", start_time - job.request_time, MAX_JOB_DELAY)
-                await complete_batch(job)
+                asyncio.create_task(complete_batch(job))  # background
             else:
                 # Process the job
                 with GPU_MUTEX.open("w") as lockfile:
@@ -394,7 +394,7 @@ async def process_image_queue():
 
                     # Check if this is the last job in the batch
                     if job.i == job.count - 1:
-                        await complete_batch(job)
+                        asyncio.create_task(complete_batch(job))  # background
                 end_time = time.time()
                 logger.info("Job duration vs estimate: %.2f seconds vs %.2f", end_time - start_time, job.duration)
         except asyncio.CancelledError:
