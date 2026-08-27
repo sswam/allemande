@@ -1,2 +1,2 @@
-raw, realistic, photo \(medium\)
+raw, realistic, photo \(medium\), real life
 [set negative_prompt _prepend] (anime, cartoon, 3d:2), [/set]
