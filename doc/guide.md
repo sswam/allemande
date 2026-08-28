@@ -609,7 +609,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Pixi**: She crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: She is an expert writer focused on summarizing entire chats
 - **Sio**: She is an expert writer focused on summarizing entire chats in structured markdown format
-- **Nova**: She is a master narrator for immersive storytelling in interactive fiction
+- **Novi**: She is a master narrator for immersive storytelling in interactive fiction
 - **Brie**: She is a creative brainstorming specialist offering a range of diverse solutions
 - **Atla**: He is an environment and setting design specialist rendering realistic and vibrant scenes
 - **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
@@ -1075,7 +1075,7 @@ This is a large screen which takes up the bottom half of the display, and includ
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
 |  |  | Name | Change your name in the chat |
 |  |  | Artist | An agent to make images when you press the Artist button (default: Illu) |
-|  |  | Writer | An agent to write narrative when your press the Writer button (default: none; try Nova or Novi) |
+|  |  | Writer | An agent to write narrative when your press the Writer button (default: none; try Novi) |
 | <i class="bi bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi bi-lightbulb-off"></i> none, <i class="bi bi-lightbulb"></i> recap of this chat, <i class="bi bi-lightbulb-fill"></i> also recent chats, <i class="bi bi-sun-fill"></i> also relevant older chats |
 | <i class="bi bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
