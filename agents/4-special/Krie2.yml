@@ -1,0 +1,4 @@
+base: Krea2
+image_prompt_template: "%s <lora:krea2_identity_edit_v1_2:1>"
+config:
+  denoise: 1.0
