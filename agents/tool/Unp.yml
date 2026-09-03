@@ -2,5 +2,5 @@
 type: tool
 command:
 - unprompted-run
-args: True
+args: False
 local_visual: True
