@@ -468,6 +468,10 @@ def estimate_job_weight(job: ImageJob) -> float:
         log("Regional prompter detected, increasing job weight")
         job_weight *= 1.5
 
+    # multiply by 0.5 if it's a fast model
+    if config.get("preset") == "anima" and steps <= 12:
+        job_weight *= 0.5
+
     log("Estimated job weight: %.2f", job_weight)
 
     return job_weight
