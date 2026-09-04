@@ -1772,7 +1772,8 @@ async function get_message_id($message) {
 
 async function msg_undo_click(event) {
   const id = await get_message_id($message_with_menu);
-  window.parent.postMessage({ type: "undo", message_id: id }, ALLYCHAT_CHAT_URL);
+  const force = event.shiftKey;
+  window.parent.postMessage({ type: "undo", message_id: id, force: force }, ALLYCHAT_CHAT_URL);
   hide("message_menu");
   $message_with_menu = null;
 }

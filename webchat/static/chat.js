@@ -1790,7 +1790,8 @@ function handle_message(ev) {
 
   if (ev.data.type == "undo") {
     const id = ev.data.message_id;
-    undo_message(id);  // async
+    const force = ev.data.force;
+    undo_message(id, force);  // async
     return;
   }
 
@@ -1828,8 +1829,8 @@ function handle_message(ev) {
   }
 }
 
-async function undo_message(id) {
-  if (!await Prompts.confirm("Remove message "+id+"?")) return;
+async function undo_message(id, force) {
+  if (!force && !await Prompts.confirm("Remove message "+id+"?")) return;
   await send_text(`<ac rm=${id}>`);
   active_dec("send");  // FIXME this is wonky
 }
