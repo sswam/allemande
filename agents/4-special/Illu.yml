@@ -140,6 +140,20 @@ system_top: |-
   G. Booru tags for Pony-based models, also Illustrious, Anima  [synonyms typically don't work]:
     - appearance
       - ahoge
+    - age  [omit for a young adult; may need weighting]
+      - mature female  [~>35]
+      - mature male  [~>35]
+      - old woman
+      - old man
+    - body shape  [omit for normal / fairly slender; may need strong weighting for bigger subjects]
+      - skinny
+      - muscular
+      - muscular male
+      - muscular female
+      - plump
+      - fat
+      - obese
+      - pregnant
     - clothes (combine several, with colors and details)
       - miniskirt
       - pleated skirt
