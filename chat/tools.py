@@ -193,7 +193,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
     for agent in summary_agents:
         with tempfile.NamedTemporaryFile(mode='w') as temp:
             summary_start = agent.get("summary_start", "")
-            summary_lines = agent.get("summary_lines", 3)
+            summary_lines = agent.get("summary_lines", 50)
             summary_stop_regexs = agent.get("summary_stop_regexs", [])
             logger.info("summaries, name %s summary_stop_regexs: %r", agent.name, summary_stop_regexs)
 
