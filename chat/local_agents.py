@@ -404,11 +404,13 @@ async def local_agent(c, agent, _query) -> str:
             fulltext2 = "[set negative_prompt] " + pos_neg[1] + " [/set] " + pos_neg[0]
             fulltext2 += " NEGATIVE [get negative_prompt]"
 
+            fulltext2 = chat.add_configured_image_prompts(fulltext2, [agent, c.config], step="templates")
+
             fulltext2, unp_vars = unprompted(fulltext2, seed)
             input_count = len(fulltext2)
             logger.debug("image prompt after running unprompted: %r", fulltext2)
 
-            fulltext2 = chat.add_configured_image_prompts(fulltext2, [agent, c.config])
+            fulltext2 = chat.add_configured_image_prompts(fulltext2, [agent, c.config], step="mappings")
             logger.debug("image prompt after adding configured: %r", fulltext2)
 
             defaults = { "steps": 15, "width": 768, "height": 1024 }
