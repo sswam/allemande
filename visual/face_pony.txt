@@ -1,5 +1,5 @@
-[if gender="male" _not]
-	[sets gender=female person=1girl person2=2girls person0=1boy]
+[if gender="boy" _not]
+	[sets gender=girl person=1girl person2=2girls person0=1boy]
 [/if]
 [else]
 	[sets person=1boy]

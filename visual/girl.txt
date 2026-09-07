@@ -1,0 +1,2 @@
+[sets gender=girl]
+[use anyone]

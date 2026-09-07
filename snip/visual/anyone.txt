@@ -1,0 +1,6 @@
+[set char]
+[choose]
+[use people]
+[/choose]
+[/set]
+[use character]

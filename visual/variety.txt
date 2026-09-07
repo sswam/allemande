@@ -1,0 +1,4 @@
+black hair, brown hair, blonde hair, red hair,
+brown eyes, green eyes, blue eyes,
+short hair, medium hair, long hair, very long hair,
+pale skin, dark skin, very dark skin

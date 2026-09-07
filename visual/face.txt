@@ -1,10 +1,10 @@
-[if gender="male" _not]
-	[sets gender=female]
+[if gender="boy" _not]
+	[sets gender=girl]
 [/if]
 
 [if pony=1]
 
-[set face][choose]square|wide[/choose][/set]
+[set face_shape][choose]square|wide[/choose][/set]
 [set forehead][choose]|large[/choose][/set]
 [set eyebrows][choose]short|long|thick|v-shaped|curly|wavy|medium[/choose][/set]
 [set nose][choose]dot|big|pointy|aquiline|long|triangle[/choose][/set]
@@ -19,17 +19,17 @@
 	8 | long hair
 	8 | medium hair
 	8 | short hair
-	1 | shaved head
-	1 | short hair, shaved head
 	[/choose]
 [/set]
-[set height]tall[/set]
+[set char_height]tall[/set]
 
 [use race, 100 1.7 2.0] [use nationality, 70 1.7 2.0]
-BREAK
+
+[##]BREAK[/##]
+
 [opt 90 1.0 1.7][get hair], [/opt]
 [use hairstyle, 90 1.0 1.7]
-[opt 60 1.0 1.7][get face] face, [/opt]
+[opt 60 1.0 1.7][get face_shape] face, [/opt]
 [opt 40 1.0 1.7][get forehead] forehead, [/opt]
 [opt 80 1.0 1.7][get eyebrows] eyebrows, [/opt]
 [opt 80 1.0 1.7][get nose] nose, [/opt]
@@ -38,7 +38,7 @@ BREAK
 [opt 50 1.0 1.7][get cheekbones] cheekbones, [/opt]
 [opt 10 1.0 1.7][get ears] ears, [/opt]
 [opt 70 1.0 1.7][get build], [/opt]
-[opt 30 1.0 1.7][get height], [/opt]
+[opt 30 1.0 1.7][get char_height], [/opt]
 
 [opt 20 1.0 1.8] freckles, [/opt]
 [opt 20 1.0 1.8] dimple, [/opt]
@@ -46,39 +46,43 @@ BREAK
 [/if]
 [else]
 
-[set face][choose]round|oval|square|heart-shaped|diamond-shaped|small|wide[/choose][/set]
+[set face_shape][choose]round|oval|square|small|wide[/choose][/set]
 [set forehead][choose]high|low|prominent|receding[/choose][/set]
 [set eyebrows][choose]short|arched|straight|thick|thin|bushy|v-shaped[/choose][/set]
 [set nose][choose]big|small|aquiline|long|short|wide|narrow|upturned|downturned[/choose][/set]
-[set mouth][choose]thick lips|puffy lips|heart-shaped mouth|small mouth|big mouth[/choose][/set]
+[set mouth][choose]thick lips|puffy lips|small mouth|big mouth[/choose][/set]
 [set chin][choose]strong|weak|square|pointed|round|cleft[/choose][/set]
 [set cheekbones][choose]|high|low|prominent|subtle[/choose][/set]
 [set ears][choose]small|protruding|close-set[/choose][/set]
-[set build][choose]plump|skinny|athletic|muscular[/choose][/set]
-[set hair][choose]very long hair|long hair|medium hair|short hair|shaved head|short hair, shaved head[/choose][/set]
-[set height][choose]tall|short[/choose][/set]
+[##][set build][choose]plump|skinny|athletic|muscular[/choose][/set][/##]
+[set build][choose]skinny[/choose][/set]
+[set hair][choose]very long hair|long hair|medium hair|short hair[/choose][/set]
+[set char_height][choose]tall|short[/choose][/set]
 
 [use race, 90 1.5 1.8] [use nationality, 40 1.5 1.8]
-BREAK
+
+[##]BREAK[/##]
+
 [opt 70 1.0 1.7][get hair], [/opt]
 [use hairstyle, 70 1.0 1.7]
-[opt 60 1.0 1.7][get face] face, [/opt]
+[opt 60 1.0 1.7][get face_shape] face, [/opt]
 [opt 60 1.0 1.7][get forehead] forehead, [/opt]
 [opt 60 1.0 1.7][get eyebrows] eyebrows, [/opt]
 [opt 60 1.0 1.7][get nose] nose, [/opt]
 [opt 60 1.0 1.7][get mouth], [/opt]
 [opt 60 1.0 1.7][get chin] chin, [/opt]
 [opt 60 1.0 1.7][get cheekbones] cheekbones, [/opt]
-[opt 60 1.0 1.7][get ears] ears, [/opt]
-[opt 60 1.0 1.7][get build], [/opt]
-[opt 60 1.0 1.7][get height], [/opt]
+[opt 60 0.5 1.0][get ears] ears, [/opt]
+[opt 50 1.0 1.7][get build], [/opt]
+[opt 60 1.0 1.7][get char_height], [/opt]
 
 [opt 20 1.0 1.8] freckles, [/opt]
 [opt 20 1.0 1.8] dimple, [/opt]
 [/else]
 
-BREAK
-[if gender="male"]
+[##]BREAK[/##]
+
+[if gender="boy"]
 	[use name_given_boy 100 1.2 1.7] [use surname 90 1.2 1.7],
 	[if pony=1]
 		[use char_boy, 100 0.9 1.7]
@@ -97,7 +101,10 @@ BREAK
 	[/if]
 [/else]
 
-BREAK
+[##]BREAK[/##]
+
+[##]
 [use face_pretty_ugly, 80 0.8 1.5]
 
 [use face_mixin_strong]
+[/##]

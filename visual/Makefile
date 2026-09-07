@@ -41,4 +41,20 @@ install: build
 # person:
 # 	mkdir -p person
 
+agents.txt:
+	( cd $$ALLEMANDE_AGENTS ; find . \( -name artist -o -name author -o -name celeb -o -name comedy -o -name dj -o -name musician -o -name poet -o -name religion -o -name wip -o -name young -o -name '.?*' \) -prune -o -name '*.yml' -print ) >$@
+
+girls.txt: agents.txt
+	( cd $$ALLEMANDE_AGENTS; xa grep -l '^  person:.*1girl' ) <$< | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+
+boys.txt: agents.txt
+	( cd $$ALLEMANDE_AGENTS; xa grep -l '^  person:.*1boy' ) <$< | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+
+nonbinary.txt: agents.txt
+	( cd $$ALLEMANDE_AGENTS; xa grep -l -w '^  person:.*1other' ) <$< | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+
+people.txt: girls.txt boys.txt nonbinary.txt
+	cat $^ | shuf >$@
+
+
 .PHONY: all build install chmod sync sync-all

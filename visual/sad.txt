@@ -12,6 +12,11 @@
 2 | serious
 2 | concentrating
 2 | lonely
+2 | confused
+2 | drunk
+2 | sad, crying
+2 | sad, crying, tears
+2 | sad, crying, streaming tears
 1 | angry
 2 | dazed
 [/choose]

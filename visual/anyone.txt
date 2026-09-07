@@ -1,6 +1,35 @@
-[set char]
-[choose]
-[use people]
-[/choose]
-[/set]
-[use character]
+[if "{get gender}" _not]
+[set gender][choose _weighted]
+40|girl
+30|boy
+2|other
+[/choose][/set]
+[sets gender_clear=1]
+[/if]
+
+[if gender="girl"]
+	[sets list=girls]
+[/if]
+[elif gender="boy"]
+	[sets list=boys]
+[/elif]
+[else]
+	[sets list=nonbinary]
+[/else]
+
+[if "{get char}" _not]
+[set char][choose]
+[use "{get list}"]
+[/choose][/set]
+[sets char_clear=1]
+[/if]
+
+[person "{get char}" "{get clothes _default=.}" "{get emo _default=.}"]
+
+[if "{get gender_clear}"]
+[unset gender_clear gender]
+[/if]
+
+[if "{get char_clear}"]
+[unset char_clear char]
+[/if]

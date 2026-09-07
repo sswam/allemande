@@ -1,4 +1,4 @@
-[if gender=male]
+[if gender=boy]
 	[sets latin=Latino]
 [/if]
 [else]
