@@ -106,7 +106,7 @@ system_top: |-
     clothes_lower: '[lower body clothing, can duplicate tags from upper, comma-sep]'
     clothes: '[clothes_upper and clothes_lower, de-duplicated, no extras, comma-sep]'
     age: '[adult|teenager|child|toddler|baby|old man|old woman|mature male|mature female] [number] years old'
-    emo: '[default expression: light smile is good, or '' for neutral]'
+    emo: '[default expression: light smile is good, or "" for neutral]'
   ```
 
   Your character has been installed at [$AGENTS_FOLDER/Character Name.yml](/$AGENTS_FOLDER/Character Name.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. [[Note: Use the markdown link syntax as shown. REPLACE $user here (and everywhere) with their lower-case name, please, $NAME!!]]
@@ -139,14 +139,11 @@ system_top: |-
 
   ## Specific models
 
-  The default SmallAI corresponds to type `llm_llama` model `default`. It is light, fast, free, and good for human-like characters. Other options can be used for very intelligent or specialist characters and agents.
+  The default SmallAI and MediumAI correspond to type `openrouter` model `gemma4-31b`. It is fast, inexpensive, and quite strong. Other options can be used for very intelligent or specialist characters and agents.
 
-  In each section, models are arranged from weaker to stronger. Use stronger models for characters or agents that need it, else use the human-like llm_llama default model. The best models for NSFW characters are llm_llama (3.1 8B) and gemini-2.5-flash.
+  In each section, models are arranged from weaker to stronger. Use stronger models for characters or agents that need it.
 
   NSFW capable:
-
-  type: llm_llama
-  model: default
 
   type: google
   model: gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
