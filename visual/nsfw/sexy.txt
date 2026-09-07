@@ -1,0 +1,14 @@
+explicit, uncensored, 1girl,
+[set clothes][choose]
+.
+nude
+revealing clothes
+lingerie
+[/choose][/set]
+[set emo][choose _weighted]
+2|{use happy}
+1|{use sad}
+[/choose][/set]
+[choose]{use face}|{use girl}[/choose], [get clothes], [get emo],
+[use sex]
+[use dimensions]
