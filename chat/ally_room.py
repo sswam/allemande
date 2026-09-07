@@ -296,9 +296,9 @@ class Room:
         save_chat_messages(messages, output, mode="w")
         await overwrite_file(user, self.name + EXTENSION, output.getvalue(), backup=backup)
 
-    def check_access(self, user: str | None) -> Access:
+    def check_access(self, user: str | None, agent_check: bool = False) -> Access:
         """Check access for a user."""
-        return check_access(user, self.name + EXTENSION)
+        return check_access(user, self.name + EXTENSION, agent_check)
 
     def find_resource_file(self, ext, name=None, create=False, try_room_name=True, try_without_extension=False) -> str|None:
         """Find a resource file for the chat room.
@@ -473,12 +473,12 @@ class Room:
         return last
 
 
-def check_access(user: str | None, pathname: Path | str) -> Access:
+def check_access(user: str | None, pathname: Path | str, agent_check: bool = False) -> Access:
     """Check if the user has access to the path, and log the access."""
     if isinstance(pathname, Path):
         pathname = str(pathname)
     try:
-        access, _reason = _check_access_2(user, pathname)
+        access, _reason = _check_access_2(user, pathname, agent_check)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
     logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
@@ -520,7 +520,7 @@ def _get_file_status(path: Path) -> FileStatus:
     return file_status
 
 
-def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
+def _check_access_2(user: str | None, pathname: str, agent_check: bool = False) -> tuple[Access, str]:
     """
     Check if the user has access to the path
     Returns a tuple of (Access, reason)
@@ -532,7 +532,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
         return result
 
     path, dir_path = _setup_paths(pathname, is_dir)
-    access_conf, users, agent_names = _load_configurations(pathname, path, dir_path)
+    access_conf, users, agent_names = _load_configurations(pathname, path, dir_path, agent_check)
 
     user = user.lower() if user is not None else None
     logger.debug("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
@@ -594,7 +594,7 @@ def _check_parent_dirs_executable(path: str) -> tuple[Access, str] | None:
     return None
 
 
-def _load_users_and_agents(pathname: str, path: Path) -> tuple[list[str], list[str], set[str]]:
+def _load_users_and_agents(pathname: str, path: Path, agent_check: bool = False) -> tuple[list[str], list[str], set[str]]:
     """Load users and agent lists, handle overlapping names"""
     users = cache.load(str(PATH_USERS)).strip().split("\n")
     agent_names = read_agents_lists(path)
@@ -603,7 +603,8 @@ def _load_users_and_agents(pathname: str, path: Path) -> tuple[list[str], list[s
     if overlapping_names:
         logging.warning(f"Found overlapping agent and user names: {', '.join(sorted(overlapping_names))}")
 
-    agent_names = list(set(agent_names) - set(users))
+    if not agent_check:
+        agent_names = list(set(agent_names) - set(users))
     return users, agent_names, overlapping_names
 
 
@@ -704,9 +705,9 @@ def _setup_paths(pathname: str, is_dir: bool) -> tuple[Path, Path]:
     return path, dir_path
 
 
-def _load_configurations(pathname: str, path: Path, dir_path: Path) -> tuple[dict, list, list]:
+def _load_configurations(pathname: str, path: Path, dir_path: Path, agent_check: bool = False) -> tuple[dict, list, list]:
     access_conf = load_config(dir_path, "access.yml")
-    users, agent_names, _ = _load_users_and_agents(pathname, path)
+    users, agent_names, _ = _load_users_and_agents(pathname, path, agent_check)
     return access_conf, users, agent_names
 
 

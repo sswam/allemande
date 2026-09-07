@@ -34,7 +34,7 @@ def filter_access(invoked: Iterable[str], room: Room | None, access_check_cache:
             if not agent or agent.get("type") in [None, "visual", "mixin"]:
                 continue
         if access_check_cache.get(name) is None:
-            access_check_cache[name] = room.check_access(name).value
+            access_check_cache[name] = room.check_access(name, agent_check=True).value
         if access_check_cache[name] & ally_room.Access.READ_WRITE.value == ally_room.Access.READ_WRITE.value:
             result.append(name)
     return result
