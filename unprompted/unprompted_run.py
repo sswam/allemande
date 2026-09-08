@@ -29,7 +29,7 @@ from lib_unprompted.shared import Unprompted  # pylint: disable=import-error,wro
 unp = Unprompted(base_dir=unprompted_dir)
 
 
-def unprompted(input_string, seed=None, cleanup=True, unprompted=None):
+def unprompted(input_string, unp_seed=None, cleanup=True, unprompted=None):
     """
     Process input string through Unprompted template engine.
 
@@ -42,20 +42,28 @@ def unprompted(input_string, seed=None, cleanup=True, unprompted=None):
     """
     unprompted = unprompted or unp
 
-    # Use provided seed or generate a random one
-    if seed is None:
+    try:
         seed = random.randint(0, 2**32-1)
+        unprompted.shortcode_user_vars = {"seed": seed}
 
-    unprompted.shortcode_user_vars = {"seed": seed}
-    result = unprompted.start(input_string)
+        # Use random seed if provided
+        if unp_seed is not None:
+            random.seed(unp_seed)
 
-    # Cleanup (after each run)
-    if cleanup:
-        unprompted.cleanup()
+        result = unprompted.start(input_string)
 
-    # # Goodbye (after session; if we created the object)
-    # if not unprompted:
-    #     unprompted.goodbye()
+    finally:
+        # Reset random seed
+        if unp_seed is not None:
+            random.seed(None)
+
+        # Cleanup (after each run)
+        if cleanup:
+            unprompted.cleanup()
+
+        # # Goodbye (after session; if we created the object)
+        # if not unprompted:
+        #     unprompted.goodbye()
 
     return result, unprompted.shortcode_user_vars
 

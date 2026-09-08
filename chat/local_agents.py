@@ -389,7 +389,12 @@ async def local_agent(c, agent, _query) -> str:
         PATH_VISUAL_REQUEST.unlink(missing_ok=True)
         PATH_VISUAL_REQUEST.symlink_to(c.local_visual_dir)
         try:
+            # get unp_seed from prompt, a bit of a hack
             seed = None  # agent.get("unp_seed_visual")
+            match = re.search(r'unp_seed=(\d+)', fulltext2)
+            if match:
+                seed = int(match.group(1))
+                logger.info("SET unp_seed: %s", seed)
 
             # need to get negative prompt from unprompted, this is a bit ugly!
             pos_neg = re.split(r"\s*\bNEGATIVE\b\s*", fulltext2, 1)
