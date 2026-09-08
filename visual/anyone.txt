@@ -8,13 +8,13 @@
 [/if]
 
 [if gender="girl"]
-	[sets list=girls]
+	[sets list=girls gender2=female]
 [/if]
 [elif gender="boy"]
-	[sets list=boys]
+	[sets list=boys gender2=male]
 [/elif]
 [else]
-	[sets list=nonbinary]
+	[sets list=nonbinary gender2=other]
 [/else]
 
 [if "{get char}" _not]
