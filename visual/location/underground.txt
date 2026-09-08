@@ -1,0 +1,35 @@
+[##] nature: underground [/##]
+underground,
+
+[choose _weighted]
+	1 | ,
+	1 | cave system
+	1 | pitch black cave
+	1 | cave, stelactites, stelagmites
+	1 | crystal cave
+	1 | subterranean lava chamber
+	1 | bioluminescent fungal forest cave
+	1 | ice cave
+	1 | geothermal hot spring grotto
+	1 | river system
+	1 | salt crystal cave
+	1 | massive sinkhole interior
+	1 | desert oasis
+	1 | volcanic tube network
+	1 | subterranean waterfall chamber
+	1 | fossilized dinosaur bone cave
+	1 | glowworm cave
+	1 | mushroom forest
+[/choose]
+
+[sets inside=1 outside=0 nature=1 civilisation=0]
+
+[##]
+	1 | military bunker
+	1 | forgotten dwarven kingdom halls
+	1 | ancient alien technology vault
+	1 | prehistoric cave painting gallery
+	1 | ancient city ruins
+	1 | abandoned mineshaft
+	1 | underwater cavern
+[/##]

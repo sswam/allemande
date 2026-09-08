@@ -1,0 +1,35 @@
+[##] nature: underwater [/##]
+underwater,
+
+[choose _weighted]
+	1 | ,
+	1 | lake
+	1 | pool
+	1 | river
+	1 | ocean
+[if quality="1" _not]
+	1 | coral reef
+	1 | shipwreck
+	1 | cave
+	1 | cavern
+	1 | kelp forest
+	1 | deep sea trench
+	1 | volcano
+	1 | bioluminescent waters
+	1 | ice cave, Arctic
+	1 | tropical lagoon
+	1 | sunken city
+	1 | hot springs
+	1 | mangrove roots
+	1 | cenote
+	1 | submerged rainforest
+	1 | geothermal vents
+	1 | flooded quarry
+	1 | sinkhole
+	1 | submarine canyon
+	1 | ancient ruins
+	1 | abyssal plain, deep sea
+[/if]
+[/choose]
+
+[sets inside=0 outside=1 nature=1 civilisation=0]

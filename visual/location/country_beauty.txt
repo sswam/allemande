@@ -1,0 +1,24 @@
+[choose]
+	New Zealand
+	Switzerland
+	Norway
+	Iceland
+	Scotland
+	Canada
+	Italy
+	Austria
+	Japan
+	France
+	Slovenia
+	Ireland
+	Chile
+	Costa Rica
+	Nepal
+	Peru
+	Croatia
+	Finland
+	Romania
+	Bhutan
+
+	Gypsy
+[/choose]

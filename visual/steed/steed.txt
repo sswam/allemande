@@ -1,0 +1,102 @@
+[choose]
+african elephant
+asian elephant
+bactrian camel
+dromedary camel
+clydesdale horse
+shire horse
+yak
+water buffalo
+domestic ox
+texas longhorn
+moose
+elk
+reindeer
+grizzly bear
+polar bear
+white rhino
+black rhino
+hippopotamus
+giraffe
+woolly mammoth
+mastodon
+paraceratherium
+megatherium
+saber-toothed cat
+dire wolf
+uintatherium
+elasmotherium
+ostrich
+emperor penguin
+terror bird
+gastornis
+elephant bird
+moa
+quetzalcoatlus
+pteranodon
+giant eagle
+giant owl
+griffon
+hippogriff
+pegasus
+alicorn
+phoenix
+roc
+simurgh
+wyvern
+manticore
+peryton
+saltwater crocodile
+komodo dragon
+galapagos tortoise
+tyrannosaurus rex
+triceratops
+stegosaurus
+ankylosaurus
+velociraptor
+brachiosaurus
+diplodocus
+spinosaurus
+carnotaurus
+pachycephalosaurus
+parasaurolophus
+titanoboa
+giant toad
+giant salamander
+basilisk
+orca
+great white shark
+blue whale
+humpback whale
+manta ray
+mosasaur
+plesiosaur
+megalodon
+giant squid
+kraken
+hippocampus
+sea serpent
+giant sea turtle
+western dragon
+eastern dragon
+chocobo
+dire boar
+warg
+hellhound
+behemoth
+leviathan
+unicorn
+kelpie
+sleipnir
+nightmare
+kirin
+chimera
+sphinx
+centaur
+giant spider
+giant scorpion
+sandworm
+cerberus
+fenrir
+owlbear
+[/choose]

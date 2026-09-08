@@ -1,0 +1,99 @@
+[##] civilisation: outdoors [/##]
+outdoors,
+
+[choose _weighted]
+	1 | ,
+	1 | park
+	1 | on grass
+	1 | orchard
+	1 | garden
+	1 | flower garden
+	1 | zen rock garden
+	1 | outdoor swimming pool
+	1 | dairy
+	1 | neon-lit city streets at night
+	1 | urban rooftop at sunset
+	1 | train station
+	1 | futuristic glass skyscraper lobby
+	1 | crowded marketplace
+	1 | carnival
+	1 | medieval castle courtyard
+	1 | bustling construction site
+	1 | road
+	1 | street
+	1 | lane
+	1 | backyard
+	1 | frontyard
+	1 | alley
+	1 | zoo, animals
+	1 | farm, farmyard, animals
+	1 | public square
+	1 | outdoor amphitheater
+	1 | botanical garden
+	1 | community vegetable garden
+	1 | outdoor cafe terrace
+	1 | sports stadium
+	1 | beach boardwalk
+	1 | outdoor art installation
+	1 | farmers' market
+	1 | outdoor yoga studio
+	1 | dog park
+	1 | rooftop garden
+	1 | outdoor wedding venue
+	1 | outdoor concert stage
+	1 | community pool
+	1 | public fountain
+	1 | outdoor sculpture garden
+	1 | open-air museum
+	1 | outdoor flea market
+	1 | urban skyline observation deck
+	1 | outdoor bookstore
+	1 | street food alley
+	1 | outdoor cinema
+	1 | skyscraper viewing platform
+	1 | outdoor painting class
+	1 | community basketball court
+	1 | outdoor dance floor
+	1 | urban farm
+	1 | outdoor archery range
+	1 | wall
+	1 | brick wall
+	1 | stone wall
+	1 | outdoor climbing wall
+	1 | public library courtyard
+	1 | outdoor tai chi class area
+	1 | community garden shed
+	1 | outdoor photography exhibition
+	1 | outdoor cooking class
+	1 | public transit stop
+	[if risque="1"]
+		1 | dark alley
+	[/if]
+	[if bondage="1"]
+		1 | sex slave market
+	[/if]
+	[if quality="1" _not]
+		1 | abandoned warehouse [opt 50] with graffiti [/opt]
+		1 | garbage dump
+		1 | ice rink, ice skates, ice skating
+		1 | skate park, [choose] roller skates | inline skates | skateboard [/choose] skates
+		1 | outdoor ice cream parlor
+		1 | amusement park
+		1 | camping site
+		1 | skydive
+		1 | golf course
+		1 | tennis court
+		1 | drive-in movie theater
+		1 | urban bike path
+		1 | outdoor gym equipment area
+		1 | miniature golf course
+		1 | food truck park
+		1 | outdoor chess tables
+		1 | urban beekeeping area
+		1 | outdoor fencing arena
+		1 | community composting site
+		1 | outdoor theater rehearsal space
+	[/if]
+[/choose]
+
+[sets inside=0 outside=1 nature=0 civilisation=1]

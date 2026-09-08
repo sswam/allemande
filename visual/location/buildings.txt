@@ -1,0 +1,80 @@
+[##] civilisation: buildings [/##]
+indoors,
+
+[choose _weighted]
+	1 | building
+	1 | church
+	1 | cathedral
+	1 | haunted mansion interior
+	1 | cozy log cabin
+	1 | castle
+	1 | palace
+	1 | museum
+	1 | indoor swimming pool
+	1 | skyscraper
+	1 | train station
+	1 | library
+	1 | university campus
+	1 | hospital
+	1 | courthouse
+	1 | prison
+	1 | monastery
+	1 | lighthouse
+	1 | observatory
+	1 | factory
+	1 | greenhouse
+	1 | barn
+	1 | silo
+	1 | windmill
+	1 | water tower
+	1 | bridge
+	1 | dam
+	1 | aqueduct
+	1 | colosseum
+	1 | pagoda
+	1 | theater
+	1 | concert hall
+	1 | art gallery
+	1 | parking garage
+	1 | subway station
+	1 | fire station
+	1 | police station
+	1 | post office
+	1 | city hall
+	1 | bunker
+	[if risque="1"]
+		1 | catwalk \(modeling\), fashion show
+	[/if]
+	[if nsfw="1"]
+		1 | public toilet [opt 50] urinal [/opt]
+	[/if]
+	[if bondage="1"]
+		1 | dungeon
+		1 | sex slave dungeon
+		1 | BDSM dungeon
+	[/if]
+	[if quality="1" _not]
+		1 | aquarium
+		1 | planetarium
+		1 | opera house
+		1 | stadium
+		1 | airport terminal
+		1 | power plant
+		1 | pyramid
+		1 | ziggurat
+		1 | mausoleum
+		1 | temple
+		1 | mosque
+		1 | synagogue
+		1 | convention center
+		1 | sports complex
+		1 | embassy
+		1 | observatory dome
+		1 | clock tower
+		1 | bell tower
+		1 | lighthouse keeper's quarters
+		1 | space launch facility
+	[/if]
+[/choose]
+
+[sets inside=1 outside=0 nature=0 civilisation=1]

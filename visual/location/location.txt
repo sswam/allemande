@@ -1,0 +1,27 @@
+[if settings="1" _not]
+	[use settings_default]
+[/if] 
+
+[choose _weighted]
+	[get wilderness] | {use ./wilderness}
+	[get underground] | {use ./underground}
+	[get space] | {use ./space}
+	[get outdoors] | {use ./outdoors}
+	[get buildings] | {use ./buildings}
+	[get home] | {use ./home}
+	[get shops] | {use ./shops}
+	[get vehicle_interior] | {use ./vehicle_interior}
+	[get underwater] | {use ./underwater}
+	[get open_vehicles] | {use ./open_vehicles}
+[/choose]
+
+[opt 50]
+
+in
+
+[choose _weighted]
+	5 | {use ./country_beauty}
+	1 | {use ./country}
+[/choose]
+
+[/opt]

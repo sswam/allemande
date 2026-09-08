@@ -1,0 +1,104 @@
+Mammals (Real & Prehistoric)
+African Elephant: The largest land mammal, traditionally ridden using a howdah.
+Asian Elephant: Historically used for transport, logging, and warfare.
+Bactrian Camel: Two-humped camel built for cold deserts.
+Dromedary Camel: Single-humped camel built for speed in hot deserts.
+Clydesdale Horse: Massive draft horse with heavy feathering on its legs.
+Shire Horse: The tallest of the draft horse breeds.
+Yak: Heavily furred ox used for high-altitude trekking.
+Water Buffalo: Widely used for riding and farming in muddy terrains.
+Domestic Ox: Strong, slow-moving bovine capable of carrying heavy loads.
+Texas Longhorn: Large steer sometimes trained for riding in shows.
+Moose: Massive deer species; historically experimented with for cavalry.
+Elk (Wapiti): Large, majestic deer capable of supporting a rider.
+Reindeer: Caribou species traditionally ridden by Arctic cultures.
+Grizzly Bear: Massive North American brown bear.
+Polar Bear: The largest living land carnivore.
+Rhino (White or Black): Heavily armored, thick-skinned herbivores.
+Hippopotamus: Aggressive, highly dangerous aquatic mammal.
+Giraffe: Extremely tall mammal requiring a unique mounting strategy.
+Woolly Mammoth: Extinct, heavily furred giant of the Ice Age.
+Mastodon: Extinct elephant relative suited for forested environments.
+Paraceratherium: Gigantic, hornless prehistoric rhino; one of the largest land mammals ever.
+Megatherium: Giant prehistoric ground sloth with massive claws.
+Saber-Toothed Cat (Smilodon): Prehistoric apex predator large enough to mount.
+Dire Wolf: Larger, heavier prehistoric cousin of the modern wolf.
+Uintatherium: Prehistoric rhinoceros-like beast with multiple knobby horns.
+Elasmotherium: Giant prehistoric rhino with a single, massive horn on its forehead.
+Avian & Flying Creatures
+Ostrich: The largest living bird, capable of carrying lightweight riders.
+Emperor Penguin: Scaled up to fantasy proportions for an icy mount.
+Terror Bird (Phorusrhacid): Extinct, flightless apex predator bird with a massive beak.
+Gastornis: Another extinct, giant flightless bird built like a heavy apex predator.
+Elephant Bird: Extinct, massive flightless bird from Madagascar.
+Moa: Giant, extinct flightless bird from New Zealand.
+Quetzalcoatlus: Pterosaur with a wingspan equivalent to a small airplane.
+Pteranodon: Classic crested flying reptile.
+Giant Eagle: Classic high-fantasy avian mount.
+Giant Owl: Silent, nocturnal flying mount.
+Griffon: Half-lion, half-eagle majestic beast.
+Hippogriff: Half-horse, half-eagle flying creature.
+Pegasus: Winged horse of Greek mythology.
+Alicorn: Winged unicorn combining flight and magic.
+Phoenix: Fiery bird capable of carrying a rider through the skies.
+Roc: Mythical bird of prey massive enough to carry elephants.
+Simurgh: Benevolent, giant winged creature from Persian folklore.
+Wyvern: Two-legged winged reptile, swifter than traditional dragons.
+Manticore: Lion's body, bat wings, and a scorpion's stinging tail.
+Peryton: Stag-headed bird with a dark, predatory nature.
+Reptiles, Amphibians & Dinosaurs
+Saltwater Crocodile: Giant apex reptile, best ridden with specialized aquatic gear.
+Komodo Dragon: The largest living lizard, highly venomous.
+Galapagos Tortoise: Slow but sturdy enough to support human weight.
+Tyrannosaurus Rex: The ultimate apex predatory dinosaur mount.
+Triceratops: Three-horned, heavily shielded herbivorous dinosaur.
+Stegosaurus: Plated dinosaur with a spiked tail for defense.
+Ankylosaurus: Living tank with a heavily armored back and clubbed tail.
+Velociraptor (Fantasy Scale): Scaled up to Jurassic Park size for a swift predator mount.
+Brachiosaurus: Sauropod offering a massive, towering vantage point.
+Diplodocus: Long-necked, whip-tailed giant dinosaur.
+Spinosaurus: Massive sail-backed semi-aquatic dinosaur mount.
+Carnotaurus: Swift, horned predatory dinosaur.
+Pachycephalosaurus: Bone-headed dinosaur built for battering rams.
+Parasaurolophus: Crested, duck-billed dinosaur.
+Titanoboa: Prehistoric snake large enough to swallow a horse whole.
+Giant Toad: Fantasy amphibian capable of massive leaps over obstacles.
+Giant Salamander: Slimy, low-profile semi-aquatic mount.
+Basilisk: Multi-legged reptilian beast with a deadly gaze.
+Aquatic & Marine Beasts
+Orca (Killer Whale): Highly intelligent apex marine mammal.
+Great White Shark: Streamlined, predatory fish for underwater cavalry.
+Blue Whale: The largest animal to ever exist, requiring a massive platform saddle.
+Humpback Whale: Majestic, singing whale suited for peaceful deep-sea travel.
+Manta Ray: Gliding marine creature ideal for smooth underwater riding.
+Mosasaur: Gigantic prehistoric marine reptile.
+Plesiosaur: Long-necked prehistoric marine reptile.
+Megalodon: Extinct, colossal shark species.
+Giant Squid: Multi-tentacled deep-sea creature.
+Kraken: Legendary sea monster capable of carrying entire crews.
+Hippocampus: Mythical creature with the front of a horse and the tail of a fish.
+Sea Serpent: Coiling, draconic marine beast.
+Giant Sea Turtle: Slow, durable marine reptile suited for long ocean voyages.
+Fantasy, Mythological & Sci-Fi Creatures
+Western Dragon: Four-legged, winged fire-breather.
+Eastern Dragon: Long, serpentine, wingless dragon that flies via magic.
+Chocobo: Large, colorful, flightless bird used as a mount in Final Fantasy.
+Dire Boar: Massive, aggressive wild pig with giant tusks.
+Warg: Large, intelligent, often malevolent wolf species.
+Hellhound: Fiery, demonic canine mount.
+Behemoth: Colossal land beast of biblical scale.
+Leviathan: Colossal water beast companion to the Behemoth.
+Unicorn: Magical, horned equine.
+Kelpie: Shape-shifting water horse from Celtic folklore.
+Sleipnir: Odin’s eight-legged, incredibly fast horse from Norse myth.
+Nightmare: Fiery-hooved, demonic horse.
+Kirin (Qilin): Hoofed chimerical creature from Chinese mythology.
+Chimera: Creature with the heads of a lion, goat, and snake.
+Sphinx: Human-headed lion mount possessing great riddling wisdom.
+Centaur: Half-human, half-horse (technically a rider and mount in one).
+Giant Spider: Archnid mount capable of scaling walls and ceilings.
+Giant Scorpion: Armored, stinging desert stalker.
+Sandworm: Colossal, desert-dwelling worm inspired by Dune.
+Cerberus: Three-headed hound of the underworld.
+Fenrir: Monstrous, giant wolf of Norse mythology.
+Owlbear: Hybrid creature with the body of a bear and the head of an owl.

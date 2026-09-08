@@ -1,0 +1,59 @@
+[##] civilisation: home [/##]
+indoors,
+
+[sets carpet=0]
+
+[choose _weighted]
+	1 | house
+	1 | bedroom {sets carpet=1}
+	1 | kitchen
+	1 | dining room
+	1 | laundry
+	1 | living room {sets carpet=1}
+	1 | home office
+	1 | attic
+	1 | basement
+	1 | balcony
+	1 | garden
+	1 | garage
+	1 | walk-in closet
+	1 | home library {sets carpet=1}
+	1 | sunroom
+	1 | home bar
+	1 | indoor greenhouse
+	1 | wine cellar
+	1 | hallway {sets carpet=1}
+	[if risque="1"]
+		20 | bedroom, on bed {sets carpet=1}
+		20 | bedroom {sets carpet=1}
+		20 | flower bed
+		20 | bathroom [opt 50], soap bubbles [/opt]
+		20 | showering
+		10 | in container
+		10 | in container, in box
+	[/if]
+	[if quality="1" _not]
+		1 | kitchen, food
+		1 | kitchen, dessert
+		1 | pantry
+		1 | mudroom
+		1 | home theater {sets carpet=1}
+		1 | craft room
+		1 | guest room
+		1 | meditation room {sets carpet=1}
+		1 | home studio
+		1 | game room {sets carpet=1}
+		1 | home sauna
+		1 | utility room
+		1 | home gym
+		1 | conservatory
+		1 | home spa
+		1 | loft
+	[/if]
+[/choose],
+
+[if carpet=1]
+	[use ./carpet, 50]
+[/if]
+
+[sets inside=1 outside=0 nature=0 civilisation=1]

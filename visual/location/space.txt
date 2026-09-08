@@ -1,0 +1,62 @@
+[##] nature: space [/##]
+space,
+
+[choose _weighted]
+	1 | ,
+	1 | alien planet landscape
+	1 | galaxy
+	1 | starry night
+	1 | nebula
+	1 | supernova explosion
+	1 | black hole event horizon
+	1 | asteroid field
+	1 | Mars surface
+	1 | Saturn's rings
+	1 | Jupiter's great red spot
+	1 | comet tail
+	1 | interstellar wormhole
+	1 | cosmic dust cloud
+	1 | exoplanet with multiple moons
+	1 | binary star system
+	1 | pulsar
+	1 | quasar
+	1 | space debris field
+	1 | Northern Lights from space
+	1 | Earth from orbit
+	1 | solar flare
+	1 | Milky Way galactic center
+	1 | neutron star collision
+	1 | space-time distortion
+	1 | galactic collision
+	1 | rogue planet
+	1 | cosmic jellyfish
+	1 | antimatter explosion
+	1 | cosmic ray shower
+[/choose]
+
+[sets inside=0 outside=1 nature=1 civilisation=0]
+
+[##]
+	1 | space station interior
+	1 | lunar colony
+	1 | space shuttle launch
+	1 | astronaut spacewalk
+	1 | alien cityscape
+	1 | space elevator
+	1 | quantum foam close-up
+	1 | space-faring civilization ruins
+	1 | cosmic web structure
+	1 | alien space fleet
+	1 | space mining operation
+	1 | terraformed planet
+	1 | space tourism resort
+	1 | intergalactic travel portal
+	1 | space pirate hideout
+	1 | zero-gravity garden
+	1 | cosmic string
+	1 | alien artifact in space
+	1 | space junkyard
+	1 | cosmic microwave background
+	1 | space whale migration
+	1 | dark matter visualization
+[/##]

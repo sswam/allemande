@@ -1,0 +1,33 @@
+[##] civilisation: open vehicles [/##]
+outdoors,
+
+[choose _weighted]
+	1 | on a boat
+	1 | on a pirate ship
+	1 | on a sailboat
+	1 | on a rowboat
+	1 | on a motorcycle
+	1 | in a convertible
+[if quality="1" _not]
+	1 | on a luxury yacht
+	1 | on a speed boat
+	1 | on a hot air balloon
+	1 | in a classic convertible
+	1 | on a snowmobile
+	1 | on a jet ski
+	1 | in a kayak
+	1 | on a hang glider
+	1 | in a horse-drawn carriage
+	1 | on a segway
+	1 | in a gondola in Venice
+	1 | on a hovercraft
+	1 | on a skateboard
+	1 | on top of a double-decker bus
+[/if]
+[/choose]
+
+[sets inside=0 outside=1 nature=0 civilisation=1]
+
+[##]
+	1 | on a unicycle
+[/##]

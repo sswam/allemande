@@ -1,0 +1,91 @@
+[##] civilisation: shops [/##]
+indoors,
+
+[choose _weighted]
+	1 | shop
+	1 | bakery
+	1 | cafe [opt 50], coffee[/opt]
+	1 | restaurant [opt 50], food[/opt] [opt 50], dessert[/opt]
+[if quality="1" _not]
+	1 | diner
+	1 | sweets shop
+	1 | ice cream shop
+	1 | retro 1950s diner
+	1 | serene japanese tea house
+	1 | dusty old west saloon
+	1 | supermarket
+	1 | library
+	1 | busy airport terminal
+	1 | arcade
+	1 | movie theater
+	1 | bookstore
+	1 | community center
+	1 | dance studio
+	1 | martial arts dojo
+	1 | roller skating rink, [choose] roller | inline [/choose] skates
+	1 | pet shop, animals
+	1 | farmer's market
+	1 | food truck park
+	1 | outdoor flea market
+	1 | street fair
+	1 | art gallery
+	1 | pottery studio
+	1 | yoga studio
+	1 | nail salon
+	1 | barbershop
+	1 | flower shop
+	1 | garden center
+	1 | music store
+	1 | comic book store
+	1 | antique shop
+	1 | thrift store
+	1 | laundromat
+	1 | bowling alley
+	1 | juice bar
+	1 | smoothie shop
+	1 | food co-op
+	1 | bike repair shop
+	1 | tailor shop
+	1 | shoe repair shop
+	1 | watch repair kiosk
+	1 | fortune teller's booth
+	1 | photo booth
+	1 | carnival midway
+	1 | petting zoo
+	1 | public aquarium touch tank
+[/if]
+	[if risque="1"]
+		1 | nightclub
+		1 | hotel bar
+		1 | burlesque club
+		1 | rooftop lounge
+[if quality="1" _not]
+		1 | underground jazz club
+		1 | speakeasy
+		1 | karaoke bar
+		1 | cocktail garden
+		1 | beachfront tiki bar
+		1 | casino floor
+		1 | live music venue
+		1 | pub with live sports
+		1 | brewery taproom
+		1 | wine cellar tasting room
+		1 | neon-lit street food alley
+		1 | retro arcade bar
+		1 | floating river bar
+		1 | sky bar in skyscraper
+		1 | silent disco
+		1 | comedy club
+		1 | cabaret
+		1 | late-night diner
+[/if]
+	[/if]
+	[if nsfw="1"]
+		1 | strip club, stripper pole
+		1 | dark strip club, spotlight
+		1 | brothel
+		1 | love hotel
+	[/if]
+[/choose]
+
+[sets inside=1 outside=0 nature=0 civilisation=1]

@@ -1,0 +1,4 @@
+[sets risque=1 nsfw=1 bondage=1 quality=0]
+
+[sets wilderness=100 underwater=2 underground=30 space=20]
+[sets outdoors=50 open_vehicles=10 buildings=10 home=20 shops=5 vehicle_interior=2]

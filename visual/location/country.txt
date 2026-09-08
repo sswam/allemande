@@ -1,0 +1,60 @@
+[choose]
+
+Afghanistan
+Algeria
+Argentina
+Australia
+Austria
+Belgium
+Brazil
+Canada
+Chile
+China
+Colombia
+Cuba
+Czech Republic
+Denmark
+Egypt
+Finland
+France
+Germany
+Greece
+Hungary
+India
+Indonesia
+Iran
+Iraq
+Ireland
+Israel
+Italy
+Japan
+Mexico
+Netherlands
+Nigeria
+Norway
+Pakistan
+Poland
+Portugal
+Russia
+Saudi Arabia
+South Africa
+South Korea
+Spain
+Sweden
+Switzerland
+Thailand
+Turkey
+Ukraine
+United Arab Emirates
+United Kingdom
+United States
+Vatican City
+Vietnam
+New Zealand
+
+Africa
+Latin America
+Aotearoa
+Pacific Islands
+Gypsy
+[/choose]

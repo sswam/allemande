@@ -1,0 +1,106 @@
+[##] nature: wilderness [/##]
+nature, outdoors,
+
+[choose _weighted]
+	1 | ,
+	1 | birds
+	1 | forest
+	1 | wild flowers
+	1 | lake
+	1 | river
+	1 | ocean
+	1 | beach
+	1 | puddle
+	1 | flowers
+	1 | roses
+	1 | flower petals
+	1 | flower field
+	1 | waterfall
+	1 | meadow
+	1 | swamp
+	1 | wetland
+	1 | lavender field in bloom
+	1 | starry night
+	1 | snow
+	1 | ice
+	1 | desert oasis
+	1 | misty mountain peak
+	1 | arctic tundra
+	1 | dense jungle canopy
+	1 | windswept cliff overlooking the sea
+	1 | cherry blossoms
+	1 | plum blossoms
+	1 | apple blossoms
+	1 | trees
+	1 | frozen lake, ice
+	1 | frozen river, ice
+	1 | jungle, animals
+	1 | grasslands, animals
+	1 | forest, animals
+	1 | Bamboo forest
+	1 | Redwood grove
+	1 | Savanna plains
+	1 | Alpine meadow
+	1 | Mangrove swamp
+	1 | Sand dunes
+	1 | Tropical beach with palm trees
+	1 | Fjord landscape
+	1 | Geothermal hot springs
+	1 | Autumn forest with colorful leaves
+	1 | Moss-covered ancient forest
+	1 | Wildflower prairie
+	1 | Coastal cliffs
+	1 | Rock formation in desert
+	1 | Bioluminescent bay at night
+	1 | Glacial valley
+	1 | Rainforest waterfall
+	1 | Natural rock arch
+	1 | Cave system with stalactites
+	1 | Sunflower field
+	1 | Misty bog
+	1 | Salt flats
+	1 | Mountain lake reflection
+	1 | Canyonlands
+	1 | Petrified forest
+	1 | Giant sequoia trees
+	1 | Everglades wetlands
+	1 | Autumn birch forest
+	1 | Moonlit desert night
+	1 | Frozen waterfall
+	1 | Volcanic black sand beach
+	1 | Lavender fields at sunset
+	1 | Cypress swamp
+	1 | Wildflower super bloom in desert
+	1 | Ancient bristlecone pine forest
+	1 | Karst limestone formations
+	1 | Autumn maple forest
+	1 | Natural hot springs in snowy landscape
+	1 | Firefly-filled night forest
+	1 | Misty rainforest canopy
+	1 | Crystal-clear mountain stream
+	1 | Tidal pools at low tide
+	1 | Aurora borealis over taiga forest
+	1 | Banyan tree grove
+	1 | Moss-covered temperate rainforest
+	1 | Desert oasis with palm trees
+	1 | Fog-covered coastal redwoods
+	1 | Spring cherry blossom orchard
+	1 | Autumnal aspen grove
+	1 | volcanic landscape
+	[if risque="1"]
+		1 | under a waterfall
+	[/if]
+[if quality="1" _not]
+	1 | ancient ruins
+	1 | volcanic landscape, molten rock
+	1 | coral reef
+	1 | frozen lake, ice, ice skates, ice skating
+	1 | frozen river, ice, ice skates, ice skating
+[/if]
+[/choose],
+
+[opt 20]
+	mountains
+[/opt]
+
+[sets inside=0 outside=1 nature=1 civilisation=0]

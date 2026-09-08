@@ -1,0 +1,68 @@
+[##] civilisation: vehicle interior [/##]
+
+[choose _weighted]
+	1 | spacecraft interior
+	1 | train interior
+	1 | car interior
+	1 | bus interior
+	1 | taxi cab interior
+	1 | police car interior
+[if quality="1" _not]
+	1 | submarine interior
+	1 | space shuttle interior
+	1 | helicopter interior
+	1 | monster truck interior
+	1 | subway train interior
+	1 | cable car interior
+	1 | luxury yacht interior
+	1 | hot air balloon basket interior
+	1 | fire truck cab interior
+	1 | ambulance interior
+	1 | private jet interior
+	1 | cruise ship cabin interior
+	1 | tank interior
+	1 | tractor cab interior
+	1 | motorcycle sidecar interior
+	1 | snowmobile interior
+	1 | sailboat cockpit interior
+	1 | race car cockpit interior
+	1 | ice cream truck interior
+	1 | food truck kitchen interior
+	1 | RV interior
+	1 | camper van interior
+	1 | double-decker bus interior
+	1 | tram interior
+	1 | gondola interior
+	1 | bulldozer cab interior
+	1 | forklift interior
+	1 | combine harvester interior
+	1 | zamboni interior
+	1 | golf cart interior
+	1 | rickshaw interior
+	1 | horse-drawn carriage interior
+	1 | limousine interior
+	1 | seaplane cockpit interior
+	1 | blimp gondola interior
+	1 | hovercraft interior
+	1 | airboat interior
+	1 | monorail interior
+	1 | funicular railway car interior
+	1 | snow groomer cab interior
+	1 | garbage truck cab interior
+	1 | mail truck interior
+	1 | armored truck interior
+	1 | mobile home interior
+	1 | ski lift gondola interior
+	1 | cherry picker bucket interior
+	1 | crane operator cabin interior
+	1 | tugboat wheelhouse interior
+	1 | streetcar interior
+	1 | airport shuttle interior
+	1 | escape pod interior
+	1 | lunar rover interior
+	1 | mars rover interior
+	1 | houseboat interior
+[/if]
+[/choose]
+
+[sets inside=1 outside=0 nature=0 civilisation=1]
