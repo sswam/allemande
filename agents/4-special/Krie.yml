@@ -1,6 +1,8 @@
 base: Krie2
+image_prompt_group_nouns: True
 image_prompt_map:
   1girl: one female
+  '\(1boy, male *:[0-9.]*\)': one male
   1boy: one male
   1other: one non-binary
   2girls: two females
