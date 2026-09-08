@@ -14,6 +14,8 @@ import asyncio
 import json
 import re
 from typing import Any
+from PIL import Image
+import io
 
 import aiohttp
 from tqdm import tqdm  # type: ignore
@@ -21,7 +23,8 @@ from tqdm import tqdm  # type: ignore
 from ally import main  # type: ignore
 from ally.text import squeeze
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
+
 
 logger = main.get_logger()
 
@@ -30,8 +33,8 @@ MAX_RETRIES = 10
 RETRY_DELAY = 10
 
 
-async def generate_image(session, port, params, restart_on_fail=False) -> dict[str, Any]:
-    """Send a request to the API and return the response."""
+async def generate_image(session, port, params, restart_on_fail=False) -> bytes:
+    """Send a request to the API and return the decoded image bytes."""
     max_retries = MAX_RETRIES if restart_on_fail else 1
     api_url = API_URL.replace("$PORT", str(port))
     if "init_images" in params:
@@ -44,7 +47,10 @@ async def generate_image(session, port, params, restart_on_fail=False) -> dict[s
                 response = await response.json()
                 if "images" not in response:
                     raise ValueError(f"Got no images in response: {json.dumps(response)}")
-                return response
+                image = base64.b64decode(response["images"][0])
+                if is_all_black_png(image):
+                    raise ValueError("Generated image is entirely black")
+                return image
 
         except Exception as e:
             logger.error(f"Attempt {attempt + 1}/{max_retries} failed: {e}")
@@ -68,6 +74,11 @@ async def restart_api():
     logger.info("Restarting automatic1111 stable diffusion API service")
     os.system("forge-kill -s=CONT")
     os.system("forge-kill")
+
+
+def is_all_black_png(data: bytes) -> bool:
+    img = Image.open(io.BytesIO(data)).convert("RGB")
+    return img.getbbox() is None
 
 
 def remove_comments(text):
@@ -212,8 +223,7 @@ async def request(
                     continue
                 logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
-                response = await generate_image(session, port, params, restart_on_fail=restart_on_fail)
-                image = base64.b64decode(response["images"][0])
+                image = await generate_image(session, port, params, restart_on_fail=restart_on_fail)
                 with open(image_file, "wb") as f:
                     f.write(image)
                 logger.info("Generated %s", image_file)
