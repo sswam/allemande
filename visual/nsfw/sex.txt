@@ -25,14 +25,14 @@ sex, spooning, nipples, pussy, penis, [choose]vaginal|anal[/choose]
 
 [opt 50]cum,[/opt]
 [opt 50]pussy juice,[/opt]
-[opt 30]pee, peeing,[/opt]
+[opt 20]pee, peeing,[/opt]
 
 [opt 50]
 [choose]
 lying, on back
 lying, on stomach
 lying, on side
-[/choose]
+[/choose],
 [/opt]
 
 [opt 50]
