@@ -25,6 +25,7 @@ from bb_lib import ChatMessage, save_chat_messages, load_chat_messages
 import video_compatible  # type: ignore  # pylint: disable=wrong-import-order
 import aligno_py as aligno  # type: ignore
 from ally import re_map
+import visual_group_by_noun
 
 
 Message = dict[str, Any]   # TODO use a class, bb_lib.ChatMessage?
@@ -508,7 +509,10 @@ def add_configured_image_prompts(fulltext, configs, step="mappings"):
         mappings = {}
         mappings_neg_1 = {}
         mappings_neg = {}
+        group_nouns = False
         for config in configs:
+            if config.get("image_prompt_group_nouns"):
+                group_nouns = True
             if "image_prompt_map_1" in config:
                 mappings_1 |= config["image_prompt_map_1"]
             if "image_prompt_map" in config:
@@ -517,6 +521,9 @@ def add_configured_image_prompts(fulltext, configs, step="mappings"):
                 mappings_neg_1 |= config["image_prompt_map_neg_1"]
             if "image_prompt_map_neg" in config:
                 mappings_neg |= config["image_prompt_map_neg"]
+        if group_nouns:
+            positive = visual_group_by_noun.prompt_group_by_noun(positive)
+            negative = visual_group_by_noun.prompt_group_by_noun(negative)
         positive = re_map.apply_mappings(positive, mappings, mappings_1)
         negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
 
