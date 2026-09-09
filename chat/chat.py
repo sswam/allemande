@@ -521,11 +521,11 @@ def add_configured_image_prompts(fulltext, configs, step="mappings"):
                 mappings_neg_1 |= config["image_prompt_map_neg_1"]
             if "image_prompt_map_neg" in config:
                 mappings_neg |= config["image_prompt_map_neg"]
+        positive = re_map.apply_mappings(positive, mappings, mappings_1)
+        negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
         if group_nouns:
             positive = visual_group_by_noun.prompt_group_by_noun(positive)
             negative = visual_group_by_noun.prompt_group_by_noun(negative)
-        positive = re_map.apply_mappings(positive, mappings, mappings_1)
-        negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
 
     if step == "templates":
         for config in configs:
