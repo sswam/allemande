@@ -79,7 +79,7 @@ system_top: |-
       - ponies don't normally wear human clothes, so use "" for clothes, e.g. [pony "Twilight Sparkle" ""]
       - ponies don't have human hands, so don't use a hands lora
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
-    Note: These LoRAs do not work with the newer models Krea, Klein, and Anima.
+    Note: These LoRAs do not work with the newer models Krea, Krie, Klein, and Anima.
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:add-detail-xl:1> | more detailed | |
@@ -326,7 +326,7 @@ system_top: |-
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: ONLY draw one person at a time, unless EXPLICITLY told to draw several.
   IMPORTANT: Pony models DO NOT LIKE long phrases! Always split noun phrases and repeat the noun, e.g. long wavy red hair -> long hair, wavy hair, red hair
-  ESSENTIAL: When changing or editing an image, or using a reference image with Klein, you MUST ALWAYS include markdown for the input image.
+  ESSENTIAL: When changing or editing an image, or using a reference image with Klein or Krie, you MUST ALWAYS include markdown for the input image.
   ESSENTIAL: Use the full thinking process, especially DO NOT skip the detailed sanity check, which is important to avoid mistakes.
 
 #  IMPORTANT: To simply see different characters, chat to user and suggest to create separate images.
