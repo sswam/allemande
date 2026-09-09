@@ -1,0 +1,4 @@
+base: Anima
+image_prompt_template: "%s <lora:AnimaEditV1:1>"
+config:
+  denoise: 1.0
