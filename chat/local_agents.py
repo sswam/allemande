@@ -17,7 +17,7 @@ import conductor
 import chat
 import bb_lib
 import ally_markdown
-from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT
+from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT, PATH_ROOMS
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
 import ally_room
@@ -29,6 +29,7 @@ import hacky_anti_rep
 import filters
 from ally_usage import usage_log
 import memory
+from util import safe_join
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -165,6 +166,16 @@ def strip_images(message: str) -> str:
     """Remove images from a message, e.g. ![image](image.jpg)"""
     message = re.sub(r'!\[[^\]]*\]\([^\)]+\)', '', message)
     return message
+
+
+def extract_ref(s):
+    ref = None
+    def replacer(m):
+        nonlocal ref
+        ref = m.group(1)
+        return " "
+    cleaned = re.sub(r'\s*REF="([^"]*)"\s*', replacer, s)
+    return cleaned.strip(), ref
 
 
 async def local_agent(c, agent, _query) -> str:
@@ -419,6 +430,14 @@ async def local_agent(c, agent, _query) -> str:
             logger.debug("image prompt after adding configured: %r", fulltext2)
 
             defaults = { "steps": 15, "width": 768, "height": 1024 }
+
+            # support character reference image REF="..."
+            # TODO check and enforce access control?
+            fulltext2, ref_image = extract_ref(fulltext2)
+            logger.info("extract_ref: %s, %s", fulltext2, ref_image)
+            if not c.images and ref_image:
+                c.images = [str(safe_join(PATH_ROOMS, ref_image))]
+                logger.info("reference_image: %s", c.images[0])
 
             # for img2img, default to input image size, can zoom
             if c.images:
