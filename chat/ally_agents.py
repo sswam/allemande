@@ -415,7 +415,7 @@ class Agent:
             # art model preference
             art_model_prompt = self.get("art_model", "`@Coni, ` or `@Krea, ` or another art model")
             if "@" not in art_model_prompt:
-                art_model_prompt = f"`@{art_model_prompt}` (preferred art model)"
+                art_model_prompt = f"`@{art_model_prompt}` (always use this preferred art model)"
 
             value = replace_variables(value, {
                 "NAME": name,
