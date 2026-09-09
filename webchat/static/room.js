@@ -1733,6 +1733,11 @@ function fix_browser_copy(ev) {
 // Global variable to store the currently selected message element
 let $message_with_menu = null;
 
+function hide_message_with_menu() {
+  hide("message_menu");
+  $message_with_menu = null;
+}
+
 function message_menu_click(event) {
   // Find the static menu element
   const menu = $id("message_menu");
@@ -1749,8 +1754,7 @@ function message_menu_click(event) {
   if (message) {
     // If the menu is already open on THIS message, close it
     if ($message_with_menu === message) {
-      hide(menu);
-      $message_with_menu = null;
+      hide_message_with_menu();
     } else {
       // Otherwise, move the menu into this message and show it
       message.appendChild(menu);
@@ -1761,8 +1765,7 @@ function message_menu_click(event) {
   }
   
   // Scenario 3: Clicked anywhere else outside
-  hide(menu);
-  $message_with_menu = null;
+  hide_message_with_menu();
 }
 
 async function get_message_id($message) {
@@ -1774,15 +1777,17 @@ async function msg_undo_click(event) {
   const id = await get_message_id($message_with_menu);
   const force = event.shiftKey;
   window.parent.postMessage({ type: "undo", message_id: id, force: force }, ALLYCHAT_CHAT_URL);
-  hide("message_menu");
-  $message_with_menu = null;
+  hide_message_with_menu();
 }
 
 async function msg_tts_click(event) {
   const regen = event.shiftKey;
   play_message_tts($message_with_menu, regen); // async
-  hide("message_menu");
+  hide_message_with_menu();
 }
+
+let playing_audio = null;
+let playing_message_id = null;
 
 async function play_message_tts($message, regen) {
   const id = await get_message_id($message);
@@ -1791,26 +1796,50 @@ async function play_message_tts($message, regen) {
   if (regen)
     url += "&regen=1";
 
-  play_audio_from_url(url);
+  play_audio_from_url(url, id);
 }
 
 function handle_media_error(event) {
-    const error = event.target.error;
-    console.error(`Media Error [Code ${error.code}]: ${error.message}`);
+  const error = event.target.error;
+  console.error(`Media Error [Code ${error.code}]: ${error.message}`);
 }
 
-async function play_audio_from_url(url) {
-    const audio = new Audio(url);
+async function play_audio_from_url(url, id) {
+  // If the same message is already playing, stop it and clear globals
+  if (playing_message_id === id && playing_audio) {
+    playing_audio.pause();
+    playing_audio = null;
+    playing_message_id = null;
+    return;
+  }
 
-    audio.addEventListener('error', handle_media_error);
+  // If a different message is playing, stop it first
+  if (playing_audio) {
+    playing_audio.pause();
+    playing_audio = null;
+    playing_message_id = null;
+  }
 
-    try {
-        await audio.play();
-        console.log("Audio is playing successfully!");
-    } catch (error) {
-        // Catch autoplay blockers or execution failures
-        console.error("Playback failed:", error.message);
-    }
+  const audio = new Audio(url);
+  playing_audio = audio;
+  playing_message_id = id;
+
+  audio.addEventListener('error', handle_media_error);
+
+  // Clear globals when audio finishes naturally
+  audio.addEventListener('ended', () => {
+    playing_audio = null;
+    playing_message_id = null;
+  });
+
+  try {
+    await audio.play();
+    console.log("Audio is playing successfully!");
+  } catch (error) {
+    console.error("Playback failed:", error.message);
+    playing_audio = null;
+    playing_message_id = null;
+  }
 }
 
 // main ----------------------------------------------------------------------
