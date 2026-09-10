@@ -111,6 +111,7 @@ async def process_request(portals, port, req, fn, *args, **kwargs):
 
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         request = d / "request.aud"
+        request = ensure_wav(request)
         response = fn(config, request, *args, **kwargs)
         for k, v in response.items():
             (d / k).write_text(v, encoding="utf-8")
@@ -127,6 +128,22 @@ async def process_request(portals, port, req, fn, *args, **kwargs):
     finally:
         if log_handler:
             logger.removeHandler(log_handler)
+
+
+def ensure_wav(input_path: Path) -> Path:
+    # Open the file in binary mode and read the first 16 bytes
+    with open(input_path, "rb") as f:
+        header = f.read(16)
+
+    # A valid WAV file header starts with RIFF and contains WAVE at offset 12
+    if header[0:4] == b"RIFF" and header[12:16] == b"WAVE":
+        return input_path
+
+    # Convert using FFmpeg if it's not a WAV
+    output_path = input_path.with_suffix(".wav")
+    subprocess.run(["ffmpeg", "-y", "-i", str(input_path), str(output_path)])
+
+    return output_path
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
