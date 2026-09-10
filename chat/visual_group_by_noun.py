@@ -21,7 +21,7 @@ BLACKLIST_NOUNS = {
 
 def prompt_group_by_noun(prompt: str) -> str:
     """Process a whole prompt, splitting by subject (1girl, etc), then grouping by noun; this is hacky but should work okay"""
-    parts = re.split(r"\b((?:1girl|1boy|1other),?\s*)\b", prompt) + [""]
+    parts = re.split(r"([,>]\s*(?:1girl|1boy|1other|female|male|non-binary),?\s*)", prompt) + [""]
     parts2 = []
     for i in range(0, len(parts), 2):
         part, delim = parts[i : i + 2]
