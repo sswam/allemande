@@ -98,7 +98,7 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-async def process_request(portals, port, req, fn, *args, **kwargs):
+async def process_request(portals, port, req, fn, *args, stop_forge=False, **kwargs):
     """Process a request on a port"""
     port = Path(port)
     logger.info("%s:%s - processing", port, req)
@@ -112,7 +112,11 @@ async def process_request(portals, port, req, fn, *args, **kwargs):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         request = d / "request.aud"
         request = ensure_wav(request)
+        if stop_forge:
+            os.system("forge-kill -s=STOP")
         response = fn(config, request, *args, **kwargs)
+        if stop_forge:
+            os.system("forge-kill -s=CONT")
         for k, v in response.items():
             (d / k).write_text(v, encoding="utf-8")
         os.rename(d, port / "done" / req)
@@ -161,7 +165,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2", poll_interval: float = 0.1):
+async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2", poll_interval: float = 0.1, stop_forge: bool = False):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
 
@@ -170,7 +174,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
     known_requests = find_todo_requests(portals)
     for portal, req in known_requests:
         logger.debug("Initial request detected: %s in %s", req, portal)
-        await process_request(Path(portals), portal, req, gen, model=model)
+        await process_request(Path(portals), portal, req, gen, model=model, stop_forge=stop_forge)
 
     known_requests_set = set(known_requests)
 
@@ -180,7 +184,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
             if (portal, req_name) in known_requests_set:
                 continue
             logger.debug("New request detected: %s in %s", req_name, portal)
-            await process_request(Path(portals), portal, req_name, gen, model=model)
+            await process_request(Path(portals), portal, req_name, gen, model=model, stop_forge=stop_forge)
 
         known_requests_set = set(new_requests)
 
@@ -193,6 +197,7 @@ def setup_args(arg):
     arg("-p", "--portals", help="Directory of portals")
     arg("-i", "--poll-interval", type=float, help="Polling interval in seconds")
     arg("-m", "--model", help="Model to use")
+    arg("-s", "--stop-forge", action="store_true", help="Stop forge during processing")
 
 
 if __name__ == "__main__":

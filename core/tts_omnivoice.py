@@ -108,7 +108,7 @@ def load(portals: Path, d: Path, filename: str) -> str:
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-async def process_request(portals: Path, port: Path, req: str, model: OmniVoice) -> None:
+async def process_request(portals: Path, port: Path, req: str, model: OmniVoice, stop_forge: bool=False) -> None:
     """Process a single TTS request, moving it through todo -> doing -> done/error."""
     logger.info("%s:%s - processing", port, req)
     log_handler = None
@@ -119,7 +119,11 @@ async def process_request(portals: Path, port: Path, req: str, model: OmniVoice)
         logger.addHandler(log_handler)
 
         config = yaml.safe_load(load(portals, d, "config.yaml")) or {}
+        if stop_forge:
+            os.system("forge-kill -s=STOP")
         gen(config, d, model)
+        if stop_forge:
+            os.system("forge-kill -s=CONT")
         os.rename(d, port / "done" / req)
         logger.info("%s:%s - done", port, req)
     except Exception as e:  # pylint: disable=broad-except
@@ -154,6 +158,7 @@ async def serve_requests(
     portals: str = str(portals_dir),
     device: str = "cuda:0",
     poll_interval: float = 0.1,
+    stop_forge: bool = False,
 ) -> None:
     """Load the model and serve TTS requests from a directory of portals."""
     logger.info("serving TTS requests from %s", portals)
@@ -165,7 +170,7 @@ async def serve_requests(
     known_requests = find_todo_requests(portals_path)
     for portal, req in known_requests:
         logger.debug("Initial request detected: %s in %s", req, portal)
-        await process_request(Path(portals), portal, req, model=model)
+        await process_request(Path(portals), portal, req, model=model, stop_forge=stop_forge)
 
     known_requests_set = set(known_requests)
 
@@ -175,7 +180,7 @@ async def serve_requests(
             if (portal, req_name) in known_requests_set:
                 continue
             logger.debug("New request detected: %s in %s", req_name, portal)
-            await process_request(Path(portals), portal, req_name, model=model)
+            await process_request(Path(portals), portal, req_name, model=model, stop_forge=stop_forge)
 
         known_requests_set = set(new_requests)
 
@@ -187,6 +192,7 @@ def setup_args(arg):
     """Set up the command-line arguments"""
     arg("-p", "--portals", help="Directory of portals")
     arg("-d", "--device", help="CUDA device to use")
+    arg("-s", "--stop-forge", action="store_true", help="Stop forge during processing")
 
 
 if __name__ == "__main__":
