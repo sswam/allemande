@@ -32,7 +32,7 @@ __version__ = "0.3.2"
 
 # File categorization
 SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base", "r", "s"]
-MEDIA_FILE_EXTS = ["webm", "jpg"]
+MEDIA_FILE_EXTS = ["webm", "jpg", "png"]
 VOICE_FILE_EXTS = ["mp3"]
 
 MIME_TYPE_ICONS = {
@@ -204,17 +204,6 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         if ext == "html" and item.stem + ".bb" in item_names:
             # We don't want to show the rendered HTML file for a BB chat file
             continue
-        elif ext in MEDIA_FILE_EXTS:
-            # Don't show media files for now.
-            continue
-            # record.update(
-            #     {
-            #         "name": item.name,
-            #         "type": "file",
-            #         "type_sort": 100 + MEDIA_FILE_EXTS.index(ext),
-            #         "link": f"{info.rooms_base_url}/{pathname}{item.name}",
-            #     }
-            # )
 
         try:
             mime_type, icon, is_dir, is_symlink, mtime = get_item_info(item)
@@ -288,6 +277,19 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "link": f"{info.rooms_base_url}/{pathname}{item.name}",
                 }
             )
+        elif ext in MEDIA_FILE_EXTS and re.search(r"(^|/)agents/", pathname):
+            # Show images in agents folders, i.e. character reference images
+            record.update(
+                {
+                    "name": item.name,
+                    "type": "file",
+                    "type_sort": 10 + MEDIA_FILE_EXTS.index(ext),
+                    "link": f"{info.rooms_base_url}/{pathname}{item.name}",
+                }
+            )
+        elif ext in MEDIA_FILE_EXTS:
+            # Don't show media files outside agent folders.
+            continue
         else:
             # Don't show random files for now.
             continue
