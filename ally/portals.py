@@ -48,7 +48,7 @@ class PortalClient:
         finally:
             os.umask(umask)
 
-        if config:
+        if config is not None:
             req_config = req/"config.yaml"
             # we could do this as async IO, seems unnecessary
             req_config.write_text(yaml.dump(config), encoding="utf-8")

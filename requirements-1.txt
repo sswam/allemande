@@ -73,3 +73,6 @@ pytest-playwright
 ruamel-yaml
 
 yt_dlp
+
+# tinytag
+# mutagen

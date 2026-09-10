@@ -163,7 +163,7 @@ async function handleRecording(recording_type) {
             preview.removeAttribute('src');
 
             if (save_action === 'save') {
-                const fileName = `${user}_photo.jpg`;
+                const fileName = `${chat.user}_photo.jpg`;
                 const save_button = 'rec_preview_save';
                 chat.active_set(save_button);
                 if (!await chat.add_upload_file_link(chat.upload_file(photoBlob, fileName, true)))
@@ -284,9 +284,10 @@ async function handleRecording(recording_type) {
 
         if (stop_action === 'save') {
             // Send the recording to the server
-            const fileName = includeVideo ? `${user}_video.webm` : `${user}_audio.webm`;
+            const fileName = includeVideo ? `${chat.user}_video.webm` : `${chat.user}_audio.webm`;
+            const speech_to_text = Boolean(view_options.voice_stt) && !includeVideo;
             chat.active_set(save_button);
-            if (!await chat.add_upload_file_link(chat.upload_file(mediaBlob, fileName, true)))
+            if (!await chat.add_upload_file_link(chat.upload_file(mediaBlob, fileName, speech_to_text)))
                 await chat.error(save_button);
             chat.active_reset(save_button);
         }

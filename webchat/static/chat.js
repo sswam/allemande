@@ -301,7 +301,7 @@ export let DEBUG = true;
 
 export let room;
 export let type;
-let user;
+export let user;
 let admin = false;
 let dev = false;
 let early = false;

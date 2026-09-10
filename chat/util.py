@@ -259,6 +259,6 @@ def join_with_commas_and_word(word, lst):
         return ", ".join(str(item) for item in lst[:-1]) + f", {word} {lst[-1]}"
 
 
-def ee(s):
+def ee(s, quote=True):
     """Encode entities."""
-    return html.escape(s, quote=True)
+    return html.escape(s, quote=quote)

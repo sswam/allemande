@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" Allemande TTS client """
+""" Allemande text to speech client """
 
 import logging
 import re

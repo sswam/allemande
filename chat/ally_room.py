@@ -25,6 +25,7 @@ from bb_lib import load_chat_messages, save_chat_messages, message_to_text
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
 import filters
 import video_compatible  # type: ignore  # pylint: disable=wrong-import-order
+import ally_stt
 
 
 logging.basicConfig(level=logging.INFO)
@@ -967,6 +968,10 @@ def safe_path_for_local_file(file: str, url: str) -> tuple[str, str]:
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
 async def upload_file(room_name, user, filename, file=None, alt=None, to_text=False):
     """Upload a file to a room."""
+    # enable upload to a folder
+    if room_name.endswith("/"):
+        room_name += "chat"
+
     room = Room(name=room_name)
 
     if not room.check_access(user).value & Access.WRITE.value:
@@ -1034,12 +1039,14 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     # convert to text if wanted
     try:
-        if to_text and medium in ("audio", "video"):
-            alt = await speech_to_text.convert_audio_video_to_text(file_path, medium)  # TODO speech_to_text
+        # if to_text and medium in ("audio", "video"):
+        if to_text and medium == "audio":
+            alt = await ally_stt.convert_audio_to_text(file_path)
         elif to_text and medium == "image":
             alt = await image_to_text.convert_image_to_text(file_path)  # TODO image_to_text
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Error converting to text: %r, %r, %r", medium, file_path, e)
+        to_text = False
 
     # alt text
     alt = alt or stem
@@ -1047,14 +1054,16 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     # markdown to embed or link to the file
     if medium == "image":
-        alt = ee(alt)
+        alt = ee(alt, quote=False)
         markdown_tag = f"![{alt}]({relurl})"
+    elif medium == "audio" and to_text:
+        markdown_tag = ee(alt, quote=False) + " " + av_element_html("audio", stem, relurl)
     elif medium == "audio":
         markdown_tag = av_element_html("audio", alt, relurl)
     elif medium == "video":
         markdown_tag = av_element_html("video", alt, relurl)
     else:
-        alt = ee(alt)
+        alt = ee(alt, quote=False)
         markdown_tag = f"[{alt}]({relurl})"
 
     return name, url, medium, markdown_tag, task

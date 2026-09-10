@@ -48,3 +48,5 @@ AGENT_CONTEXT_DEFAULT = 30
 
 TTS_VOICE_DEFAULT = "voice/female"
 TTS_TIMEOUT = 60  # 1 minute
+STT_TIMEOUT = 60  # 1 minute
+STT_MAX_LENGTH = 300  # 5 minutes
