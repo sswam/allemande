@@ -435,7 +435,7 @@ async def local_agent(c, agent, _query) -> str:
             # TODO check and enforce access control?
             fulltext2, ref_image = extract_ref(fulltext2)
             logger.info("extract_ref: %s, %s", fulltext2, ref_image)
-            if not c.images and ref_image:
+            if not c.images and ref_image and agent.get("allow_ref_image", False):
                 c.images = [str(safe_join(PATH_ROOMS, ref_image))]
                 logger.info("reference_image: %s", c.images[0])
 
