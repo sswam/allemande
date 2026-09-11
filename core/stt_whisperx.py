@@ -1,18 +1,13 @@
 #!/usr/bin/env python3-allemande
 
-""" allemande - core whisper module """
+""" allemande - core whisperx module """
 
-import sys
-import os
 import logging
+import os
 from pathlib import Path
 from functools import partial
-from types import SimpleNamespace
 import asyncio
-import time
 
-import inotify.adapters
-import torch
 import yaml
 
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -31,7 +26,7 @@ compute_type = "float16"
 
 prog = main.prog_info()
 
-portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
+portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "stt_whisper"
 
 
 def gen(config, audio_file, *_args, model=None, **_kwargs):
@@ -41,9 +36,13 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
 
     result = model.transcribe(str(audio_file), language=language, batch_size=batch_size)
 
+    logger.info("result: %r", result)
+
+    text = " ".join([segment["text"] for segment in result["segments"]])
+
     response = {
-        "text.txt": result["text"],
-        "result.yaml": yaml.safe_dump(result),
+        "text.txt": text,
+        # "result.yaml": yaml.safe_dump(result),
     }
 
     return response
@@ -52,7 +51,7 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
 def load(portals, d, filename):
     """ Load a file from a directory or above """
     while True:
-        f = d/filename
+        f = d / filename
         if f.exists():
             return f.read_text(encoding="utf-8")
         if d == portals:
@@ -61,7 +60,7 @@ def load(portals, d, filename):
         if p == d:
             break
         d = p
-    f = prog.dir/filename
+    f = prog.dir / filename
     if f.exists():
         return f.read_text(encoding="utf-8")
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
@@ -73,25 +72,25 @@ async def process_request(portals, port, req, fn, *args, **kwargs):
     logger.info("%s:%s - processing", port, req)
     log_handler = None
     try:
-        d = port/"doing"/req
-        os.rename(port/"todo"/req, d)
-        log_handler = logging.FileHandler(d/"log.txt")
+        d = port / "doing" / req
+        os.rename(port / "todo" / req, d)
+        log_handler = logging.FileHandler(d / "log.txt")
         logger.addHandler(log_handler)
 
         config = yaml.safe_load(load(portals, d, "config.yaml"))
-        request = d/"request.aud"
+        request = d / "request.aud"
         response = fn(config, request, *args, **kwargs)
         for k, v in response.items():
-            (d/k).write_text(v, encoding="utf-8")
-        os.rename(d, port/"done"/req)
+            (d / k).write_text(v, encoding="utf-8")
+        os.rename(d, port / "done" / req)
         logger.info("%s:%s - done", port, req)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("%s:%s - error: %s", port, req, e)
         try:
-            os.rename(d, port/"error"/req)
-        except Exception as e2:
+            os.rename(d, port / "error" / req)
+        except Exception as e2:  # pylint: disable=broad-except
             logger.exception("%s:%s - error: %s", port, req, e2)
-        if 'CUDA error' in str(e):
+        if "CUDA error" in str(e):
             raise
     finally:
         if log_handler:
@@ -124,7 +123,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
     known_requests = find_todo_requests(portals)
     for portal, req in known_requests:
         logger.debug("Initial request detected: %s in %s", req, portal)
-        await process_request(portals, portal, req, fn)
+        await process_request(Path(portals), portal, req, fn)
 
     known_requests_set = set(known_requests)
 
@@ -134,7 +133,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
             if (portal, req_name) in known_requests_set:
                 continue
             logger.debug("New request detected: %s in %s", req_name, portal)
-            await process_request(portals, portal, req_name, fn)
+            await process_request(Path(portals), portal, req_name, fn)
 
         known_requests_set = set(new_requests)
 

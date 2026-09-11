@@ -138,7 +138,7 @@ llm:
 	# while true; do make mount && nice ionice $(PYTHON) core/llm_llama.py -l -t 60 -g -n 60 -s -v; sleep 1; done
 
 whisper:
-	while true; do make mount && nice ionice $(PYTHON) core/stt_whisper.py -v -s; sleep 1; done
+	while true; do make mount && nice ionice $(PYTHON) core/stt_whisperx.py -v; sleep 1; done
 
 omnivoice:
 	while true; do make mount && nice ionice $(PYTHON) core/tts_omnivoice.py -v -s; sleep 1; done

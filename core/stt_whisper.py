@@ -1,6 +1,5 @@
 #!/usr/bin/env python3-allemande
 
-
 """ allemande - core whisper module """
 
 import logging
@@ -27,38 +26,56 @@ WHISPER_CPP_CPU = "/opt/whisper.cpp/whisper-cpu"
 WHISPER_CPP_DIR = str(Path(WHISPER_CPP).parent)
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
+GPU_MUTEX = None  # locking disabled for now
+
 
 def try_gpu_command(primary_command, fallback_command=None):
-    with GPU_MUTEX.open("w") as lockfile:
-        try:
-            # Try to acquire the lock non-blocking
+    if GPU_MUTEX:
+        with GPU_MUTEX.open("w") as lockfile:
+            try_gpu_command_2(primary_command, fallback_command, lockfile)
+    else:
+        try_gpu_command_2(primary_command, fallback_command, None)
+
+
+def try_gpu_command_2(primary_command, fallback_command, lockfile):
+    try:
+        # Try to acquire the lock non-blocking
+        if lockfile:
             fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             # Lock acquired successfully, run primary command
-            result = subprocess.run(primary_command, check=True)
+        logger.info("*** Running GPU whisper")
+        result = subprocess.run(primary_command, check=True)
+        return result
+    except BlockingIOError as e:
+        if e.errno != errno.EWOULDBLOCK:
+            raise
+        # Lock is held by another process
+        if fallback_command:
+            logger.info("*** Lock was held by another process, running CPU whisper")
+            # Run fallback command without requiring the lock
+            result = subprocess.run(fallback_command, check=True)
             return result
-        except BlockingIOError as e:
-            if e.errno != errno.EWOULDBLOCK:
-                raise
-            # Lock is held by another process
-            if fallback_command:
-                # Run fallback command without requiring the lock
-                result = subprocess.run(fallback_command, check=True)
-                return result
-            else:
-                raise RuntimeError("GPU is currently in use by another process")
-        finally:
-            # Only unlock if we actually got the lock
-            try:
+        else:
+            raise RuntimeError("GPU is currently in use by another process")
+    except subprocess.CalledProcessError as e:
+        if fallback_command:
+            logger.info("*** GPU process failed, running CPU whisper")
+            # Run fallback command without requiring the lock
+            result = subprocess.run(fallback_command, check=True)
+            return result
+        else:
+            raise RuntimeError("GPU process failed")
+    finally:
+        # Only unlock if we actually got the lock
+        try:
+            if lockfile:
                 fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
-            except IOError:
-                pass
+        except IOError:
+            pass
 
 
 def gen(config, audio_file, *_args, model=None, **_kwargs):
-    """Transcribe text from an audio file."""
-
-    language = config.get("language", "auto")
-    model = config.get("model", model)
+    """ Transcribe text from an audio file. """
 
     if not re.match(r"[\w-]+$", model):
         raise ValueError(f"Invalid model name: {model}")
@@ -75,13 +92,13 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
 
     response = {
         "text.txt": text,
-        #        "result.yaml": yaml.safe_dump(result),
+        # "result.yaml": yaml.safe_dump(result),
     }
     return response
 
 
 def load(portals, d, filename):
-    """Load a file from a directory or above"""
+    """ Load a file from a directory or above """
     while True:
         f = d / filename
         if f.exists():
@@ -98,8 +115,8 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-async def process_request(portals, port, req, fn, *args, stop_forge=False, **kwargs):
-    """Process a request on a port"""
+async def process_request(portals, port, req, fn, *args, **kwargs):
+    """ Process a request on a port """
     port = Path(port)
     logger.info("%s:%s - processing", port, req)
     log_handler = None
@@ -112,11 +129,11 @@ async def process_request(portals, port, req, fn, *args, stop_forge=False, **kwa
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         request = d / "request.aud"
         request = ensure_wav(request)
-        if stop_forge:
-            os.system("forge-kill -s=STOP")
+        # if stop_forge:
+        #     os.system("forge-kill -s=STOP")
         response = fn(config, request, *args, **kwargs)
-        if stop_forge:
-            os.system("forge-kill -s=CONT")
+        # if stop_forge:
+        #     os.system("forge-kill -s=CONT")
         for k, v in response.items():
             (d / k).write_text(v, encoding="utf-8")
         os.rename(d, port / "done" / req)
