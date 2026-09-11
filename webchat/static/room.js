@@ -1733,7 +1733,7 @@ function fix_browser_copy(ev) {
 // Global variable to store the currently selected message element
 let $message_with_menu = null;
 
-function hide_message_with_menu() {
+function hide_message_menu() {
   hide("message_menu");
   $message_with_menu = null;
 }
@@ -1754,7 +1754,7 @@ function message_menu_click(event) {
   if (message) {
     // If the menu is already open on THIS message, close it
     if ($message_with_menu === message) {
-      hide_message_with_menu();
+      hide_message_menu();
     } else {
       // Otherwise, move the menu into this message and show it
       message.appendChild(menu);
@@ -1765,7 +1765,7 @@ function message_menu_click(event) {
   }
   
   // Scenario 3: Clicked anywhere else outside
-  hide_message_with_menu();
+  hide_message_menu();
 }
 
 async function get_message_id($message) {
@@ -1777,34 +1777,21 @@ async function msg_undo_click(event) {
   const id = await get_message_id($message_with_menu);
   const force = event.shiftKey;
   window.parent.postMessage({ type: "undo", message_id: id, force: force }, ALLYCHAT_CHAT_URL);
-  hide_message_with_menu();
+  hide_message_menu();
 }
 
 async function msg_tts_click(event) {
   const regen = event.shiftKey;
-  play_message_tts($message_with_menu, regen); // async
-  hide_message_with_menu();
+  play_message_audio($message_with_menu, regen); // async
+  hide_message_menu();
 }
 
 let playing_audio = null;
 let playing_message_id = null;
 
-async function play_message_tts($message, regen) {
+async function play_message_audio($message, regen) {
   const id = await get_message_id($message);
-  const hash = $message.getAttribute("hash");
-  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
-  if (regen)
-    url += "&regen=1";
 
-  play_audio_from_url(url, id);
-}
-
-function handle_media_error(event) {
-  const error = event.target.error;
-  console.error(`Media Error [Code ${error.code}]: ${error.message}`);
-}
-
-async function play_audio_from_url(url, id) {
   // If the same message is already playing, stop it and clear globals
   if (playing_message_id === id && playing_audio) {
     playing_audio.pause();
@@ -1820,6 +1807,64 @@ async function play_audio_from_url(url, id) {
     playing_message_id = null;
   }
 
+  // if the message has audio elements, play them in turn instead of doing TTS
+  const audios = $message.querySelectorAll("audio");
+  if (audios.length) {
+    playing_message_id = id;
+    play_audio_sequence(audios);
+    return;
+  }
+
+  // no audio elements?  do TTS
+  const hash = $message.getAttribute("hash");
+  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+  if (regen)
+    url += "&regen=1";
+
+  play_audio_from_url(url, id);
+}
+
+async function play_audio_sequence(audioElements, delay) {
+  if (delay === undefined)
+    delay = 1000;
+  for (let audio of audioElements) {
+    playing_audio = audio;
+    let isPaused = false;
+
+    // Play the current audio and wait for it to either finish or pause
+    await new Promise((resolve) => {
+      // If finished normally, move to the next step
+      audio.onended = () => resolve();
+
+      // If paused, flag it and resolve to exit the loop
+      audio.onpause = () => {
+        isPaused = true;
+        resolve();
+      };
+
+      // Handle errors gracefully so the loop doesn't crash completely
+      audio.onerror = () => resolve();
+
+      audio.currentTime = 0;
+      audio.play().catch(() => resolve());
+    });
+
+    // Break the loop immediately if the audio was paused
+    if (isPaused)
+      break;
+
+    // Wait before the next sound
+    if (delay)
+      await $wait(delay);
+  }
+}
+
+function handle_media_error(event) {
+  const error = event.target.error;
+  console.error(`Media Error [Code ${error.code}]: ${error.message}`);
+}
+
+async function play_audio_from_url(url, id) {
   const audio = new Audio(url);
   playing_audio = audio;
   playing_message_id = id;

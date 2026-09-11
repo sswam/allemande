@@ -285,7 +285,14 @@ async function handleRecording(recording_type) {
         if (stop_action === 'save') {
             // Send the recording to the server
             const fileName = includeVideo ? `${chat.user}_video.webm` : `${chat.user}_audio.webm`;
-            const speech_to_text = Boolean(chat.view_options.voice_stt) && !includeVideo;
+            let speech_to_text = "";
+            if (!includeVideo && chat.view_options.voice_stt) {
+                if (chat.view_options.voice_pass_through) {
+                    speech_to_text = "stt,pass";
+                } else {
+                    speech_to_text = "stt";
+                }
+            }
             chat.active_set(save_button);
             if (!await chat.add_upload_file_link(chat.upload_file(mediaBlob, fileName, speech_to_text)))
                 await chat.error(save_button);

@@ -966,7 +966,7 @@ def safe_path_for_local_file(file: str, url: str) -> tuple[str, str]:
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
-async def upload_file(room_name, user, filename, file=None, alt=None, to_text=False):
+async def upload_file(room_name, user, filename, file=None, alt=None, to_text=""):
     """Upload a file to a room."""
     # enable upload to a folder
     if room_name.endswith("/"):
@@ -979,6 +979,12 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     name = sanitize_filename(os.path.basename(filename))
     stem, ext = os.path.splitext(name)
+
+    # support temporary upload for STT without audio pass-through
+    temp_upload = "stt" in to_text and "pass" not in to_text
+
+    if temp_upload:
+        stem = "." + stem
 
     i = 1
     suffix = ""
@@ -1048,6 +1054,9 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
         logger.error("Error converting to text: %r, %r, %r", medium, file_path, e)
         to_text = False
 
+    if temp_upload:
+        file_path.unlink()
+
     # alt text
     alt = alt or stem
     alt = re.sub(r"\s+", " ", alt)
@@ -1057,9 +1066,14 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
         alt = ee(alt, quote=False)
         markdown_tag = f"![{alt}]({relurl})"
     elif medium == "audio" and to_text:
-        markdown_tag = ee(alt, quote=False) + " " + av_element_html("audio", stem, relurl)
+        markdown_tag = ee(alt, quote=False)
+        if not temp_upload:
+            markdown_tag += " " + av_element_html("audio", stem, relurl, controls=False)
     elif medium == "audio":
-        markdown_tag = av_element_html("audio", alt, relurl)
+        if temp_upload:
+            markdown_tag = ""
+        else:
+            markdown_tag = av_element_html("audio", alt, relurl)
     elif medium == "video":
         markdown_tag = av_element_html("video", alt, relurl)
     else:
@@ -1097,7 +1111,8 @@ async def convert_image_format(from_path: str, to_path: str) -> int:
         return 1
 
 
-def av_element_html(tag, label, url):
+def av_element_html(tag, label, url, controls=True):
     """Return an audio or video element."""
 
-    return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
+    controls_attr = " controls" if controls else ""
+    return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" {controls_attr}></{tag}>'

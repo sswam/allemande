@@ -137,11 +137,8 @@ async def upload(request):
     room = form["room"]
     room = util.sanitize_pathname(room)
     file = form["file"]
-    to_text = form.get("to_text", False)
+    to_text = form.get("to_text", "")
     user = get_user(request)
-
-    if to_text == "false":
-        to_text = False
 
     logger.info("%s upload  %s", user, room)
 

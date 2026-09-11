@@ -98,6 +98,7 @@ const VIEW_OPTIONS_DEFAULT = {
   voice_tts: 0,
   voice_vad: 0,
   voice_auto: 0,
+  voice_pass_through: 0,
   help: 0,
   embed: 0,
   dir_sort: "time",
@@ -3018,6 +3019,7 @@ async function view_options_apply() {
   active_set("voice_tts", view_options.voice_tts);
   active_set("voice_vad", view_options.voice_vad);
   active_set("voice_auto", view_options.voice_auto);
+  active_set("voice_pass_through", view_options.voice_pass_through);
   active_set("edit_advanced", view_options.edit_advanced > 0);
 
   active_set("help", view_options.help > 0);
@@ -3762,6 +3764,11 @@ async function voice_auto(ev) {
   } else {
     view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = 0;
   }
+  view_options_apply();
+}
+
+async function voice_pass_through(ev) {
+  view_options.voice_pass_through = !view_options.voice_pass_through;
   view_options_apply();
 }
 
@@ -4760,6 +4767,7 @@ export async function init() {
   $on($id("voice_stt"), "click", voice_stt);
   $on($id("voice_vad"), "click", voice_vad);
   $on($id("voice_auto"), "click", voice_auto);
+  $on($id("voice_pass_through"), "click", voice_pass_through);
 
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);

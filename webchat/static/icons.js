@@ -87,6 +87,7 @@ export const icons = {
   voice_stt: '<i class="bi bi-mic i20"></i>',
   voice_tts: '<i class="bi bi-volume-down i20"></i>',
   voice_vad: '<i class="bi bi-soundwave i20"></i>',
+  voice_pass_through: '<i class="bi bi-voicemail i20"></i>',
   help: '<i class="bi bi-question i22"></i>',
 //  help: '<i class="bi bi-info-lg i20"></i>',
 //  select: '<i class="bi bi-list-check i20"></i>',
