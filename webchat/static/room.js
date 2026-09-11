@@ -21,6 +21,8 @@ let overlay_fullscreen = false;
 
 let simple = true;
 
+let voice_delay = 500;
+
 export let view_options = {
   images: 1,
   image_size: 8,
@@ -98,6 +100,7 @@ export function clear() {
   $("div.messages_wrap").before(menu);
   $("div.messages").innerHTML = "";
   clean_up_server_events();
+  enable_tts_new_messages_after_delay();
 }
 
 function ready_state_change() {
@@ -186,6 +189,11 @@ async function wait_for_messages_to_load(elements) {
 // mutation observer ---------------------------------------------------------
 
 const mutationMutex = new Mutex();
+let tts_new_messages = false;
+
+function enable_tts_new_messages() {
+  tts_new_messages = true;
+}
 
 async function call_process_messages(messages) {
   await wait_for_load();
@@ -195,10 +203,24 @@ async function call_process_messages(messages) {
   online();
   const process_messages = await $import("chat:process_messages");
   await process_messages.process_messages(messages);
-  for (const msg of messages)
-    if (!msg.classList.contains("hidden"))
+  let first_visible_message_not_me;
+  for (const msg of messages) {
+    if (!msg.classList.contains("hidden")) {
+      if (!first_visible_message_not_me && !msg.classList.contains("me"))
+        first_visible_message_not_me = msg;
       scroll_add_message(msg);
+    }
+  }
   scroll_follow_end();
+
+  // with voice_auto, read new messages - starting from the first (if not already reading)
+  // or precache the first message, if already playing something
+  if (view_options.voice_auto && first_visible_message_not_me && tts_new_messages) {
+    if (!playing_message_id)
+      play_message_audio(first_visible_message_not_me);
+    else
+      precache_message_audio(first_visible_message_not_me, 100);
+  }
 }
 
 async function mutated(mutations) {
@@ -1095,7 +1117,7 @@ async function set_view_options(new_view_options) {
     cl.toggle("history", view_options.history == 1);
     cl.toggle("ids-hover", view_options.ids == 1);
     cl.toggle("ids", view_options.ids == 2);
-    cl.toggle("msg_tts", view_options.voice_manual||view_options.voice_tts||view_options.voice_stt);
+    cl.toggle("msg_tts", view_options.voice_tts);
     // if (old_view_options.columns != view_options.columns)
     //   restoreScrollPosition();
   }
@@ -1792,6 +1814,22 @@ let playing_message_id = null;
 async function play_message_audio($message, regen) {
   const id = await get_message_id($message);
 
+  // scroll into view with voice_auto, to read along!
+  if (view_options.voice_auto) {
+    $message.scrollIntoView({
+      "behavior": "smooth",
+      "block": "nearest",
+    });
+  }
+
+  // if voice_auto, get the next message and precache the TTS
+  let $message_next;
+  if (view_options.voice_auto) {
+    $message_next = find_next_visible_message($message);
+    if ($message_next)
+      precache_message_audio($message_next, 100);  // 100ms delay so we gen for this message first!
+  }
+
   // If the same message is already playing, stop it and clear globals
   if (playing_message_id === id && playing_audio) {
     playing_audio.pause();
@@ -1811,22 +1849,74 @@ async function play_message_audio($message, regen) {
   const audios = $message.querySelectorAll("audio");
   if (audios.length) {
     playing_message_id = id;
-    play_audio_sequence(audios);
+    if (!await play_audio_sequence(audios))
+      return;
+  } else {
+    // no audio elements?  do TTS
+    const hash = $message.getAttribute("hash");
+    let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+    if (regen)
+      url += "&regen=1&ts=" + Date.now();
+
+    if (!await play_audio_from_url(url, id))
+      return;
+  }
+
+  if (!view_options.voice_auto)
+    return;
+
+  // check again in case new messages added - but not if the message is from the user!
+  if (!$message_next || $message_next.classList.contains("hidden")) {
+    $message_next = find_next_visible_message_not_me($message);
+  }
+
+  if (!$message_next) {
+    scroll_to_end($messages_wrap);
     return;
   }
 
-  // no audio elements?  do TTS
-  const hash = $message.getAttribute("hash");
-  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
-  if (regen)
-    url += "&regen=1";
+  // continue playing the next message
 
-  play_audio_from_url(url, id);
+  // Wait before the next audio
+  if (voice_delay)
+    await $wait(voice_delay);
+
+  play_message_audio($message_next);  // don't pass regen through
 }
 
-async function play_audio_sequence(audioElements, delay) {
-  if (delay === undefined)
-    delay = 1000;
+function find_next_visible_message($message) {
+  do {
+    $message = $message.nextElementSibling;
+  } while ($message && $message.classList.contains("hidden"));
+  return $message;
+}
+
+function find_next_visible_message_not_me($message) {
+  do {
+    $message = $message.nextElementSibling;
+  } while ($message && ($message.classList.contains("hidden") || $message.classList.contains("me")));
+  return $message;
+}
+
+async function precache_message_audio($message, delay) {
+  // if the message has audio elements, don't worry about it
+  const audios = $message.querySelectorAll("audio");
+  if (audios.length)
+    return;
+
+  const id = await get_message_id($message);
+
+  // do TTS precache
+  const hash = $message.getAttribute("hash");
+  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+
+  if (delay)
+    await $wait(delay);
+
+  precache_url(url)  // don't wait
+}
+
+async function play_audio_sequence(audioElements) {
   for (let audio of audioElements) {
     playing_audio = audio;
     let isPaused = false;
@@ -1838,6 +1928,8 @@ async function play_audio_sequence(audioElements, delay) {
 
       // If paused, flag it and resolve to exit the loop
       audio.onpause = () => {
+        if (audio.ended)
+          return;
         isPaused = true;
         resolve();
       };
@@ -1851,12 +1943,13 @@ async function play_audio_sequence(audioElements, delay) {
 
     // Break the loop immediately if the audio was paused
     if (isPaused)
-      break;
+      return false;
 
-    // Wait before the next sound
-    if (delay)
-      await $wait(delay);
+    // Wait before the next audio
+    if (voice_delay)
+      await $wait(voice_delay);
   }
+  return true;
 }
 
 function handle_media_error(event) {
@@ -1869,19 +1962,48 @@ async function play_audio_from_url(url, id) {
   playing_audio = audio;
   playing_message_id = id;
 
-  audio.addEventListener('error', handle_media_error);
+  return new Promise((resolve) => {
 
-  // Clear globals when audio finishes naturally
-  audio.addEventListener('ended', () => {
-    playing_audio = null;
-    playing_message_id = null;
+    audio.addEventListener('ended', () => {
+      playing_audio_clear(id);
+      resolve(true);
+    });
+
+    audio.addEventListener('pause', () => {
+      if (audio.ended)
+        return;
+      playing_audio_clear(id);
+      resolve(false);
+    });
+
+    audio.addEventListener('error', (e) => {
+      handle_media_error(e);
+      playing_audio_clear(id);
+      resolve(true);
+    });
+
+    audio.play().catch((error) => {
+      console.error("Playback failed:", error.message);
+      playing_audio_clear(id);
+      resolve(true);
+    });
+
   });
+}
 
+async function precache_url(url) {
   try {
-    await audio.play();
-    console.log("Audio is playing successfully!");
+    const response = await fetch(url);
+    
+    if (!response.ok)
+      console.warn(`Pre-cache failed for ${url}: Status ${response.status}`);
   } catch (error) {
-    console.error("Playback failed:", error.message);
+    console.error(`Network error while pre-caching ${url}:`, error);
+  }
+}
+
+function playing_audio_clear(id) {
+  if (playing_message_id == id) {
     playing_audio = null;
     playing_message_id = null;
   }
@@ -2001,6 +2123,13 @@ export async function room_main() {
   }
 
   load_agent_colours(); // async
+
+  enable_tts_new_messages_after_delay();
+}
+
+function enable_tts_new_messages_after_delay() {
+  tts_new_messages = false;
+  setTimeout(enable_tts_new_messages, 10000);
 }
 
 export async function folder_main() {

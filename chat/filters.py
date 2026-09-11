@@ -126,7 +126,7 @@ def filter_in_remove_images(message: str, _place: int) -> str:
         Remove ![...](...) images, and squash blank lines.
         """
         # Remove markdown images: ![alt text](url)
-        message = re.sub(r'!\[([^\]]*)\]\([^\)]*\)', '', message)
+        message = re.sub(r'!\[(.*?)\]\([^\)]*\)', '', message)
 
         message = clean_up_input_message(message)
 

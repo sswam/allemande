@@ -704,9 +704,12 @@ class Agents:
         """Write the list of agents to a file."""
         agents_dict = {}
         for agent in self.agents.values():
-            if agent.get("type") in [None, "human", "visual", "mixin"]:
+            agent_type = agent.get("type")
+            if agent_type in [None, "visual", "mixin"]:
                 continue
             agent_info = {}
+            if agent_type == "human":
+                agent_info["type"] = "human"
             if agent.get("voice") is not None:
                 agent_info["voice"] = agent.get("voice")
             agents_dict[agent.name] = agent_info

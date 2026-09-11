@@ -6,10 +6,11 @@ import logging
 import re
 from pathlib import Path
 import shutil
+import asyncio
 
 import bb_lib
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
-from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT
+from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT, TTS_VOICE_HUMAN_DEFAULT, TTS_VOICE_NARRATION
 import chat
 import filters
 import ally_room
@@ -19,7 +20,25 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def generate_tts_file(path: Path, pathname: str):
+_tts_locks = {}
+
+
+def get_tts_lock(key):
+    """ Get a lock to prevent concurrent TTS generation of the same file """
+    if key not in _tts_locks:
+        _tts_locks[key] = asyncio.Lock()
+    return _tts_locks[key]
+
+
+async def generate_tts_file(path: Path, regen=False):
+    """ Generate a TTS file if needed, with locking """
+    lock = get_tts_lock(str(path))
+    async with lock:
+        if regen or not path.exists():
+            await generate_tts_file_2(path)
+
+
+async def generate_tts_file_2(path: Path):
     """ Generate a missing TTS file """
     stem = path.stem
     m = re.match(r"(\d+)\.([0-9a-f]{8})$", stem)
@@ -48,21 +67,40 @@ async def generate_tts_file(path: Path, pathname: str):
         # user needs to reload the page, or HTML is out of sync with bb file
         return
 
-    # TODO select a voice for the user / agent somehow...!  oh oh...  maybe can cache those settings in room options even for the default?
-
     # clean up stuff we likely don't want to speak!
     content, _n_own_messages = chat.remove_thinking_sections(content, None, 0)
     content = filters.filter_in_remove_code(content, 0)
     content = filters.filter_in_remove_images(content, 0)
+    content = re.sub(r"(^|\s)@(\w)", r"\2", content)  # strip @ signs from @mentions
+    content = re.sub(r"<script\b.*?>.*?</script>", "", content, flags=re.DOTALL | re.IGNORECASE)  # strip out script containers
+    content = re.sub(r"<style\b.*?>.*?</style>", "", content, flags=re.DOTALL | re.IGNORECASE)  # strip out style containers
+    content = re.sub(r"<!--.*?-->", "", content, flags=re.DOTALL)  # strip out HTML comments
+    content = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", content)  # replace links with just the link text
+    content = re.sub(r"<[A-Za-z/].*?>", "", content)  # strip out HTML tags
     # content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - disabled for now as it's flaky
+
+    # experimental:  add a fullstop at the end of each line if it ends with a word character
+    content = re.sub(r"(\w|\*)$", r"\1.", content, flags=re.MULTILINE)
+
+    logger.info("cleaned up content for TTS: %s", content)
+
+    path.parent.mkdir(exist_ok=True)
 
     # handle empty content
     if not content:
         path.write_text("")
         return
 
-    agents_dict = ally_room.read_agents_dicts(Path(room_file).parent)
-    voice = agents_dict.get(user.lower(), {}).get("voice", TTS_VOICE_DEFAULT)
+    agents_dict = ally_room.read_agents_dicts(Path(room_file).parent, include_human=True)
+    agent = user and agents_dict.get(user.lower())
+    if user is None:
+        voice = TTS_VOICE_NARRATION
+    elif agent is not None and agent.get("type") != "human":
+        voice = agent.get("voice", TTS_VOICE_DEFAULT)
+    elif agent is not None:
+        voice = agent.get("voice", TTS_VOICE_HUMAN_DEFAULT)
+    else:
+        voice = TTS_VOICE_HUMAN_DEFAULT
 
     logger.info("generate_tts_file: %s %s %s", room_file, msg_id, voice)
 
@@ -77,7 +115,6 @@ async def generate_tts_file(path: Path, pathname: str):
     response, resp = await client_request(portal, content, config=config, timeout=TTS_TIMEOUT)
 
     try:
-        path.parent.mkdir(exist_ok=True)
         shutil.copy(response, path)
     except Exception as e:
         logger.error("generate_tts_file, response / copy failed: %r", e)

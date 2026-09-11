@@ -795,20 +795,25 @@ def load_config(dir_path: Path, filename: str, check_hidden=True) -> dict[str, A
     return config_all
 
 
-def read_agents_dict(path) -> dict:
+def read_agents_dict(path, include_human=False) -> dict:
     """Read the agents dict from a file."""
     if not path.exists():
         return {}
     agents_dict = cache.load(path)
     if not isinstance(agents_dict, dict):
         raise ValueError("Invalid agents dict")
-    return {k.lower(): v for k, v in agents_dict.items()}
+
+    agents = {k.lower(): v for k, v in agents_dict.items()}
+
+    if not include_human:
+        agents = { k: v for k, v in agents.items() if v.get("type") != "human" }
+
+    return agents
 
 
-def read_agents_dicts(path) -> dict:
+def read_agents_dicts(path, include_human=False) -> dict:
     """Read and merge agents dicts from a path up to the top directory, with deeper dirs taking precedence."""
     top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
-    merged = {}
 
     room_dir = path
     # if not a dir, go to parent
@@ -828,16 +833,16 @@ def read_agents_dicts(path) -> dict:
 
     # Process from top down (global first, then top_dir, then closer dirs),
     # so deeper dirs take precedence by overwriting
-    merged.update(read_agents_dict(top_dir / ".agents_global.yml"))
+    agents = read_agents_dict(top_dir / ".agents_global.yml", include_human=include_human)
     for d in reversed(dirs):
-        merged.update(read_agents_dict(d / ".agents.yml"))
+        agents.update(read_agents_dict(d / ".agents.yml", include_human=include_human))
 
-    return merged
+    return agents
 
 
-def read_agents_lists(path) -> list[str]:
+def read_agents_lists(path, include_human=False) -> list[str]:
     """Read the de-duplicated list of agent names from a path up to the top directory."""
-    return list(read_agents_dicts(path).keys())
+    return list(read_agents_dicts(path, include_human=include_human).keys())
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments

@@ -146,7 +146,7 @@ export async function processMessage(newMessage) {
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
   const label = newMessage.querySelector(".label");
-  const me_message = newUser && newUser.toLowerCase() === user;
+  const me_message = newUser && newUser.toLowerCase().replace(/=.*/, '') === user;
   const simple = (room.view_options.advanced ?? -1) < 0;
   const blocked = newUser && BLOCK[`${user}/${newUser}`];
 

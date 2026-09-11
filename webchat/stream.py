@@ -317,8 +317,7 @@ async def stream(request, path=""):
     # Check for TTS files
     if is_tts_file:
         media_type = "audio/mpeg"
-        if regen or not path.exists():
-            await ally_tts.generate_tts_file(path, pathname)
+        await ally_tts.generate_tts_file(path, regen)
         # TODO return a static empty-ish mp3 for empty file
         if path.exists():
             return FileResponse(path, media_type=media_type)

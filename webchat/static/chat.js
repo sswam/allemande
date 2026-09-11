@@ -93,12 +93,13 @@ const VIEW_OPTIONS_DEFAULT = {
   highlight_theme_dark: "a11y-dark",
   fullscreen: 0,
   advanced: 1,
-  voice_manual: 0,
+  voice_all: 1,
   voice_stt: 0,
   voice_tts: 0,
   voice_vad: 0,
   voice_auto: 0,
   voice_pass_through: 0,
+  voice_send: 0,
   help: 0,
   embed: 0,
   dir_sort: "time",
@@ -2988,9 +2989,11 @@ async function view_options_apply() {
   if (view_options.toc)
     view_options.canvas = 0;
 
-  // set voice_auto if all component options are set
-  if (view_options.voice_tts && view_options.voice_stt && view_options.voice_vad) {
-    view_options.voice_auto = 1;
+  // set voice_all if all component options are set
+  if (view_options.voice_tts && view_options.voice_stt && view_options.voice_vad && view_options.voice_auto && view_options.voice_pass_through && view_options.voice_send) {
+    view_options.voice_all = 1;
+  } else {
+    view_options.voice_all = 0;
   }
 
   // update buttons
@@ -3014,12 +3017,13 @@ async function view_options_apply() {
   active_set("view_advanced", view_options.advanced > 1);
   active_set("view_standard", view_options.advanced >= 0);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
-  active_set("voice_manual", view_options.voice_manual);
+  active_set("voice_all", view_options.voice_all);
   active_set("voice_stt", view_options.voice_stt);
   active_set("voice_tts", view_options.voice_tts);
   active_set("voice_vad", view_options.voice_vad);
   active_set("voice_auto", view_options.voice_auto);
   active_set("voice_pass_through", view_options.voice_pass_through);
+  active_set("voice_send", view_options.voice_send);
   active_set("edit_advanced", view_options.edit_advanced > 0);
 
   active_set("help", view_options.help > 0);
@@ -3716,19 +3720,15 @@ async function opt_memorize(ev) {
   });
 }
 
-async function voice_manual(ev) {
-  view_options.voice_manual = !view_options.voice_manual;
-  if (view_options.voice_manual) {
-    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = view_options.voice_auto = 0;
-  }
+async function voice_all(ev) {
+  view_options.voice_all = !view_options.voice_all;
+  view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = view_options.voice_auto = view_options.voice_pass_through = view_options.voice_send = view_options.voice_all;
   view_options_apply();
 }
 
 async function voice_tts(ev) {
   view_options.voice_tts = !view_options.voice_tts;
-  if (view_options.voice_tts) {
-    view_options.voice_manual = 0;
-  } else {
+  if (!view_options.voice_tts) {
     view_options.voice_auto = 0;
   }
   view_options_apply();
@@ -3736,11 +3736,10 @@ async function voice_tts(ev) {
 
 async function voice_stt(ev) {
   view_options.voice_stt = !view_options.voice_stt;
-  if (view_options.voice_stt) {
-    view_options.voice_manual = 0;
-  } else {
-    view_options.voice_auto = 0;
+  if (!view_options.voice_stt) {
+    view_options.voice_pass_through = 0;
     view_options.voice_vad = 0;
+    view_options.voice_send = 0;
   }
   view_options_apply();
 }
@@ -3748,10 +3747,7 @@ async function voice_stt(ev) {
 async function voice_vad(ev) {
   view_options.voice_vad = !view_options.voice_vad;
   if (view_options.voice_vad) {
-    view_options.voice_manual = 0;
     view_options.voice_stt = 1;
-  } else {
-    view_options.voice_auto = 0;
   }
   view_options_apply();
 }
@@ -3759,16 +3755,25 @@ async function voice_vad(ev) {
 async function voice_auto(ev) {
   view_options.voice_auto = !view_options.voice_auto;
   if (view_options.voice_auto) {
-    view_options.voice_manual = 0;
-    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = 1;
-  } else {
-    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = 0;
+    view_options.voice_tts = 1;
   }
   view_options_apply();
 }
 
 async function voice_pass_through(ev) {
   view_options.voice_pass_through = !view_options.voice_pass_through;
+  if (view_options.voice_pass_through) {
+    view_options.voice_stt = 1;
+  }
+  view_options_apply();
+}
+
+async function voice_send(ev) {
+  view_options.voice_send = !view_options.voice_send;
+  if (view_options.voice_send) {
+    view_options.voice_stt = 1;
+    view_options.voice_vad = 1;
+  }
   view_options_apply();
 }
 
@@ -3802,7 +3807,6 @@ async function setup_icons() {
   icons["add_file_2"] = icons["add_file"];
   icons["font_contract"] = icons["font_expand"];
   icons["mod_auto"] = icons["auto"];
-  icons["voice_auto"] = icons["auto"];
 
   icons["help_undo"] = icons["x_large"];
   icons["help_retry"] = icons["undo"];
@@ -4762,12 +4766,13 @@ export async function init() {
   $on($id("view_standard"), "click", view_standard);
   // $on($id("view_cancel"), "click", () => set_controls());
 
-  $on($id("voice_manual"), "click", voice_manual);
+  $on($id("voice_all"), "click", voice_all);
   $on($id("voice_tts"), "click", voice_tts);
   $on($id("voice_stt"), "click", voice_stt);
   $on($id("voice_vad"), "click", voice_vad);
   $on($id("voice_auto"), "click", voice_auto);
   $on($id("voice_pass_through"), "click", voice_pass_through);
+  $on($id("voice_send"), "click", voice_send);
 
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
