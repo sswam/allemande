@@ -38,7 +38,7 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
 
     logger.info("result: %r", result)
 
-    text = " ".join([segment["text"] for segment in result["segments"]])
+    text = " ".join([segment["text"].strip() for segment in result["segments"]])
 
     response = {
         "text.txt": text,
