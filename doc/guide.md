@@ -23,7 +23,7 @@ Novel features include:
 - AIs can teach you about the app, including all the models and agents
 - a column view option, to make the most of your screen
 - web, image, video search; programming tools such as Bash and Python
-- the whole app is open source; you can potentially run it at home
+- the whole app is open source, although it's difficult to set up
 - a cast of more than 1,500 characters, specialist agents, and tools
 - custom agents and missions, adjust context and other settings mid-chat
 - a wide range of styles, support for custom styles and JavaScript
@@ -61,27 +61,27 @@ You can read our detailed [Terms of Service](/terms).
 - **Multiple Chat Rooms**: Create and join different chat spaces instantly
 - **Group or Private Chat**: Talk with multiple users or have private conversations
 - **Diverse AI Models**: Access to many different AI language models, each with unique capabilities
+- **Powerful Image Gen**: Many AI art models and options for high-quality image gen
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**: Markdown, HTML, TeX math, Graphviz, Mermaid, embeds, SVG, CSS, JavaScript, canvas.
 - **Universal**: Features for general assistance, work, education, and entertainment.
 - **Separate SFW and NSFW Zones**: Adult users can opt-in to access the NSFW zone.
+- **Voice Chat**: Full voice chat with a variety of voices, and optional pass-through for user speech.
 
 ## Limitations
 
 ### Work in Progess
 
-- **Image Processing**: We don't have img2img, face transfer, or LoRA training functions yet. The AIs can look at reference images for ideas (see AI Vision below).
 - **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
-- **Voice Chat**: Voice chat is under development, it's going to be good!
 - **Account Management**: To reset your password, change your name or contact details, or delete your account, please message Sam.
 
 ### Future Directions
 
 - **Private Messaging**: We don't yet have a direct messaging feature
 - **Video Generation**: We may be able to interleave long-running processes such as video generation with other GPU workload.
-- **Scalability**: Users can volunteer their idle GPU resources to support the service
+- **Scalability**: Users could volunteer their idle GPU resources to support the service
 
 ## Learning about Ally Chat
 
@@ -258,12 +258,77 @@ By default, AIs can see one image from the immediately preceding message, such a
 
 Advanced: You can enable vision for more images in any room. Please turn it off again when you're finished with the vision task.
 
-1. Go to room options by clicking the <i class="bi-gear"></i> **Options** button.
+1. Go to room options by clicking the <i class="bi-three-dots-vertical"></i> **Options** button.
 2. Set the **images** option to 1 or a higher number. This controls how many recent images the AI can see.
 3. Upload an image, or check that there is one in the chat history.
 4. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
 5. Please clear the **images** option to be blank when you are not using AI vision. This makes responses faster, and can save money.
 6. If you set the **images** option to blank, AI vision is disabled entirely for that chat room.
+
+## Voice Chat
+
+Ally Chat has a sophisticated voice chat system, where different characters can speak with different voices, and users can choose to pass-through their recorded voice or choose an AI voice for their messages.
+
+One caveat, this is not a live speech system like you may have used with major providers. There are delays with both speech to text and text to speech. Please adjust your expectations accordingly!
+
+The speech models we are using support hundreds of languages, but so far the developer has been focusing on English. If you'd like to help add support for your language, please contact us!
+
+We are using Whisper Large 2 for speech to text, OmniVoice for text to speech, and ricky0123/vad with Silero VAD for Voice Activity Detection.
+
+### How to enable full voice chat
+
+1. Press the <i class="bi-three-dots-vertical"></i> **Options** button.
+2. Under <i class="bi bi-headset i20"></i> Voice Options, press the <i class="bi bi-sun-fill i20"></i> **Full Voice Chat** button.
+3. If you don't want to share your recorded audio, turn off the <i class="bi bi-voicemail i20"></i> **Pass Through** option.
+
+There are many options for voice chat, see below in the User Interface Guide.
+
+### Setting an agent's voice
+
+When you edit a custom agent, you can set their voice. We have several voices to choose from.
+
+1. Edit the agent
+2. Press <i class="bi-lightbulb-off"></i> to switch to the advanced agent editor.
+3. Add a line like this for example:
+```
+voice: voice/male_uk
+```
+4. Save the agent
+
+English female voices include:
+- female
+- female_uk
+- female_us
+- female_jp
+- synergy
+- e-girl
+- bratty
+- bimbo
+
+English male voices include:
+- male
+- male_uk
+- male_us
+
+It's also possible to create an agent of `type: human` with your username and representing yourself, and set a voice for it.
+
+### Adding a new voice
+
+1. Obtain a clip of the voice, around 10 seconds, mp3 format.
+2. It's probably easier to stop here, and send the voice file to the developer to install!
+3. Transcribe the speech in a text file. The first line of the file should describe the voice for OmniVoice, with comma-separated attributes, e.g. "female" or "male, american accent". Or you can leave the first line blank. Check [the list of allowed attributes](https://github.com/k2-fsa/OmniVoice/blob/master/docs/voice-design.md#supported-attributes).
+4. Name the files consistently, e.g. myvoice.mp3 and myvoice.txt
+5. Browse to voice/ and upload the two voice files.
+6. You may have to wait up to 30 minutes after uploading for the new voice to be functional.
+7. Edit your agent as above to use the new voice:
+```
+voice: voice/myvoice
+```
+
+You can upload a voice in a private location if you like, just set the right path to it, for example:
+```
+voice: yourname/myvoice
+```
 
 ## Memory
 
@@ -536,7 +601,7 @@ digraph ZAI {
     node [shape=box, style=filled, fillcolor="#A7C7E7", fontname="Helvetica"]
 
     "Z.AI" [label=<<b>Z.AI</b>>]
-    "GLM" [label=<<b>GLM 4.6</b><br/><font point-size="10">Glimi</font><br/><font point-size="8">205K context</font><br/><font point-size="8">Reasoning, coding</font>>]
+    "GLM" [label=<<b>Glimi</b><br/><font point-size="10">GLM 4.6</font><br/><font point-size="8">205K context</font><br/><font point-size="8">Reasoning, coding</font>>]
 
     "Z.AI" -> "GLM"
 }
@@ -551,12 +616,13 @@ digraph StabilityAI {
     node [shape=box, style=filled, fillcolor="#FFC2EB", fontname="Helvetica"]
 
     "Stability AI" [label=<<b>Stability AI</b>>]
-    "SDXL" [label=<<b>SDXL</b><br/><font point-size="10">Stable Diffusion XL</font><br/><font point-size="8"></font>>]
-    "PonyXL" [label=<<b>PonyXL</b><br/><font point-size="10">Pony Diffusion V6 XL</font><br/><font point-size="8"></font>>]
-    "Jily" [label=<<b>Jily</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8"></font>>]
-    "Hily" [label=<<b>Hily ...</b><br/><font point-size="10">Hello World XL</font><br/><font point-size="8"></font>>]
-    "Poni" [label=<<b>Poni</b><br/><font point-size="10">AutismMix Confetti</font><br/><font point-size="8"></font>>]
-    "Coni" [label=<<b>Coni ...</b><br/><font point-size="10">CyberRealistic Pony</font><br/><font point-size="8"></font>>]
+    "SDXL" [label=<<b>SDXL</b><br/><font point-size="10">Stable Diffusion XL</font>>]
+    "PonyXL" [label=<<b>PonyXL</b><br/><font point-size="10">Pony Diffusion V6 XL</font>>]
+    "Jily" [label=<<b>Jily</b><br/><font point-size="10">Juggernaut XL</font>>]
+    "Hily" [label=<<b>Hily ...</b><br/><font point-size="10">Hello World XL</font>>]
+    "Poni" [label=<<b>Poni</b><br/><font point-size="10">AutismMix Confetti</font>>]
+    "Coni" [label=<<b>Coni ...</b><br/><font point-size="10">CyberRealistic Pony</font>>]
+    "Irus" [label=<<b>Irus</b><br/><font point-size="10">Illustrious Realism</font>>]
 
     "Stability AI" -> "SDXL"
     "SDXL" -> "PonyXL"
@@ -564,6 +630,28 @@ digraph StabilityAI {
     "SDXL" -> "Hily"
     "PonyXL" -> "Poni"
     "PonyXL" -> "Coni"
+    "SDXL" -> "Irus"
+}
+```
+
+### Other Art Models
+
+```dot-
+digraph ArtModels {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#FFEBC2", fontname="Helvetica"]
+
+    "ArtModels" [label=<<b>Art Models</b>>]
+    "Krea2" [label=<<b>Krea2</b><br/><font point-size="10">Krea 2</font>>]
+    "Krie" [label=<<b>Krie</b><br/><font point-size="10">Krea 2 Identity Edit</font>>]
+    "F2K" [label=<<b>F2K</b><br/><font point-size="10">Flux 2 Klein</font>>]
+    "Anima" [label=<<b>Anima</b><br/><font point-size="10">Anima</font>>]
+
+    "ArtModels" -> "Krea2"
+    "ArtModels" -> "Krie"
+    "ArtModels" -> "F2K"
+    "ArtModels" -> "Anima"
 }
 ```
 
@@ -916,14 +1004,23 @@ Input and output costs are measured in US dollars per million tokens.
 
 #### Image Models (SFW)
 
-| Creator       | Model               | Name | Description                                                                                                     |
-|---------------|---------------------|------|-----------------------------------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images                            |
-| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                          |
-| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for anime-style art, NSFW tendencies                             |
-| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies |
+| Creator          | Model                | Name  | Description                                                                                                              |
+|------------------|----------------------|-------|--------------------------------------------------------------------------------------------------------------------------|
+| RunDiffusion     | Juggernaut XL v9     | Jily  | The most popular model based on SDXL, for high-quality realistic and artistic images                                     |
+| LEOSAM           | HelloWorld XL        | Hily  | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                                   |
+| Autismix anon    | AutismMix Confetti   | Poni  | Mix of pony with "some stuff", a popular model for anime-style art, NSFW tendencies                                      |
+| Cyberdelia       | CyberRealistic Pony  | Coni  | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies          |
+| Krea AI          | Krea 2 Turbo         | Krea2 | The fastest medium quality Krea 2 model, a strong modern model                                                           |
+| conradlocke      | Krea 2 Identity Edit | Krie  | Instruction-based, identity-preserving image editing for Krea 2                                                          |
+| FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K   | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
+| CircleStone Labs | Anima Turbo          | Anima | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
 
-* Note that all models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity.
+* Note that most models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity. Anima should be prompted with "safe".
+
+There are a few variant art model agents with extra features:
+
+- Krea - Krea2, but translates Pony-style prompts to work better
+- Klein - F2K, but translates Pony-style prompts to work better
 
 #### Censorship
 
@@ -934,6 +1031,8 @@ OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with most NSFW topics.
 Llama 3: Can engage with any NSFW topic, practically uncensored, but may be reluctant by default.
 Venice Uncensored: Fully uncensored, or as close as it gets.
+Krea2: Avoids nudity without a NSFW LoRA.
+F2K: Avoids nudity without a NSFW LoRA.
 
 If you notice any unexpected censorship, please report it to us. Many issues can be fixed by adjusting character prompts.
 
@@ -1065,6 +1164,18 @@ This is a large screen which takes up the bottom half of the display, and includ
 | <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
 | <i class="bi-arrows-fullscreen"></i> |  | Full-screen | Make chat area full-screen (off, whole window, full-screen) |
 
+### <i class="bi bi-headset"></i> Voice Options
+
+| Icon | Shortcut | Setting | Description |
+|---|---|---|---|
+| <i class="bi bi-sun-fill i20"></i> |  | Full Voice Chat | Enable / disable all voice chat options together |
+| <i class="bi bi-volume-down i20"></i> |  | Text to Speech | Enable speaking messages (by selecting them) |
+| <i class="bi bi-play i20"></i> |  | Auto Play | Auto-speak new messages, and continuous replay |
+| <i class="bi bi-mic i20"></i> |  | Speech to Text | Enable speech to text on recorded audio |
+| <i class="bi bi-soundwave i20"></i> |  | Voice Activity Detection | VAD: automatically record spoken audio for text to speech |
+| <i class="bi bi-voicemail i20"></i> |  | Pass Through | Keep VAD recorded audio for replay. May be privacy concerns. |
+| <i class="bi bi-send i20"></i> |  | Auto Send | Auto-send messages from VAD after a short time |
+
 ### <i class="bi bi-gear"></i> Room Options
 
 | Icon | Shortcut | Name | Description |
@@ -1090,15 +1201,18 @@ This is a large screen which takes up the bottom half of the display, and includ
 
 ## Editor Controls
 
-When editing a room or file, these controls appear:
+When editing a room, agent or file, these controls appear:
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
 | <i class="bi-indent"></i> | `Alt+T` | Indent | Insert a tab or indent the selected text. |
 | <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Remove a tab or dedent the selected text. |
 | <i class="bi-arrow-counterclockwise"></i> |  | Reset | Revert changes. |
-| <i class="bi-trash3"></i> |  | Clear | Clear the contents of the editor. |
+| <i class="bi-trash3"></i> |  | Delete | Delete the file. |
 | <i class="bi-check-lg"></i> |  | Save | Save changes. |
+| <i class="bi-lightbulb-off"></i> <i class="bi-lightbulb"></i> |  | Advanced | Switch between the simple and advanced agent editor. |
+
+With the advanced agent editor you can edit the agent YAML file directly, and set options that aren't available in the simple editor, but if you mess up the syntax the agent will no longer work. Some parts need to be indented with exactly two spaces. The developer can fix broken agent files for you!
 
 ## Image Viewing Mode
 

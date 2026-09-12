@@ -222,22 +222,26 @@ Input and output costs are measured in US dollars per million tokens.
 
 #### Image Models
 
-| Creator       | Model               | Name | Description                                                                                                         |
-|---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
-| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
-| Autismix anon | AutismMix Confetti  | Poni | Mix of Pony with "some stuff", a popular model for anime-style art                                                  |
-| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic Pony model         |
-| SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Jily, with more SDXL than Pony                     |
-| SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
-| Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
-| Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
-| coyotte       | Lustify V6 OLT      | Lusy | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                         |
-| pornworksai   | PornWorks Bad Boys  | Bboy | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics                                 |
-| ffjggrtbjibv  | CocksXL             | Coci | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus     |
-| nutbutter     | bigasp_v20          | Basp | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity                  |
-| aria1th261    | IllustriousXL       | Ilus | SFW&NSFW anime/cartoons, more advanced than Poni                                                                    |
-| klaabu        | Illustrious Realism | Irus | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni                                                            |
+| Creator          | Model                | Name  | Description                                                                                                              |
+|------------------|----------------------|-------|--------------------------------------------------------------------------------------------------------------------------|
+| RunDiffusion     | Juggernaut XL v9     | Jily  | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica         |
+| LEOSAM           | HelloWorld XL        | Hily  | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica       |
+| Autismix anon    | AutismMix Confetti   | Poni  | Mix of Pony with "some stuff", a popular model for anime-style art                                                       |
+| Cyberdelia       | CyberRealistic Pony  | Coni  | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic Pony model              |
+| Krea AI          | Krea 2 Turbo         | Krea2 | The fastest medium quality Krea 2 model, a strong modern model                                                           |
+| conradlocke      | Krea 2 Identity Edit | Krie  | Instruction-based, identity-preserving image editing for Krea 2                                                          |
+| FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K   | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
+| CircleStone Labs | Anima Turbo          | Anima | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
+| coyotte          | Lustify V6 OLT       | Lusy  | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                              |
+| SubtleShader     | Big Love XL          | Bigi  | State of the art erotic art, realistic, with more SDXL than Pony                                                         |
+| SubtleShader     | Big Love Pony        | Pigi  | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                      |
+| Stable Yogi      | Babes                | Boni  | This pony-based model is tuned to render beautiful women and erotic art                                                  |
+| pornworksai      | PornWorks Bad Boys   | Bboy  | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics                                      |
+| ffjggrtbjibv     | CocksXL              | Coci  | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus          |
+| nutbutter        | bigasp_v20           | Basp  | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity                       |
+| Tauron           | Eros Ultima Hybrid   | Yoni  | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                                    |
+| klaabu           | Illustrious Realism  | Irus  | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni                                                                 |
+| aria1th261       | IllustriousXL        | Ilus  | SFW&NSFW anime/cartoons, more advanced than Poni, but not working correctly!                                             |
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
 
@@ -246,3 +250,14 @@ Most of our other image gen models are based primarily on Pony XL, with less und
 They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
 
 The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.
+
+There are a few variant art model agents with extra features:
+
+- Krea - Krea2, but translates Pony-style prompts to work better
+- Klein - F2K, but translates Pony-style prompts to work better
+- Xrea - Krea, but includes a LoRA for NSFW
+- Xlein - Klein, but includes a LoRA for NSFW
+- Xrie - Krie, but includes a LoRA for NSFW
+- Nude - Xlein, prompted to nudify an image (recommended)
+- KNude - Xrea, prompted to nudify an image
+- KNude2 - Krea with an alternative NSFW LoRA, prompted to nudify an image
