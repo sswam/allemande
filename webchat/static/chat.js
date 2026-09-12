@@ -2908,6 +2908,10 @@ let myvad = null;
 let myvad_init_promise = null;  // cope with concurrent calls to vad_start_or_pause
 let vad_typing = false;
 let vad_disable_while_typing_timeout = null;
+const vad_disable_while_typing_interval = 1000;
+const voice_send_interval = 2000;
+let voice_send_timeout = null;
+let voice_send_pending = false;
 
 const vad_options = {
   redemptionMs: 1400,
@@ -2915,14 +2919,22 @@ const vad_options = {
   onSpeechStart: () => {
     console.log("Speech start detected");
     send_to_room_iframe({ type: "vad_active", active: true });
+    if (voice_send_timeout) {
+      defer_voice_send_timeout();
+    }
   },
   onSpeechEnd: (audio) => {
     console.log("Speech end detected");
     send_to_room_iframe({ type: "vad_active", active: false });
+    if (voice_send_timeout) {
+      defer_voice_send_timeout();
+    }
     vad_trim_encode_and_upload_audio(audio);  // don't wait
   },
   onVADMisfire: () => {
     send_to_room_iframe({ type: "vad_active", active: false });
+    if (voice_send_pending)
+      start_voice_send_timeout();
   },
   onnxWASMBasePath:
     "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
@@ -2949,7 +2961,7 @@ async function vad_start_or_pause() {
   } else {
     console.log("VAD paused");
     myvad.pause();
-    clearTimeout(voice_send_timeout);
+    clear_voice_send_timeout();
   }
 }
 
@@ -2962,8 +2974,6 @@ function content_focus_changed() {
   vad_start_or_pause();
 }
 
-const vad_disable_while_typing_interval = 1000;
-
 function vad_disable_while_typing() {
   vad_typing = true;
   vad_start_or_pause();
@@ -2974,9 +2984,6 @@ function vad_disable_while_typing() {
     vad_start_or_pause();
   }, vad_disable_while_typing_interval);
 }
-
-const voice_send_interval = 2000;
-let voice_send_timeout = null;
 
 async function vad_trim_encode_and_upload_audio(audio) {
   // audio is a Float32Array of audio samples at sample rate 16000
@@ -3002,14 +3009,35 @@ async function vad_trim_encode_and_upload_audio(audio) {
   const added_text = await add_upload_file_link(upload_file(mediaBlob, fileName, speech_to_text));
 
   // auto-send after a timeout, if enabled; also clear this on typing or losing focus
-  if (!added_text || !view_options.voice_send)
+  if (!(added_text || voice_send_pending))
+    return;
+  voice_send_pending = false;
+  if (!view_options.voice_send)
     return;
 
+  start_voice_send_timeout();
+}
+
+function start_voice_send_timeout() {
   clearTimeout(voice_send_timeout);
   voice_send_timeout = setTimeout(() => {
     send();
     voice_send_timeout = null;
   }, voice_send_interval);
+  voice_send_pending = false;
+}
+
+function clear_voice_send_timeout() {
+  clearTimeout(voice_send_timeout);
+  voice_send_timeout = null;
+  voice_send_pending = false;
+}
+
+function defer_voice_send_timeout() {
+  console.log("deferring auto-send until more speech has been collected");
+  clearTimeout(voice_send_timeout);
+  voice_send_timeout = null;
+  voice_send_pending = true;
 }
 
 function vad_trim_audio(audio) {
