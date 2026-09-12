@@ -21,7 +21,8 @@ let overlay_fullscreen = false;
 
 let simple = true;
 
-let voice_delay = 500;
+let voice_delay_between_messages = 500;
+let voice_delay_between_clips = 200;
 
 export let view_options = {
   images: 1,
@@ -89,7 +90,7 @@ function offline() {
     status.innerText += " disconnected; reload!";
   show(status);
   console.log("will reload on event");
-  for (const evname of ["mouseenter", "mousemove", "click", "touchstart"]) 
+  for (const evname of ["mouseenter", "mousemove", "click", "touchstart"])
     document.body.addEventListener(evname, reload);
 }
 
@@ -935,6 +936,10 @@ async function click(ev) {
   }
   */
 
+  // stop audio on click anywhere, if a little time has elapsed
+  if (Date.now() > playing_audio_start_time + 500)
+    stop_playing_audio();
+
   message_menu_click(ev);
 
   // copy username from label?
@@ -1090,6 +1095,8 @@ async function handle_message(ev) {
     scroll_home_end(ev.data.p);
   } else if (ev.data.type === "scroll_pages") {
     scroll_pages(ev.data.d);
+  } else if (ev.data.type === "vad_active") {
+    vad_active_duck_volume(ev.data.active);
   }
   if (file_type === "room" && !["scroll_home_end", "scroll_pages"].includes(ev.data.type))
     scroll_restore_2();
@@ -1448,21 +1455,21 @@ div.image:has(img:not(${finalSelector})) { display: none !important; }
 //         new RegExp(`(^|\\s)${key}($|\\s)`, 'g'), `$1${config.FILTER_EXPANSIONS[key]}$2`
 //     );
 //   }
-// 
+//
 //   // console.log("update_image_filter:", filterString);
-// 
+//
 // 	const existingStyle = document.getElementById('image-filter');
-// 
+//
 // 	const CSSRules = filter_string_to_CSS(filterString.toLowerCase());
-// 
+//
 // 	// console.log(CSSRules);
-// 
+//
 // 	const style = document.createElement('style');
 // 	style.id = 'image-filter';
 // 	style.textContent = CSSRules;
-// 
+//
 // 	document.head.appendChild(style);
-// 
+//
 // 	// remove old filter after adding new, to avoid flashes of unwanted content
 // 	if (existingStyle)
 // 		existingStyle.remove();
@@ -1771,7 +1778,7 @@ function message_menu_click(event) {
 
   // Check if the user clicked inside a message
   const message = event.target.closest(".message");
-  
+
   // Scenario 2: Clicked inside a message
   if (message) {
     // If the menu is already open on THIS message, close it
@@ -1785,7 +1792,7 @@ function message_menu_click(event) {
     }
     return;
   }
-  
+
   // Scenario 3: Clicked anywhere else outside
   hide_message_menu();
 }
@@ -1809,7 +1816,18 @@ async function msg_tts_click(event) {
 }
 
 let playing_audio = null;
+let playing_audio_start_time = 0;
 let playing_message_id = null;
+let currentAudioVolumeTarget = 1.0;
+let volumeFadeInterval = null;
+
+function stop_playing_audio() {
+  if (!playing_audio)
+    return;
+  playing_audio.pause();
+  playing_audio = null;
+  playing_message_id = null;
+}
 
 async function play_message_audio($message, regen) {
   const id = await get_message_id($message);
@@ -1832,24 +1850,23 @@ async function play_message_audio($message, regen) {
 
   // If the same message is already playing, stop it and clear globals
   if (playing_message_id === id && playing_audio) {
-    playing_audio.pause();
-    playing_audio = null;
-    playing_message_id = null;
+    stop_playing_audio();
     return;
   }
 
   // If a different message is playing, stop it first
   if (playing_audio) {
-    playing_audio.pause();
-    playing_audio = null;
-    playing_message_id = null;
+    stop_playing_audio();
   }
 
   // if the message has audio elements, play them in turn instead of doing TTS
   const audios = $message.querySelectorAll("audio");
   if (audios.length) {
     playing_message_id = id;
-    if (!await play_audio_sequence(audios))
+    const continue_playing = await play_audio_sequence(audios);
+    playing_audio = null;
+    playing_message_id = null;
+    if (!continue_playing)
       return;
   } else {
     // no audio elements?  do TTS
@@ -1878,10 +1895,46 @@ async function play_message_audio($message, regen) {
   // continue playing the next message
 
   // Wait before the next audio
-  if (voice_delay)
-    await $wait(voice_delay);
+  if (voice_delay_between_messages)
+    await $wait(voice_delay_between_messages);
 
   play_message_audio($message_next);  // don't pass regen through
+}
+
+function vad_active_duck_volume(active) {
+  // console.log("vad_active_duck_volume", active);
+  if (active) {
+    setGlobalVolume(0.15, 150);
+  } else {
+    setGlobalVolume(1.0, 300);
+  }
+}
+
+function setGlobalVolume(targetVolume, durationMs = 150) {
+  // console.log("setGlobalVolume", targetVolume);
+  currentAudioVolumeTarget = targetVolume;
+
+  if (!playing_audio)
+    return;
+
+  clearInterval(volumeFadeInterval);
+  const startVolume = playing_audio.volume;
+  const steps = 8;
+  const stepTime = durationMs / steps;
+  const volumeDelta = (targetVolume - startVolume) / steps;
+  let currentStep = 0;
+
+  volumeFadeInterval = setInterval(() => {
+    currentStep++;
+    if (playing_audio) {
+      playing_audio.volume = Math.max(0, Math.min(1, startVolume + (volumeDelta * currentStep)));
+    }
+    if (currentStep >= steps) {
+      clearInterval(volumeFadeInterval);
+      if (playing_audio)
+        playing_audio.volume = targetVolume;
+    }
+  }, stepTime);
 }
 
 function find_next_visible_message($message) {
@@ -1917,8 +1970,11 @@ async function precache_message_audio($message, delay) {
 }
 
 async function play_audio_sequence(audioElements) {
-  for (let audio of audioElements) {
+  for (let i = 0; i < audioElements.length; i++) {
+    const audio = audioElements[i];
+    playing_audio_start_time = Date.now();
     playing_audio = audio;
+    audio.volume = currentAudioVolumeTarget;
     let isPaused = false;
 
     // Play the current audio and wait for it to either finish or pause
@@ -1945,9 +2001,10 @@ async function play_audio_sequence(audioElements) {
     if (isPaused)
       return false;
 
-    // Wait before the next audio
-    if (voice_delay)
-      await $wait(voice_delay);
+    // Wait before the next audio, but not after the last one
+    const isLastElement = i === audioElements.length - 1;
+    if (voice_delay_between_clips && !isLastElement)
+      await $wait(voice_delay_between_clips);
   }
   return true;
 }
@@ -1959,7 +2016,9 @@ function handle_media_error(event) {
 
 async function play_audio_from_url(url, id) {
   const audio = new Audio(url);
+  playing_audio_start_time = Date.now();
   playing_audio = audio;
+  audio.volume = currentAudioVolumeTarget;
   playing_message_id = id;
 
   return new Promise((resolve) => {
@@ -1987,14 +2046,13 @@ async function play_audio_from_url(url, id) {
       playing_audio_clear(id);
       resolve(true);
     });
-
   });
 }
 
 async function precache_url(url) {
   try {
     const response = await fetch(url);
-    
+
     if (!response.ok)
       console.warn(`Pre-cache failed for ${url}: Status ${response.status}`);
   } catch (error) {
@@ -2006,6 +2064,13 @@ function playing_audio_clear(id) {
   if (playing_message_id == id) {
     playing_audio = null;
     playing_message_id = null;
+  }
+}
+
+// stop playing audio for a message if it is removed
+export function message_removed(id, $el) {
+  if (playing_message_id == id) {
+    playing_audio.pause();
   }
 }
 

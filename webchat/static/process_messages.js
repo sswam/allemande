@@ -587,6 +587,7 @@ function remove(messageId, edit = false) {
     if (!$el.classList.contains("message"))
       continue;
     message = $el;
+    room.message_removed(messageId, $el);
   }
   if (!message) {
     console.error(`remove: message ${messageId} not found`);

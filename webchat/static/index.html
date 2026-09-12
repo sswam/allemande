@@ -235,8 +235,8 @@
 				<button id="voice_auto" title="auto-play messages with text to speech">auto-play</button>
 				<button id="voice_stt" title="speech to text">stt</button>
 				<button id="voice_pass_through" title="pass through user audio">pass through</button>
-				<button id="voice_vad" class="dev" title="voice activity detection">vad</button>
-				<button id="voice_send" class="dev" title="auto-send spoken messages after a delay">auto-send</button>
+				<button id="voice_vad" title="voice activity detection">vad</button>
+				<button id="voice_send" title="auto-send spoken messages after a delay">auto-send</button>
 				<!--<input id="voice_voice" placeholder="voice" title="text to speech voice">-->
 			</div>
 			<h2><span id="room_opt"></span> Room Options</h2>
@@ -334,6 +334,8 @@
 <script src="resizer.js"></script>
 <script src="debug.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prompts-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.wasm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.29/dist/bundle.min.js"></script>
 <script>
 (async () => {
 	await Promise.all([

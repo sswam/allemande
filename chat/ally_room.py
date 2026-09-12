@@ -1055,16 +1055,19 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=""
             alt = await ally_stt.convert_audio_to_text(file_path)
         elif to_text and medium == "image":
             alt = await image_to_text.convert_image_to_text(file_path)  # TODO image_to_text
+        else:
+            alt = alt or stem
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Error converting to text: %r, %r, %r", medium, file_path, e)
-        to_text = False
+        alt = ""
 
-    if temp_upload:
+    if temp_upload or (to_text and medium == "audio" and alt == ""):
         file_path.unlink()
 
     # alt text
-    alt = alt or stem
     alt = re.sub(r"\s+", " ", alt)
+
+    logger.info("upload: medium: %s, to_text: %s", medium, to_text)
 
     # markdown to embed or link to the file
     if medium == "image":
@@ -1072,7 +1075,8 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=""
         markdown_tag = f"![{alt}]({relurl})"
     elif medium == "audio" and to_text:
         markdown_tag = ee(alt, quote=False)
-        if not temp_upload:
+        logger.info("speech to text: alt: %s", alt)
+        if alt and not temp_upload:
             markdown_tag += " " + av_element_html("audio", stem, relurl, controls=False)
     elif medium == "audio":
         if temp_upload:
@@ -1120,4 +1124,5 @@ def av_element_html(tag, label, url, controls=True):
     """Return an audio or video element."""
 
     controls_attr = " controls" if controls else ""
-    return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" {controls_attr}></{tag}>'
+    return f'<{tag} src="{ee(url)}"{controls_attr}></{tag}>'
+    # return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}"{controls_attr}></{tag}>'

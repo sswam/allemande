@@ -1,3 +1,5 @@
+import { Output, WebMOutputFormat, BufferTarget, EncodedAudioPacketSource, EncodedPacket } from 'https://cdn.jsdelivr.net/npm/mediabunny@latest/+esm';
+
 let config = null;  // set to modules.config early in init
 const embed = window.parent !== window.self;
 
@@ -2092,6 +2094,11 @@ export async function add_upload_file_link(promise) {
     return false;
   const { name, url, medium, markdown } = data;
 
+  console.log(`Markdown [${markdown}]`);
+
+  if (!markdown)
+    return false;
+
   if (/\S$/.test($content.value)) {
     $content.value += " ";
   }
@@ -2885,6 +2892,8 @@ function calc_visual_age_from_age(age) {
   if (!is_number(age) || age < 0)
     return "";
   const word =
+    age >= 60 ? "old adult" :
+    age >= 30 ? "mature adult" :
     age >= 18 ? "adult" :
     age >= 13 ? "teenager" :
     age >= 4 ? "child" :
@@ -2893,6 +2902,188 @@ function calc_visual_age_from_age(age) {
   return `${word} ${age} years old`;
 }
 
+// voice activity detection (VAD) --------------------------------------------
+
+let myvad = null;
+let myvad_init_promise = null;  // cope with concurrent calls to vad_start_or_pause
+let vad_typing = false;
+let vad_disable_while_typing_timeout = null;
+
+const vad_options = {
+  redemptionMs: 1400,
+  preSpeechPadMs: 800,
+  onSpeechStart: () => {
+    console.log("Speech start detected");
+    send_to_room_iframe({ type: "vad_active", active: true });
+  },
+  onSpeechEnd: (audio) => {
+    console.log("Speech end detected");
+    send_to_room_iframe({ type: "vad_active", active: false });
+    vad_trim_encode_and_upload_audio(audio);  // don't wait
+  },
+  onVADMisfire: () => {
+    send_to_room_iframe({ type: "vad_active", active: false });
+  },
+  onnxWASMBasePath:
+    "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
+  baseAssetPath:
+    "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.29/dist/",
+};
+
+async function init_myvad() {
+  if (myvad_init_promise)
+    return await myvad_init_promise;
+  myvad_init_promise = vad.MicVAD.new(vad_options);
+  myvad = await myvad_init_promise;
+}
+
+async function vad_start_or_pause() {
+  const vad_should_be_on = Boolean(view_options.voice_vad && is_input_active_and_focused() && !vad_typing);
+  const vad_is_on = Boolean(myvad && myvad.listening);
+  if (vad_is_on == vad_should_be_on)
+    return;
+  if (vad_should_be_on) {
+    console.log("VAD listening");
+    await init_myvad();
+    myvad.start();
+  } else {
+    console.log("VAD paused");
+    myvad.pause();
+    clearTimeout(voice_send_timeout);
+  }
+}
+
+function is_input_active_and_focused() {
+  // Returns true ONLY if the element is active AND the browser window is focused
+  return $content === document.activeElement && document.hasFocus();
+}
+
+function content_focus_changed() {
+  vad_start_or_pause();
+}
+
+const vad_disable_while_typing_interval = 1000;
+
+function vad_disable_while_typing() {
+  vad_typing = true;
+  vad_start_or_pause();
+  clearTimeout(vad_disable_while_typing_timeout);
+  vad_disable_while_typing_timeout = setTimeout(() => {
+    vad_disable_while_typing_timeout = null;
+    vad_typing = false;
+    vad_start_or_pause();
+  }, vad_disable_while_typing_interval);
+}
+
+const voice_send_interval = 2000;
+let voice_send_timeout = null;
+
+async function vad_trim_encode_and_upload_audio(audio) {
+  // audio is a Float32Array of audio samples at sample rate 16000
+  // const wavBuffer = vad.utils.encodeWAV(audio);
+  //
+  // // Create a playable audio URL or Blob
+  // const mediaBlob = new Blob([wavBuffer], { type: "audio/wav" });
+  const trimmed_audio = vad_trim_audio(audio);
+  const mediaBlob = await encodeToWebM(trimmed_audio);
+  // const audioUrl = URL.createObjectURL(mediaBlob);
+  console.log("encoded audio to WebM:", mediaBlob);
+
+  // a little dup code from record.js
+  let speech_to_text = "";
+  if (chat.view_options.voice_pass_through) {
+      speech_to_text = "stt,pass";
+  } else {
+      speech_to_text = "stt";
+  }
+
+  const fileName = `${chat.user}_audio.webm`;
+
+  const added_text = await add_upload_file_link(upload_file(mediaBlob, fileName, speech_to_text));
+
+  // auto-send after a timeout, if enabled; also clear this on typing or losing focus
+  if (!added_text || !view_options.voice_send)
+    return;
+
+  clearTimeout(voice_send_timeout);
+  voice_send_timeout = setTimeout(() => {
+    send();
+    voice_send_timeout = null;
+  }, voice_send_interval);
+}
+
+function vad_trim_audio(audio) {
+  const sampleRate = 16000;
+
+  // 2. Define safety "fudge factor" cushions (in milliseconds)
+  const frontCushionMs = 200; // Leave 200ms of context at the start
+  const tailCushionMs = 250;  // Leave 250ms of context at the end
+
+  // 3. Calculate sample positions to slice
+  // Calculate how many samples to strip off the start
+  const msToTrimFront = Math.max(0, vad_options.preSpeechPadMs - frontCushionMs);
+  const startSample = Math.floor((msToTrimFront / 1000) * sampleRate);
+
+  // Calculate how many samples to strip off the end
+  const msToTrimTail = Math.max(0, vad_options.redemptionMs - tailCushionMs);
+  const tailSamplesToTrim = Math.floor((msToTrimTail / 1000) * sampleRate);
+  const endSample = Math.max(startSample, audio.length - tailSamplesToTrim);
+
+  // 4. Extract the cleanly isolated audio window instantly using subarray
+  const trimmedAudio = audio.subarray(startSample, endSample);
+
+  return trimmedAudio;
+}
+
+async function encodeToWebM(float32Array, sampleRate = 16000) {
+  // 1. Prepare the Mediabunny output targets
+  const bufferTarget = new BufferTarget();
+
+  const output = new Output({
+    format: new WebMOutputFormat(),
+    target: bufferTarget
+  });
+
+  const audioSource = new EncodedAudioPacketSource("opus");
+  output.addAudioTrack(audioSource);
+
+  await output.start(); // Init the container format
+
+  // 2. Configure the browser's native hardware/low-level encoder
+  const encoder = new AudioEncoder({
+    output: async (chunk, metadata) => {
+      // Feed WebCodecs binary chunks directly to the muxer layout
+      await audioSource.add(EncodedPacket.fromEncodedChunk(chunk), metadata);
+    },
+    error: (e) => console.error("WebCodecs Error:", e)
+  });
+
+  encoder.configure({
+    codec: 'opus', // High-fidelity speech compression
+    sampleRate: sampleRate,
+    numberOfChannels: 1,
+    bitrate: 32000 // Small file footprint, standard for speech
+  });
+
+  // 3. Wrap raw Float32Array data inside an AudioData object
+  const audioData = new AudioData({
+    format: 'f32',
+    sampleRate: sampleRate,
+    numberOfFrames: float32Array.length,
+    numberOfChannels: 1,
+    timestamp: 0,
+    data: float32Array
+  });
+
+  // 4. Fire the encoder and force an absolute drain instantly
+  encoder.encode(audioData);
+  await encoder.flush();
+  await output.finalize();
+
+  // 5. Fetch the final compressed webm file out of memory
+  const webmBuffer = bufferTarget.buffer;
+  return new Blob([webmBuffer], { type: 'audio/webm' });
+}
 
 // view options --------------------------------------------------------------
 
@@ -3155,6 +3346,9 @@ async function view_options_apply() {
 
   // show agent_new
   show("agent_new", type === "dir" && room.match(/(^|\/)agents\//));
+
+  // turn VAD on or off
+  vad_start_or_pause();
 
   // console.log("view options applied:", view_options);
 
@@ -3447,6 +3641,7 @@ function show_theme_name() {
 
   clearTimeout(hide_theme_timeout);
   hide_theme_timeout = setTimeout(() => {
+    hide_theme_timeout = null;
     overlay.remove();
     overlay = null;
   }, 1000);
@@ -4826,6 +5021,17 @@ export async function init() {
   $content.addEventListener('dragleave', content_dragleave);
   $content.addEventListener('drop', content_drop);
   $content.addEventListener('paste', content_paste);
+
+  // focus and blur handlers for VAD
+  $content.addEventListener('focus', content_focus_changed);
+  $content.addEventListener('blur', content_focus_changed);
+  window.addEventListener('focus', content_focus_changed);
+  window.addEventListener('blur', content_focus_changed);
+
+  // disable VAD while typing
+  $on($content, "input", vad_disable_while_typing);
+  $on($content, "keypress", vad_disable_while_typing);  // for arrow keys, etc
+  $on($content, "click", vad_disable_while_typing);
 
   if (isMobile)
     setup_view_option_swipe();
