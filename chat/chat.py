@@ -234,6 +234,26 @@ def context_remove_image_details(context: list[str]) -> list[str]:
     return context
 
 
+def remove_audio_tags(content: str) -> str:
+    """Remove audio tags from the content."""
+    modified = re.sub(r" *<audio\b.*?>.*?</audio> *", " ", content, flags=re.IGNORECASE)
+    if modified != content:
+        modified = re.sub(" +$", "", modified, flags=re.MULTILINE)
+        logger.debug("Removed audio tags from message: original: %s", content)
+        logger.debug("  modified: %s", modified)
+    return modified
+
+
+def context_remove_audio_tags(context: list[str]) -> list[str]:
+    """Remove image details from the context."""
+
+    n = len(context)
+    for i in range(n - 1, -1, -1):
+        context[i] = remove_audio_tags(context[i])
+
+    return context
+
+
 def history_remove_thinking_sections(history: list[dict[str, Any]], agent: Agent | None):
     """Remove "thinking" sections from the history."""
     # Remove any "thinking" sections from the context

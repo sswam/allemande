@@ -215,6 +215,10 @@ async def local_agent(c, agent, _query) -> str:
     if not agent.get("see_alt"):
         context = chat.context_remove_image_details(context)
 
+    # remove audio tags
+    if not agent.get("see_audio"):
+        context = chat.context_remove_audio_tags(context)
+
     # Apply filter_in filters
     logger.debug("Applying input filters, query before: %r", context[-1] if context else None)
     context = filters.apply_filters_in(agent, context)
