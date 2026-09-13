@@ -46,9 +46,9 @@ LOAD_EAGER = False  # load tokenizer at startup
 SUMMARY_PROMPT_DEFAULT = "summarize what you'd like to remember from this please"
 AGENT_CONTEXT_DEFAULT = 30
 
-TTS_VOICE_DEFAULT = "voice/female"
-TTS_VOICE_HUMAN_DEFAULT = "voice/male"
-TTS_VOICE_NARRATION = "voice/male"
+TTS_VOICE_DEFAULT = "voice/female_au"
+TTS_VOICE_HUMAN_DEFAULT = "voice/male_au"
+TTS_VOICE_NARRATION = "voice/male_uk"
 TTS_TIMEOUT = 60  # 1 minute
 STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes

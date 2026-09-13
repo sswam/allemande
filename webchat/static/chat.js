@@ -2751,10 +2751,26 @@ async function edit_agent_reset() {
   $id("ea_visual_person").value = blank_to_dash(agent.visual?.person);
   $id("ea_visual_clothes").value = blank_to_dash(agent.visual?.clothes);
   $id("ea_visual_emo").value = blank_to_dash(agent.visual?.emo);
+  $id("ea_voice").value = blank_to_dash(ea_voice_abbrev(agent.voice));
   const visual_age = $id("ea_visual_age").value = blank_to_dash(agent.visual?.age);
 
   const show_visual_age = visual_age !== calc_visual_age_from_age(age);
   show($id("ea_visual_age"), show_visual_age);
+}
+
+function ea_voice_abbrev(voice) {
+  if (!voice)
+    return voice;
+  voice = voice.replace(/^voice\//, "");
+  return voice;
+}
+
+function ea_voice_expand(voice) {
+  if (!voice)
+    return voice;
+  if (!voice.match(/\/|,/))
+    voice = "voice/" + voice;
+  return voice;
 }
 
 function blank_to_dash(s) {
@@ -2869,6 +2885,7 @@ async function edit_agent_update_text() {
   agent.visual.person = dash_to_blank($id("ea_visual_person").value);
   agent.visual.clothes = dash_to_blank($id("ea_visual_clothes").value);
   agent.visual.emo = dash_to_blank($id("ea_visual_emo").value);
+  agent.voice = ea_voice_expand(dash_to_blank($id("ea_voice").value));
 
   if ($id("ea_visual_age").classList.contains("hidden")) {
     agent.visual.age = dash_to_blank(calc_visual_age_from_age(agent.age));
