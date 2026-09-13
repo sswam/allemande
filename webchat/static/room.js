@@ -923,6 +923,10 @@ function image_click($el, ev) {
 }
 
 async function click(ev) {
+  // stop audio on click anywhere, if a little time has elapsed
+  if (Date.now() > playing_audio_start_time + 500)
+    stop_playing_audio();
+
   if (!$messages.contains(ev.target))
     return;
 
@@ -935,10 +939,6 @@ async function click(ev) {
     select_message($message, ev.shiftKey, ev.ctrlKey);
   }
   */
-
-  // stop audio on click anywhere, if a little time has elapsed
-  if (Date.now() > playing_audio_start_time + 500)
-    stop_playing_audio();
 
   message_menu_click(ev);
 
