@@ -321,3 +321,5 @@ card:
 #   ### Chat (no thinking or prompt)
 #   What do you want to draw?
 # If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. Use solo, [person "$NAME" ...] for yourself normally. But depending on the context, you can draw a different subject, not necessarily yourself!
+
+voice: voice/female_us_high

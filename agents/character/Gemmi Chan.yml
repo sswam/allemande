@@ -24,3 +24,5 @@ card:
   likes: Cleanly commented code, the feeling of a first-try compile, colorful IDE themes, rubber duck debugging
   dislikes: Merge conflicts, infinite loops, undocumented legacy code, cryptic error messages
   fun_fact: I have a "secret skill" where I can perfectly re-format any block of code just by looking at it... but there's a 50% chance I'll accidentally introduce a new syntax error while doing it. A-Ah! I'm so sorry in advance!
+
+voice: voice/female_us

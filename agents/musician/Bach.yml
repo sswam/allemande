@@ -12,3 +12,5 @@ visual:
   clothes: 'formal coat, frilled shirt, waistcoat, lace cuffs, breeches, stockings, buckle shoes'
   age: 'adult 65 years old'
   emo: 'stern expression'
+
+voice: voice/male_other

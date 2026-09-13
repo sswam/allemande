@@ -20,3 +20,5 @@ visual:
   clothes: 'blouse, cardigan, jewelry, trousers'
   age: 'adult 45 years old'
   emo: 'thoughtful expression, warm smile'
+
+voice: voice/female_us

@@ -33,3 +33,5 @@ visual:
   clothes: 'suit jacket, white shirt, black tie, suit pants'
   age: 'adult 35 years old'
   emo: 'serious'
+
+voice: voice/male_us_low

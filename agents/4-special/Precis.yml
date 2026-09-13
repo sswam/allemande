@@ -18,3 +18,5 @@ visual:
   clothes: 'suit, dress shirt, necktie, suit pants'
   age: 'adult 35 years old'
   emo: 'serious'
+
+voice: voice/male_uk

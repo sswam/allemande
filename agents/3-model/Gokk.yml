@@ -11,3 +11,5 @@ visual:
   age: adult 20 years old
   clothes_upper: light blue and brown colorful shirt, funky patterns, scarf with glittering knot [set negative_prompt] [get negative_prompt] white shirt [/set]
   clothes_lower: black pants
+
+voice: voice/male_us
