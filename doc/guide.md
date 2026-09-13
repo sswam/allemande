@@ -271,7 +271,7 @@ Ally Chat has a sophisticated voice chat system, where different characters can 
 
 One caveat, this is not a live speech system like you may have used with major providers. There are delays with both speech to text and text to speech. Please adjust your expectations accordingly!
 
-The speech models we are using support hundreds of languages, but so far the developer has been focusing on English. If you'd like to help add support for your language, please contact us!
+The speech models we are using support hundreds of languages, but so far the developer has been focusing on English and a little Spanish. If you want support for your language, please contact us!
 
 We are using Whisper Large 2 for speech to text, OmniVoice for text to speech, and ricky0123/vad with Silero VAD for Voice Activity Detection.
 
@@ -285,32 +285,16 @@ There are many options for voice chat, see below in the User Interface Guide.
 
 ### Setting an agent's voice
 
-When you edit a custom agent, you can set their voice. We have several voices to choose from.
-
-1. Edit the agent
-2. Press <i class="bi-lightbulb-off"></i> to switch to the advanced agent editor.
-3. Add a line like this for example:
-```
-voice: voice/male_uk
-```
-4. Save the agent
-
-English female voices include:
-- female
-- female_uk
-- female_us
-- female_jp
-- synergy
-- e-girl
-- bratty
-- bimbo
-
-English male voices include:
-- male
-- male_uk
-- male_us
+When you edit a custom agent, you can set their voice.
 
 It's also possible to create an agent of `type: human` with your username and representing yourself, and set a voice for it.
+
+Some voices are not listed in the agent editor, but you can enter them manually:
+
+- {male,female}_{uk,us,au}_whisper - whispering voices, e.g. female_uk_whisper
+- {male,female}_{uk,us,au}_{vlow,low,high,vhigh} - different pitched voices, e.g. female_us_vlow
+
+If you want a different voice combination, please ask the developer for help.
 
 ### Adding a new voice
 
