@@ -57,20 +57,20 @@ adduser $user www-data
 # -------- set up apt sources.list; WARNING this overwrites the file ---------
 
 cat <<END | sudo tee /etc/apt/sources.list >/dev/null
-deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian trixie main contrib non-free non-free-firmware
 deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
-deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
-deb http://ftp.debian.org/debian bookworm-backports main contrib non-free non-free-firmware
-deb http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian trixie-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware
+deb http://ftp.debian.org/debian trixie-backports main contrib non-free non-free-firmware
+deb http://ftp.debian.org/debian trixie-updates main contrib non-free non-free-firmware
 deb http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
 
-deb-src http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian trixie main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
-deb-src http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
-deb-src http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
-deb-src http://ftp.debian.org/debian bookworm-backports main contrib non-free non-free-firmware
-deb-src http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian trixie-updates main contrib non-free non-free-firmware
+deb-src http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware
+deb-src http://ftp.debian.org/debian trixie-backports main contrib non-free non-free-firmware
+deb-src http://ftp.debian.org/debian trixie-updates main contrib non-free non-free-firmware
 deb-src http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
 END
 
@@ -110,7 +110,7 @@ sudo mkdir -p $dirs
 sudo chgrp staff $dirs
 sudo chmod g+w $dirs
 
-# -------- install essential tools and upgrade to Debian bookworm ------------
+# -------- install essential tools and upgrade to Debian trixie ------------
 
 sudo apt-get update
 sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev neovim
