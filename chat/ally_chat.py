@@ -330,7 +330,7 @@ def should_skip_editing_command(history_messages, poke):
     if not history_messages or poke:
         return False
     message = history_messages[-1]
-    return message and re.search(r"""<ac\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE)
+    return message and re.search(r"""<ac\b[a-z0-9 ="']*>""", message["content"], flags=re.IGNORECASE)
 
 
 def handle_directed_poke(message, history, history_messages, file, args, last_message_id):

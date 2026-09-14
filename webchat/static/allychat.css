@@ -138,14 +138,15 @@ select:disabled, select:disabled:hover, select:disabled:focus
 
 /* buttons with SVG icons */
 
-button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi), #top_main #user {
+button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi), #top_main #user, button.ui, .button.ui {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: calc(var(--pad) / 2);
 	line-height: 1;
 	overflow: clip;
-	height: 1.5em;  /* disregard content size */
+	height: 1.5rem;  /* disregard content size */
+	min-width: 2rem;
 	border-radius: var(--radius);
 	cursor: pointer;
 }

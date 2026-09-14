@@ -710,31 +710,65 @@ function react(id, msgUser, reaction) {
     return;
   let $reacts = $message.querySelector('.message_reacts');
 
-  // remove all reactions from the user
-  if ($reacts && reaction === "") {
-    let $react_old = $reacts.querySelectorAll(`[data-user="${msgUser}"]`);
-    for (const $e of $react_old)
-      $e.remove();
+  // remove older reaction from the user
+  if ($reacts) {
+    const user = msgUser.toLowerCase();
+    let $react_old = $reacts.querySelector(`[data-user="${user}"]`);
+    $react_old?.remove();
 
     // is it now empty?
-    if ($reacts.childElementCount == 0)
+    if (reaction === "" && $reacts.childElementCount == 0)
       $reacts.remove();
+  }
 
+  if (reaction !== "") {
+    if (!$reacts) {
+      $reacts = $create("div");
+      $reacts.classList.add("message_reacts");
+      $message.appendChild($reacts);
+      $reacts.tabIndex = 0;
+    }
+
+    const $react = $create("div");
+    const text = reaction + " —" + msgUser;
+    $react.appendChild($text(text));
+    $react.dataset.user = msgUser.toLowerCase();
+    $reacts.appendChild($react);
+  }
+
+  if (!$reacts)
     return;
-  }
 
-  if (!$reacts) {
-    $reacts = $create("div");
-    $reacts.classList.add("message_reacts");
-    $message.appendChild($reacts);
-    $reacts.tabIndex = 0;
-  }
+  // reaction summary line
+  let $summary = $reacts.querySelector(".summary");
+  if ($summary)
+    $summary.remove();
+  const react_count = $reacts.childElementCount;
+  if (react_count > 1) {
+    $summary = $create("div");
+    $summary.classList.add("summary");
+    const counters = {};
+    for (const $e of $reacts.children) {
+      const t = $e.textContent;
+      const emoji = t.match(/^\p{RGI_Emoji}/v)?.[0];
+      const comment = !emoji || t.length > emoji.length;
+      if (emoji)
+        counters[emoji] = (counters[emoji] || 0) + 1;
+      if (comment)
+        counters["🗨️"] = (counters["🗨️"] || 0) + 1;
+    }
 
-  const $react = $create("div");
-  const text = reaction + " —" + msgUser;
-  $react.appendChild($text(text));
-  $react.dataset.user = msgUser;
-  $reacts.appendChild($react);
+    // Sort emojis by decreasing frequency and build summary_text
+    const summary_text = [
+      react_count,
+      ...Object.entries(counters)
+        .sort((a, b) => b[1] - a[1])
+        .map(([emoji]) => emoji)
+    ].join(" ");
+
+    $summary.appendChild($text(summary_text));
+    $reacts.appendChild($summary);
+  }
 
   // scroll to bottom
   $reacts.scrollTop = $reacts.scrollHeight;

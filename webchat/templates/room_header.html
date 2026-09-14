@@ -24,18 +24,6 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <script src="{{ chat_base_url }}/toc.js"></script>
 <link rel="stylesheet" href="{{ chat_base_url }}/toc.css" crossorigin="use-credentials">
 <!--<script src="/sw_register.js"></script>-->
-<script>
-(async () => {
-	await Promise.all([
-		$import("chat:config"),
-		$import("chat:room"),
-		$import("chat:process_messages"),
-	]);
-	online = modules.room.online;
-	clear = modules.room.clear;
-	modules.room.room_main();
-})();
-</script>
 <link rel="stylesheet" href="{{ chat_base_url }}/room_gen.css" crossorigin="use-credentials">
 <link id="theme" rel="stylesheet" type="text/css" media="screen" href="{{ chat_base_url }}/themes/{{ theme|safe }}.css" crossorigin="use-credentials">
 <link id="user_styles" rel="stylesheet" type="text/css" href="{{ chat_base_url }}/users/{{ user }}/styles.css" crossorigin="use-credentials">
@@ -49,7 +37,55 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <title>{{ room }}</title>
 </head>
 <body id="messages" class="messages simple">
+<div id="message_menu" class="hidden">
+	<button id="msg_react" title="react to this message">react</button>
+	<div id="msg_react_options" class="button ui">
+		<div id="msg_react_options_grid">
+			<button title="clown face">🤡</button>
+			<button title="folded hands">🙏</button>
+			<button title="thinking face">🤔</button>
+			<button title="sweat droplets">💦</button>
+			<button title="peach">🍑</button>
+			<button title="eggplant">🍆</button>
+			<button title="frown">☹️</button>
+			<button title="slightly frown">🙁</button>
+
+			<button title="skull">💀</button>
+			<button title="rocket">🚀</button>
+			<button title="hundred points">💯</button>
+			<button title="eyes">👀</button>
+			<button title="fire">🔥</button>
+			<button title="purple heart">💜</button>
+			<button title="grin">😀</button>
+			<button title="smile">🙂</button>
+
+			<button title="dislike">👎</button>
+			<button title="angry">😡</button>
+			<button title="sad">😢</button>
+			<button title="wow">😮</button>
+			<button title="haha">😂</button>
+			<button title="care">🥰</button>
+			<button title="love">❤️</button>
+			<button title="like">👍</button>
+		</div>
+	</div>
+	<button id="msg_comment" title="comment on this message"><i class="bi bi-chat-right i16"></i></button>
+	<button id="msg_tts" title="speak this message"><i class="bi bi-volume-down i20"></i></button>
+	<button id="msg_copy" title="copy this message" class="hidden"><i class="bi bi-copy i20"></i></button>
+	<button id="msg_edit" title="edit this message" class="hidden"><i class="bi bi-pencil i18"></i></button>
+	<button id="msg_undo" title="remove this message"><i class="bi bi-x-lg i20"></i></button>
+</div>
 <script>
+(async () => {
+	await Promise.all([
+		$import("chat:config"),
+		$import("chat:room"),
+		$import("chat:process_messages"),
+	]);
+	online = modules.room.online;
+	clear = modules.room.clear;
+	modules.room.room_main();
+})();
 	view_options = JSON.parse(localStorage.getItem("view_options"));
 	advanced = view_options?.advanced;
 	document.body.classList.toggle("simple", advanced === undefined || advanced < 0);
@@ -86,17 +122,12 @@ Hello, world
 <div class="resizer">
 </div>
 
-<div id="message_menu" class="hidden">
-	<button id="msg_react" title="react to this message"><i class="bi bi-heart i20"></i></button>
-	<button id="msg_comment" title="comment on this message"><i class="bi bi-chat-right i20"></i></button>
-	<button id="msg_tts" title="speak this message"><i class="bi bi-volume-down i20"></i></button>
-	<button id="msg_copy" title="copy this message" class="hidden"><i class="bi bi-copy i20"></i></button>
-	<button id="msg_edit" title="edit this message" class="hidden"><i class="bi bi-pencil i18"></i></button>
-	<button id="msg_undo" title="remove this message"><i class="bi bi-x-lg i20"></i></button>
-</div>
-
 <script>
 	fix_accessibility();
+//	(async () => {
+//		await $import("chat:room");
+//		modules.room.setup_msg_react_options();
+//	})();
 </script>
 
 <div class="messages_wrap">

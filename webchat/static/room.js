@@ -1765,16 +1765,51 @@ function fix_browser_copy(ev) {
 // Global variable to store the currently selected message element
 let $message_with_menu = null;
 
+const $msg_react = $id('msg_react');
+const $msg_react_options = $id('msg_react_options');
+const $msg_menu = $id("message_menu");
+
 function hide_message_menu() {
   hide("message_menu");
+  $msg_menu.classList.remove("react_options");
   $message_with_menu = null;
 }
 
-function show_message_menu(message) {
+function show_message_menu($message) {
   const menu = $id("message_menu");
-  message.appendChild(menu);
+  menu.classList.remove("react_options");
+  $message.appendChild(menu);
   show(menu);
-  $message_with_menu = message;
+  $message_with_menu = $message;
+  const reaction = msg_reaction_get($message);
+  if (reaction) {
+    $msg_react.innerText = reaction;
+    $msg_react.title = "remove your reaction";
+  } else {
+    $msg_react.innerHTML = '<i class="bi bi-heart i18"></i>';
+    $msg_react.title = "react to this message";
+  }
+  keep_message_menu_on_screen();
+}
+
+function keep_message_menu_on_screen() {
+  const menu = $id("message_menu");
+  menu.style.right = '0';
+  menu.style.left = 'auto';
+  menu.style.bottom = '100%';
+  menu.style.top = 'auto';
+
+  requestAnimationFrame(() => {
+    const { left, top } = menu.getBoundingClientRect();
+    if (left < 8) { // 8px breathing room from edge
+      menu.style.right = 'auto';
+      menu.style.left = '0';
+    }
+    if (top < 8) {
+      menu.style.bottom = 'auto';
+      menu.style.top = '0';
+    }
+  });
 }
 
 function message_menu_click(event) {
@@ -1810,8 +1845,9 @@ async function get_message_id($message) {
 
 async function msg_undo_click(event) {
   const id = await get_message_id($message_with_menu);
+  const msgUser = $message_with_menu.getAttribute("user");
   const force = event.shiftKey;
-  window.parent.postMessage({ type: "undo", message_id: id, force: force }, ALLYCHAT_CHAT_URL);
+  window.parent.postMessage({ type: "undo", message_id: id, force, msgUser }, ALLYCHAT_CHAT_URL);
   hide_message_menu();
 }
 
@@ -2085,16 +2121,109 @@ export function message_removed(id, $el) {
 // reactions -----------------------------------------------------------------
 
 async function msg_react_click(e) {
+  const comment = event.shiftKey;
   const id = await get_message_id($message_with_menu);
-  window.parent.postMessage({ type: "react", message_id: id }, ALLYCHAT_CHAT_URL);
+  const reaction_old = msg_reaction_get($message_with_menu);
+  if (comment) {
+    const prefill = (reaction_old || "❤️") + " ";
+    window.parent.postMessage({ type: "react", message_id: id, comment: true, reaction_old, prefill }, ALLYCHAT_CHAT_URL);
+  } else {
+    const reaction = reaction_old ? "" : "❤️"; // default is love / heart
+    window.parent.postMessage({ type: "react", message_id: id, reaction_old, reaction }, ALLYCHAT_CHAT_URL);
+  }
+  hide_message_menu();
+}
+
+async function msg_react_option_click(e) {
+  const comment = event.shiftKey;
+  const id = await get_message_id($message_with_menu);
+  const $button = e.target;
+  const reaction = $button.textContent;
+  const reaction_old = msg_reaction_get($message_with_menu);
+  if (comment) {
+    const prefill = reaction + " ";
+    window.parent.postMessage({ type: "react", message_id: id, comment: true, reaction_old, prefill }, ALLYCHAT_CHAT_URL);
+  } else {
+    window.parent.postMessage({ type: "react", message_id: id, reaction_old, reaction }, ALLYCHAT_CHAT_URL);
+  }
   hide_message_menu();
 }
 
 async function msg_comment_click(e) {
   const id = await get_message_id($message_with_menu);
-  window.parent.postMessage({ type: "react", message_id: id, comment: true }, ALLYCHAT_CHAT_URL);
+  const $reacts = $message_with_menu.querySelector('.message_reacts');
+  const reaction_old = msg_reaction_get($message_with_menu);
+  window.parent.postMessage({ type: "react", message_id: id, comment: true, reaction_old, prefill: reaction_old }, ALLYCHAT_CHAT_URL);
   hide_message_menu();
 }
+
+function msg_reaction_get($message) {
+  const $reacts = $message.querySelector('.message_reacts');
+  let reaction = null;
+  if ($reacts) {
+    const $react = $reacts.querySelector(`[data-user="${user}"]`);
+    reaction = $react?.textContent.replace(/(.*) —.*/, "$1");
+  }
+  return reaction;
+}
+
+const react_expand_delay_press_ms = 500; 
+const react_expand_delay_hover_ms = 1000; 
+let react_expand_timer = null;
+
+function react_expand_triggered() {
+  $msg_menu.classList.add("react_options");
+  keep_message_menu_on_screen();
+}
+
+function setup_msg_react_options() {
+  // --- Desktop Hover Handlers ---
+  $on($msg_react, 'mouseenter', () => {
+    clearTimeout(react_expand_timer);
+    react_expand_timer = setTimeout(() => {
+      react_expand_triggered();
+    }, react_expand_delay_hover_ms);
+  });
+
+  $on($msg_react, 'mousedown', () => {
+    clearTimeout(react_expand_timer);
+  });
+
+  $on($msg_react, 'mouseleave', () => {
+    clearTimeout(react_expand_timer);
+  });
+
+  // --- Mobile Long-Press & Release Handlers ---
+  $on($msg_react, 'touchstart', (event) => {
+    // Reset state for a new touch interaction
+    clearTimeout(react_expand_timer);
+
+    react_expand_timer = setTimeout(() => {
+      // react_is_long_pressed = true;
+      react_expand_triggered();
+    }, react_expand_delay_press_ms);
+  });
+
+  $on($msg_react, 'touchend', () => {
+    clearTimeout(react_expand_timer);
+  });
+
+  $on($msg_react, 'touchcancel', () => {
+    // Clean up timers if the touch is interrupted (e.g. alert popups, scrolling)
+    clearTimeout(react_expand_timer);
+  });
+
+  $on($msg_react, 'contextmenu', (event) => {
+    // Disables the long-press popup menu on mobile browsers
+    event.preventDefault(); 
+  });
+
+  // handle each react option
+  for (const $b of $msg_react_options.querySelectorAll("button")) {
+    $on($b, "click", msg_react_option_click);
+  }
+}
+
 
 // main ----------------------------------------------------------------------
 
@@ -2214,6 +2343,8 @@ export async function room_main() {
   load_agent_colours(); // async
 
   enable_tts_new_messages_after_delay();
+
+  setup_msg_react_options();
 }
 
 function enable_tts_new_messages_after_delay() {

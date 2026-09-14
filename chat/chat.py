@@ -326,7 +326,7 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
     #     logger.info("\n\n\n")
     lookup = messages.copy()
     for i, message in enumerate(messages):
-        m = re.search(r"""(<ac\b[-a-z0-9 ="']*>)\s*$""", message["content"], flags=re.IGNORECASE)
+        m = re.search(r"""(<ac\b[-a-z0-9 ="']*>).*""", message["content"], flags=re.IGNORECASE)
         if not m:
             continue
         xmltext = m.group(1).strip()
@@ -340,14 +340,15 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         remove = meta.get("rm")
         edit = meta.get("edit")
         insert = meta.get("insert")
+        react = meta.get("react")
 
         # handle erroneous content, should be only digits and spaces
-        if not re.match(r"[0-9 ]+$", remove or ""):
+        if remove and not re.match(r"[0-9 ]+$", remove):
             logger.warning("Invalid remove attribute in message %s: %s", i, remove)
             remove = None
 
-        # remove the rm, edit and insert attributes
-        for attr in ["rm", "edit", "insert"]:
+        # remove the rm, edit, insert and react attributes
+        for attr in ["rm", "edit", "insert", "react"]:
             if attr in meta.attrs:
                 del meta[attr]
         # add the meta tag back to the message content if there are any remaining attributes
@@ -380,7 +381,8 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         #         logger.info("message ID: %s, remove: %s, edit: %s, insert: %s, content: %s", i, remove, edit, insert, message["content"])
 
         # if a message that wasn't moved is now empty, mark it for removal
-        if remove and not edit and not insert and not message["content"].strip():
+        # XXX This is too complex, should assume only a single command per message with no other content.
+        if (react or remove) and not edit and not insert and not message["content"].strip():
             #             logger.warning("Removing editing message ID: %s", i)
             messages[i]["rm"] = True
 

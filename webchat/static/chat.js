@@ -1795,14 +1795,18 @@ function handle_message(ev) {
   if (ev.data.type == "undo") {
     const id = ev.data.message_id;
     const force = ev.data.force;
-    undo_message(id, force);  // async
+    const msgUser = ev.data.msgUser;
+    undo_message(id, force, msgUser);  // async
     return;
   }
 
   if (ev.data.type == "react") {
     const id = ev.data.message_id;
     const comment = ev.data.comment;
-    react_to_message(id, comment);  // async
+    const reaction = ev.data.reaction;
+    const reaction_old = ev.data.reaction_old;
+    const prefill = ev.data.prefill;
+    react_to_message(id, comment, reaction, reaction_old, prefill);  // async
     return;
   }
 
@@ -1840,8 +1844,13 @@ function handle_message(ev) {
   }
 }
 
-async function undo_message(id, force) {
-  if (!force && !await Prompts.confirm("Remove message "+id+"?")) return;
+async function undo_message(id, force, msgUser) {
+  if (!force) {
+    const query = msgUser ? `Remove message ${id} from ${msgUser}?`
+      : `Remove narrative message ${id}?`;
+    if (!await Prompts.confirm(query))
+      return;
+  }
   await send_text(`<ac rm=${id}>`);
   active_dec("send");  // FIXME this is wonky
 }
@@ -4883,14 +4892,38 @@ function setup_combo_boxes() {
 
 // reactions -----------------------------------------------------------------
 
-async function react_to_message(id, comment) {
-  let react = "❤️";
-  if (comment) {
-    react = (await Prompts.prompt("Comment?")) || react;
-    console.log("react", react);
-    console.log("encode_entities(react)", encode_entities(react));
+async function set_prompt_default(text, select) {
+  // hacky
+  await $wait(100);
+  const dialog_input = document.querySelector('dialog[role="dialog"] input');
+  if (!dialog_input) {
+    console.log("Did not find Prompts.prompt dialog");
+    return;
   }
-  await send_text(`<ac react=${id}>` + encode_entities(react));
+  dialog_input.value = text;
+  if (select)
+    dialog_input.select();
+}
+
+async function react_to_message(id, comment, reaction, reaction_old, prefill) {
+  if (comment) {
+    // hacky
+    if (prefill)
+      set_prompt_default(prefill, !prefill.endsWith(" "));
+    const comment = await Prompts.prompt("Comment?");
+    if (comment === null)
+      return;
+    reaction = comment;
+  }
+  if (reaction === reaction_old)
+    return;
+  if (!comment && reaction === "" && reaction_old) {
+    const emoji = reaction_old.match(/^\p{RGI_Emoji}/v)?.[0];
+    const was_comment = !emoji || reaction_old.length > emoji.length;
+    if (was_comment && !await Prompts.confirm("Remove your comment?"))
+      return;
+  }
+  await send_text(`<ac react=${id}>` + encode_entities(reaction.trim()));
   active_dec("send");  // FIXME this is wonky
 }
 

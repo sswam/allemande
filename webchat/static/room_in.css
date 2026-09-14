@@ -1660,10 +1660,46 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
   gap: var(--pad);
 }
 
+#message_menu.react_options > button {
+	display: none;
+}
+
+#message_menu:not(.react_options) > #msg_react_options {
+	display: none;
+}
+
+#msg_react {
+  /* Prevents the callout menu and magnifier on iOS */
+  -webkit-touch-callout: none; 
+  
+  /* Prevents text selection highlighting while pressing down */
+  -webkit-user-select: none;   
+  user-select: none;
+
+  /* to show comment, limit width, allow scroll without scrollbar */
+  white-space: pre;
+  max-width: 95vw;
+  overflow-x: auto;
+  &::-webkit-scrollbar { display: none; }
+  scrollbar-width: none;
+}
+
+#msg_react_options {
+	height: auto;
+}
+#msg_react_options_grid {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+}
+#msg_react_options_grid > button {
+	width: 3rem;
+	height: 2rem;
+}
+
 .message_reacts {
   margin-left: auto;
   width: max-content;
-  max-width: 50%;
+  max-width: 95vw;
   background: var(--background);
   padding: 0.25rem 0.25rem;
   border-radius: 0.5rem;
@@ -1672,15 +1708,20 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
   flex-direction: column;
   gap: var(--pad);
   overflow: auto;
+  &::-webkit-scrollbar { display: none; }
+  scrollbar-width: none;
   max-height: calc(2 * var(--font-size) * 1.2 + var(--pad) + 2 * 0.25rem); /* 2 lines, font-size * line-height + gap + 2 * pad */
+  opacity: 0.75;
 }
 
 .message_reacts:focus {
   max-height: 50%;
+  opacity: 1;
 }
 
 .message_reacts > * {
   line-height: 1.2;
+  text-align: right;
 }
 
 body:not(.msg_tts) button#msg_tts {
