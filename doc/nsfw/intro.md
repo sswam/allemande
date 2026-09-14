@@ -127,6 +127,7 @@ There are many, many more; check the guide, and try the help system!
 - Private/group chat rooms
 - Instant room creation and switching
 - 1500+ characters, assistants, specialists, and tools
+- Voice chat with numerous voices and accents, and support for many languages
 
 ## Rooms and Privacy
  

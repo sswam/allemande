@@ -116,6 +116,7 @@ There are many, many more; check the guide, and try the help system!
 - Private/group chat rooms
 - Instant room creation and switching
 - 1500+ characters, assistants, specialists, and tools
+- Voice chat with numerous voices and accents, and support for many languages
 
 ## Rooms and Privacy
 
@@ -145,7 +146,6 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 - It's difficult for new users (WIP)
 - no documents / RAG (WIP)
 - no notifications (WIP)
-- voice chat incomplete (WIP)
 - no direct messaging
 - no video generation
 

@@ -728,6 +728,13 @@ Llama 3.1 8B is a small model. All of the others are quite strong.
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
+## Variants for shorter responses
+- **Aio**: Aion normally gives very long responses. Aio should give shorter one or two line responses. You can also set the **lines** option to strictly limit it.
+- **Clu**: A version of Claude, that responses as concisely as possible.
+- **Des**: A version of Desee (DeepSeek Flash), that responses as concisely as possible.
+- **Emm**: A version of Emmy (GPT 4.1), that responses as concisely as possible.
+- **Fli**: A version of Flashi (Gemini Flash), that responses as concisely as possible.
+
 ### Specialists based on Strong AI
 - **Illu** and **Gemu** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gemu uses a stronger model
 - **Novi**: She is a master narrator for immersive storytelling in interactive fiction
@@ -1014,7 +1021,7 @@ Claude: Can talk about adult concerns including sexuality, but will not engage w
 OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with most NSFW topics.
 Llama 3: Can engage with any NSFW topic, practically uncensored, but may be reluctant by default.
-Venice Uncensored: Fully uncensored, or as close as it gets.
+Venice Uncensored, Aion: Fully uncensored, or as close as it gets. The Aio may work better than Aion, it gives shorter reponses.
 Krea2: Avoids nudity without a NSFW LoRA.
 F2K: Avoids nudity without a NSFW LoRA.
 
