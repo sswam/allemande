@@ -642,11 +642,6 @@ function overlay_close(ev, back_pressed) {
   overlay_mode = false;
   $body.classList.remove("overlay");
 
-  // Reset current image index
-  allImages = null;
-  $currentImg = null;
-  currentImgIndex = null;
-
   // clean up the "back button to close overlay" state
   $off(window, "popstate", image_overlay_back);
   if (!back_pressed)
@@ -662,7 +657,19 @@ function overlay_close(ev, back_pressed) {
 
   clear_overlay_image_cover();
   $overlay.innerHTML = "";
+
   exit_fullscreen();
+
+  const go_to_image = $currentImg;
+  setTimeout(() => go_to_image.scrollIntoView({
+    "behavior": "smooth",
+    "block": "nearest",
+  }), 500);
+
+  // Reset current image index
+  allImages = null;
+  $currentImg = null;
+  currentImgIndex = null;
 }
 
 function signal_overlay(overlay) {
