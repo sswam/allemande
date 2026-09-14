@@ -1799,6 +1799,13 @@ function handle_message(ev) {
     return;
   }
 
+  if (ev.data.type == "react") {
+    const id = ev.data.message_id;
+    const comment = ev.data.comment;
+    react_to_message(id, comment);  // async
+    return;
+  }
+
   /*
   if (ev.data.type == "size_change") {
     console.log("size_change", ev.data);
@@ -4872,6 +4879,21 @@ function setup_combo_boxes() {
     $on(el, "blur", handle_combo_blur);
   }
 }
+
+
+// reactions -----------------------------------------------------------------
+
+async function react_to_message(id, comment) {
+  let react = "❤️";
+  if (comment) {
+    react = (await Prompts.prompt("Comment?")) || react;
+    console.log("react", react);
+    console.log("encode_entities(react)", encode_entities(react));
+  }
+  await send_text(`<ac react=${id}>` + encode_entities(react));
+  active_dec("send");  // FIXME this is wonky
+}
+
 
 // main ----------------------------------------------------------------------
 

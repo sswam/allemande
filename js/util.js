@@ -88,7 +88,7 @@ const $style = async (id, href) => {
 }
 
 function encode_entities(txt) {
-  return txt.replace(/[&<>"']/g, c => ({
+  return txt.replace(/[&<>"]/g, c => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',

@@ -144,11 +144,11 @@ export async function processMessage(newMessage) {
 
   // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
-  const newUser = newMessage.getAttribute("user");
+  const msgUser = newMessage.getAttribute("user");
   const label = newMessage.querySelector(".label");
-  const me_message = newUser && newUser.toLowerCase().replace(/=.*/, '') === user;
+  const me_message = msgUser && msgUser.toLowerCase().replace(/=.*/, '') === user;
   const simple = (room.view_options.advanced ?? -1) < 0;
-  const blocked = newUser && BLOCK[`${user}/${newUser}`];
+  const blocked = msgUser && BLOCK[`${user}/${msgUser}`];
 
   if (blocked) {
     newMessage.classList.add("hidden");
@@ -173,14 +173,14 @@ export async function processMessage(newMessage) {
   */
 
   // Processing editing commands
-  await process_editing_commands(newMessage);
+  await process_editing_commands_and_reacts(newMessage);
 
   // Hide the label if same user as previous message
 //  if (hideLabelForSameUser) {
   let prevMessage = newMessage.previousElementSibling;
   while (prevMessage && prevMessage.classList.contains('hidden'))
     prevMessage = prevMessage.previousElementSibling;
-  if (prevMessage && newUser == prevMessage.getAttribute("user") && label)
+  if (prevMessage && msgUser == prevMessage.getAttribute("user") && label)
     label.classList.add("label-hidden");
   else
     newMessage.classList.add("turn");
@@ -195,7 +195,7 @@ export async function processMessage(newMessage) {
     let prevMessage = newMessage.previousElementSibling;
     while (prevMessage && prevMessage.classList.contains('hidden'))
       prevMessage = prevMessage.previousElementSibling;
-    if (prevMessage && newUser == prevMessage.getAttribute("user")) {
+    if (prevMessage && msgUser == prevMessage.getAttribute("user")) {
       label.classList.add("hidden");
       if (prevMessage.querySelector("div.image") && !prevMessage.querySelector(":empty:not(img, .label .alt)") &&
         newMessage.querySelector("img") && !newMessage.querySelector(":empty:not(img, .label .alt)")) {
@@ -281,14 +281,14 @@ export async function processMessage(newMessage) {
       await room.lazy_image(img);
   }
 
-  if (newUser) {
+  if (msgUser) {
     // add class="me" to messages from the current user
     if (me_message) {
       newMessage.classList.add("me");
     }
 
     // hide system messages
-    if (newUser.toLowerCase() === "system") {
+    if (msgUser.toLowerCase() === "system") {
       newMessage.classList.add("hidden");
     }
 
@@ -306,7 +306,7 @@ export async function processMessage(newMessage) {
       "morf",
       "brie",
     ]; // TODO: read from config, extend list
-    if (specialists.includes(newUser.toLowerCase())) {
+    if (specialists.includes(msgUser.toLowerCase())) {
       newMessage.classList.add("specialist");
     }
 
@@ -330,7 +330,7 @@ export async function processMessage(newMessage) {
       "novi",
       "nova",
     ]; // TODO: read from config, extend list
-    if (narrators.includes(newUser.toLowerCase())) {
+    if (narrators.includes(msgUser.toLowerCase())) {
       newMessage.classList.add("narrative");
     }
 
@@ -340,7 +340,7 @@ export async function processMessage(newMessage) {
     if (
       newContent &&
       pattern.test(newContent.textContent) &&
-      !summarisers.includes(newUser.toLowerCase())
+      !summarisers.includes(msgUser.toLowerCase())
     ) {
       newMessage.classList.add("invoke-specialist");
     }
@@ -398,7 +398,7 @@ export async function processMessage(newMessage) {
   //   console.log("last visible message ID", lastMessageId);
 
   // notify parent window of new message
-  room.notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
+  room.notify_new_message({ user: msgUser, content: newContent.innerHTML, lastMessageId });
 
   // append timestamp element to last .message element
   const timestamp = $id('timestamp');
@@ -645,7 +645,13 @@ function message_is_empty(message) {
     return empty;
 }
 
-async function process_editing_commands(message) {
+function message_text(message) {
+  const content = message.querySelector('.content');
+  const contentText = content.textContent.trim();
+  return contentText;
+}
+
+async function process_editing_commands_and_reacts(message) {
   const metas = get_message_meta(message);
   // if (metas.length > 0) {
   //   console.log("process_editing_commands: message", message.outerHTML);
@@ -655,16 +661,21 @@ async function process_editing_commands(message) {
     const remove_ids = meta.getAttribute("rm");
     const insert_id = meta.getAttribute("insert");
     const edit_id = meta.getAttribute("edit");
+    const react_id = meta.getAttribute("react");
+    const text = meta.textContent;
     meta.removeAttribute("rm");
     meta.removeAttribute("insert");
     meta.removeAttribute("edit");
+    meta.removeAttribute("react");
 
     // if no attributes remain on the tag, remove the meta tag
     if (!meta.hasAttributes())
       meta.remove();
 
+    const empty = message_is_empty(message);
+
     // if the message content is now empty, aside from the label, hide the message
-    if (message_is_empty(message)) {
+    if (empty) {
       message.classList.add('hidden');
     }
 
@@ -678,8 +689,53 @@ async function process_editing_commands(message) {
 
     const point = insert_id || edit_id;
     if (point) {
-      await insert(point, message);
+      insert(point, message);
       message.dataset.prev = point;
     }
+
+    if (react_id) {
+      const msgUser = message.getAttribute("user");
+      message.classList.add('hidden');
+      react(react_id, msgUser, text);
+    }
   }
+}
+
+// reactions -----------------------------------------------------------------
+
+function react(id, msgUser, reaction) {
+  const msg_id = `m${id}`;
+  const $message = $id(msg_id);
+  if (!$message)
+    return;
+  let $reacts = $message.querySelector('.message_reacts');
+
+  // remove all reactions from the user
+  if ($reacts && reaction === "") {
+    let $react_old = $reacts.querySelectorAll(`[data-user="${msgUser}"]`);
+    for (const $e of $react_old)
+      $e.remove();
+
+    // is it now empty?
+    if ($reacts.childElementCount == 0)
+      $reacts.remove();
+
+    return;
+  }
+
+  if (!$reacts) {
+    $reacts = $create("div");
+    $reacts.classList.add("message_reacts");
+    $message.appendChild($reacts);
+    $reacts.tabIndex = 0;
+  }
+
+  const $react = $create("div");
+  const text = reaction + " —" + msgUser;
+  $react.appendChild($text(text));
+  $react.dataset.user = msgUser;
+  $reacts.appendChild($react);
+
+  // scroll to bottom
+  $reacts.scrollTop = $reacts.scrollHeight;
 }

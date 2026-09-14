@@ -439,7 +439,7 @@ function setup_keyboard_shortcuts() {
 
 // embeds --------------------------------------------------------------------
 
-// when we click an image of class thumb, we convert it to an embed
+// when we click an image of class thumb, we convert it to an embed video
 
 function embed_click(ev, $thumb) {
   const $embed = $thumb.parentNode;
@@ -958,11 +958,13 @@ async function click(ev) {
     }
   }
 
+  // click a embed > thumb, to show an embed video
   if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
     ev.preventDefault();
     ev.stopPropagation();
     return embed_click(ev, ev.target);
   }
+
   // check for img tag, and view or browse to the src
   if (ev.target.tagName === "IMG" && !ev.target.closest('a[href]')) {
     //  || ev.shiftKey || ev.ctrlKey || ev.metaKey || ev.altKey || ev.button == 1)) {
@@ -970,6 +972,7 @@ async function click(ev) {
     ev.stopPropagation();
     return image_click(ev.target, ev);
   }
+
   // check for A tag containing an image
   if (ev.target.tagName === "A" && ev.target.querySelector("img")) {
     ev.preventDefault();
@@ -1767,6 +1770,13 @@ function hide_message_menu() {
   $message_with_menu = null;
 }
 
+function show_message_menu(message) {
+  const menu = $id("message_menu");
+  message.appendChild(menu);
+  show(menu);
+  $message_with_menu = message;
+}
+
 function message_menu_click(event) {
   // Find the static menu element
   const menu = $id("message_menu");
@@ -1776,19 +1786,15 @@ function message_menu_click(event) {
     return;
   }
 
-  // Check if the user clicked inside a message
-  const message = event.target.closest(".message");
-
   // Scenario 2: Clicked inside a message
+  const message = event.target.closest(".message");
   if (message) {
     // If the menu is already open on THIS message, close it
     if ($message_with_menu === message) {
       hide_message_menu();
     } else {
       // Otherwise, move the menu into this message and show it
-      message.appendChild(menu);
-      show(menu);
-      $message_with_menu = message;
+      show_message_menu(message);
     }
     return;
   }
@@ -1814,6 +1820,8 @@ async function msg_tts_click(event) {
   play_message_audio($message_with_menu, regen); // async
   hide_message_menu();
 }
+
+// playing TTS and pass-through audio ----------------------------------------
 
 let playing_audio = null;
 let playing_audio_start_time = 0;
@@ -2074,6 +2082,20 @@ export function message_removed(id, $el) {
   }
 }
 
+// reactions -----------------------------------------------------------------
+
+async function msg_react_click(e) {
+  const id = await get_message_id($message_with_menu);
+  window.parent.postMessage({ type: "react", message_id: id }, ALLYCHAT_CHAT_URL);
+  hide_message_menu();
+}
+
+async function msg_comment_click(e) {
+  const id = await get_message_id($message_with_menu);
+  window.parent.postMessage({ type: "react", message_id: id, comment: true }, ALLYCHAT_CHAT_URL);
+  hide_message_menu();
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -2142,7 +2164,7 @@ export async function room_main() {
   $on($overlay, "auxclick", overlay_click); // XXX why did I add this?
   setup_swipe();
   $on(document, "click", click);
-  $on(document, "auxclick", click); // XXX why did I add this?
+  // $on(document, "auxclick", click); // XXX why did I add this?
   $on(window, "resize", () => run_hooks("window_resize"));
   $on(window, "message", handle_message);
 
@@ -2158,6 +2180,8 @@ export async function room_main() {
 
   $on($id("msg_undo"), "click", msg_undo_click);
   $on($id("msg_tts"), "click", msg_tts_click);
+  $on($id("msg_react"), "click", msg_react_click);
+  $on($id("msg_comment"), "click", msg_comment_click);
 
   setup_keyboard_shortcuts();
   if (inIframe)

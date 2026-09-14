@@ -1660,6 +1660,29 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
   gap: var(--pad);
 }
 
+.message_reacts {
+  margin-left: auto;
+  width: max-content;
+  max-width: 50%;
+  background: var(--background);
+  padding: 0.25rem 0.25rem;
+  border-radius: 0.5rem;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pad);
+  overflow: auto;
+  max-height: calc(2 * var(--font-size) * 1.2 + var(--pad) + 2 * 0.25rem); /* 2 lines, font-size * line-height + gap + 2 * pad */
+}
+
+.message_reacts:focus {
+  max-height: 50%;
+}
+
+.message_reacts > * {
+  line-height: 1.2;
+}
+
 body:not(.msg_tts) button#msg_tts {
 	display: none;
 }
