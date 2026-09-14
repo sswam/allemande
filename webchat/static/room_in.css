@@ -1678,7 +1678,7 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 
   /* to show comment, limit width, allow scroll without scrollbar */
   white-space: pre;
-  max-width: 95vw;
+  max-width: 80vw;
   overflow-x: auto;
   &::-webkit-scrollbar { display: none; }
   scrollbar-width: none;
@@ -1689,7 +1689,7 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 }
 #msg_react_options_grid {
 	display: grid;
-	grid-template-columns: repeat(8, 1fr);
+	grid-template-columns: repeat(9, 1fr);
 }
 #msg_react_options_grid > button {
 	width: 2rem;
@@ -1700,7 +1700,7 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 .message_reacts {
   margin-left: auto;
   width: max-content;
-  max-width: 95vw;
+  max-width: 80vw;
   background: var(--background);
   padding: 0.25rem 0.25rem;
   border-radius: 0.5rem;
