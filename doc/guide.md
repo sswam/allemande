@@ -241,7 +241,7 @@ We can do taller portrait images with e.g. [T2] and wider landscape images with 
 
 ## The Image Viewer
 
-If you tap an image in the chat, it will zoom to fill the window.
+If you double tap an image in the chat, it will zoom to fill the window.
 
 - To exit the image viewer, tap near the middle of the image or press the back button.
 - Browse to other images by tapping near the left or right of the screen.

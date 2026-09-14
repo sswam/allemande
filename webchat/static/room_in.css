@@ -1692,8 +1692,9 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 	grid-template-columns: repeat(8, 1fr);
 }
 #msg_react_options_grid > button {
-	width: 3rem;
+	width: 2rem;
 	height: 2rem;
+	padding: 0.0625rem;
 }
 
 .message_reacts {
@@ -1725,5 +1726,12 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 }
 
 body:not(.msg_tts) button#msg_tts {
+	display: none;
+}
+
+body:not(.reacts) #msg_react,
+body:not(.reacts) #msg_react_options,
+body:not(.reacts) #msg_comment,
+body:not(.reacts) .message_reacts {
 	display: none;
 }

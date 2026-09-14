@@ -127,4 +127,6 @@ export const icons = {
   writer: '<i class="bi bi-justify-left i20"></i>',
 
   agent_new: '<i class="bi bi-person-add i20"></i>',
+
+  view_reacts: '<i class="bi bi-heart i20"></i>',
 };

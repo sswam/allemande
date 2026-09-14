@@ -965,6 +965,13 @@ async function click(ev) {
     return embed_click(ev, ev.target);
   }
 
+  // click_check_image(ev);
+}
+
+function click_check_image(ev) {
+  if (!$messages.contains(ev.target))
+    return;
+
   // check for img tag, and view or browse to the src
   if (ev.target.tagName === "IMG" && !ev.target.closest('a[href]')) {
     //  || ev.shiftKey || ev.ctrlKey || ev.metaKey || ev.altKey || ev.button == 1)) {
@@ -1116,6 +1123,7 @@ async function set_view_options(new_view_options) {
   if (file_type === "room") {
     cl.toggle("images", view_options.images > 0);
     cl.toggle("blur", view_options.images == 2);
+    cl.toggle("reacts", view_options.reacts == 1);
     cl.toggle("alt", view_options.alt == 1);
     cl.toggle("code_source", view_options.source >= 1);
     cl.toggle("script_source", view_options.source >= 2);
@@ -1635,6 +1643,8 @@ function mouse_double_click(e) {
     currentX = 0;
     currentY = 0;
   }
+
+  click_check_image(e);
 }
 
 // Touch event handlers with proper cancel handling
@@ -2167,8 +2177,8 @@ function msg_reaction_get($message) {
   return reaction;
 }
 
-const react_expand_delay_press_ms = 500; 
-const react_expand_delay_hover_ms = 1000; 
+const react_expand_delay_press_ms = 500;
+const react_expand_delay_hover_ms = 500;  // this seems to override the other even on mobile
 let react_expand_timer = null;
 
 function react_expand_triggered() {
@@ -2215,7 +2225,7 @@ function setup_msg_react_options() {
 
   $on($msg_react, 'contextmenu', (event) => {
     // Disables the long-press popup menu on mobile browsers
-    event.preventDefault(); 
+    event.preventDefault();
   });
 
   // handle each react option

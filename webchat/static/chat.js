@@ -76,6 +76,7 @@ const VIEW_OPTIONS_DEFAULT = {
   update: 0,
   ids: 0,
   images: 1,
+  reacts: 1,
   alt: 0,
   source: 1,
   details: 0,
@@ -3252,6 +3253,7 @@ async function view_options_apply() {
   // TODO simplify / de-dup this code
   active_set("view_ids", view_options.ids);
   active_set("view_images", view_options.images);
+  active_set("view_reacts", view_options.reacts);
   active_set("view_alt", view_options.alt);
   active_set("view_source", view_options.source);
   active_set("view_highlight", view_options.highlight);
@@ -3442,6 +3444,11 @@ function view_ids(ev) {
 function view_images(ev) {
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
   view_options.images = (view_options.images + delta + 3) % 3;
+  view_options_apply();
+}
+
+function view_reacts(ev) {
+  view_options.reacts = !view_options.reacts;
   view_options_apply();
 }
 
@@ -5042,6 +5049,7 @@ export async function init() {
   $on($id("view_theme_bw"), "click", change_theme);
   $on($id("view_ids"), "click", view_ids);
   $on($id("view_images"), "click", view_images);
+  $on($id("view_reacts"), "click", view_reacts);
   $on($id("view_alt"), "click", view_alt);
   $on($id("view_image_size"), "click", view_image_size);
   $on($id("view_font_size"), "click", view_font_size);
