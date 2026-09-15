@@ -2770,7 +2770,7 @@ async function edit_agent_reset() {
   $id("ea_visual_emo").value = blank_to_dash(agent.visual?.emo);
   $id("ea_voice").value = blank_to_dash(ea_voice_abbrev(agent.voice));
   $id("ea_art_model").value = blank_to_dash(agent.art_model);
-  $id("ea_ref_image").value = ea_ref_image_from_visual_person(agent.visual?.person);
+  $id("ea_ref_image").value = ea_ref_image_from_visual_person(agent.visual?.person || "");
   const visual_age = $id("ea_visual_age").value = blank_to_dash(agent.visual?.age);
 
   const show_visual_age = visual_age !== calc_visual_age_from_age(age);
