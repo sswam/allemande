@@ -507,6 +507,9 @@ def filter_out_truncate_repeated_characters(message: str, max_repeat=80) -> str:
     # Handle three character pattern repetitions (e.g., "abcabcabc...")
     message = re.sub(rf'(...)\1{{{max_repeat//3-1},}}', lambda m: m.group(1) * (max_repeat//3-1), message)
 
+    # Handle four character pattern repetitions (e.g., "abcdabcdabcd...")
+    message = re.sub(rf'(....)\1{{{max_repeat//4-1},}}', lambda m: m.group(1) * (max_repeat//4-1), message)
+
     return message
 
 
