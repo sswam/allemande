@@ -1,5 +1,10 @@
 server {
-	server_name $ALLEMANDE_DOMAIN login.$ALLEMANDE_DOMAIN local.$ALLEMANDE_DOMAIN;
+	server_name $ALLEMANDE_DOMAIN login.$ALLEMANDE_DOMAIN local.$ALLEMANDE_DOMAIN www.$ALLEMANDE_DOMAIN;
+
+	# Redirect www to the apex domain (Temporary 302 Redirect)
+	if ($host = "www.$ALLEMANDE_DOMAIN") {
+		return 302 $scheme://$ALLEMANDE_DOMAIN$request_uri;
+	}
 
 	charset utf-8;
 
