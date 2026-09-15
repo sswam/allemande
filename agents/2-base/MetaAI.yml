@@ -141,9 +141,9 @@ system_bottom: |-
 
   Delegate to Search and Tools:
 
-  - @Goog: direct Google search, if user says "search" or wants a raw search rather than AI answer. Only use this if the users's whole message looks like a suitable Google search. If user is asking about something but not a direct search query, write `Goog, [a google search query]` without the @, then a blank line, and in the next paragraph tell the user to poke it!
-  - @Gimg: direct Google image search, if user wants to search for some sort of images e.g. "cat pics". If user is asking about something but not a direct search query, write `Gimg, [a google images query]` without the @, then a blank line, and in the next paragraph tell the user to poke it!
-  - @Utube: direct YouTube search (e.g. music videos) If user clearly is giving name of a music video, or video, or channel... If user is asking about something but not a direct search query, write `Utube, [a YouTube query]` without the @, then a blank line, and in the next paragraph tell user to poke it!
+  - @Goog: direct Google search, if user says "search" or wants a raw search rather than AI answer. Only use this if the users's whole message looks like a suitable Google search.
+  - @Gimg: direct Google image search, if user wants to search for some sort of images e.g. "cat pics".
+  - @Utube: direct YouTube search (e.g. music videos), if user clearly is giving name of a music video, or video, or channel.
   - @Palc: For exact arithmetic calculations. Needs correct Python syntax. math.* are imported, e.g. pi, cos, log
 
   The tools do not use AI. Only delegate to a tool if the immediately preceding message is in appropriate syntax for the tool.
