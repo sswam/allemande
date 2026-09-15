@@ -156,10 +156,10 @@
 				<option value="female_jp" label="English, Japanese">
 				<option value="female_pt" label="English, Portuguese">
 				<option value="female_ru" label="English, Russian">
-				<option value="synergy" label="English, sexy female">
-				<option value="e-girl" label="English, sexy female">
-				<option value="bratty" label="English, sexy female">
-				<option value="bimbo" label="English, sexy female">
+				<option value="synergy" label="English, sexy female" class="nsfw">
+				<option value="e-girl" label="English, sexy female" class="nsfw">
+				<option value="bratty" label="English, sexy female" class="nsfw">
+				<option value="bimbo" label="English, sexy female" class="nsfw">
 				<option value="male_us" label="English, American">
 				<option value="male_uk" label="English, British">
 				<option value="male_au" label="English, Australian">
@@ -173,6 +173,29 @@
 				<option value="es_female" label="Spanish">
 				<option value="es_male" label="Spanish">
 			</datalist>
+		</div>
+		<div class="row wide gap">
+			<input list="ea_art_model_options" id="ea_art_model" title="preferred art model - blank for flexibility" placeholder="art model" class="grow">
+			<datalist id="ea_art_model_options">
+				<option value="Jily" label="Juggernaut XL: realistic">
+				<option value="Krea" label="Krea 2: powerful modern model, SFW">
+				<option value="Krie" label="Krea 2 Identity Edit: use for reference image">
+				<option value="Coni" label="CyberRealistic Pony: realistic, good for NSFW">
+				<option value="Anima" label="Anima Turbo: fast, artistic not realistic, good for NSFW">
+				<option value="Klein" label="Flux 2 Klein: modern model, SFW">
+				<option value="Xlein" label="Flux 2 Klein + NSFW: modern model, limited NSFW" class="nsfw">
+				<option value="Xrea" label="Krea 2 + NSFW: powerful modern model, limited NSFW" class="nsfw">
+				<option value="Xrie" label="Krea 2 IE + NSFW: use for reference image" class="nsfw">
+				<option value="Lusy" label="Lustify V6 OLT: NSFW model" class="nsfw">
+				<option value="Bigi" label="Big Love XL: NSFW model" class="nsfw">
+				<option value="Boni" label="Babes: NSFW model" class="nsfw">
+				<option value="Basp" label="bigasp_v20: NSFW tendencies" class="nsfw">
+				<option value="Bboy" label="PornWorks Bad Boys: Gay & Male NSFW model" class="nsfw">
+				<option value="Coci" label="CocksXL: Trans-female and male NSFW model" class="nsfw">
+			</datalist>
+			<input id="ea_ref_image" name="ea_ref_image" title="reference image" placeholder="ref. image" class="grow" type="search"/>
+			<input id="ea_ref_image_file" name="ea_ref_image_file" type="file" accept="image/jpeg, image/png, image/webp" class="inputfile hide" tabindex="-1"/>
+			<button id="ea_ref_image_upload" title="upload reference image"><i class="bi bi-upload i20"></i></button>
 		</div>
 	</div>
 

@@ -864,7 +864,7 @@ div.large_controls > .back {
 	margin-top: 1.25rem;
 }
 
-#view_edit_agent * {
+#view_edit_agent > * {
 	min-height: 2rem;
 }
 #view_edit_agent textarea {
@@ -886,6 +886,10 @@ div.large_controls > .back {
 #view_edit_agent textarea:focus.grow2,
 #view_edit_agent textarea:focus.grow3 {
 	flex-grow: 10;
+}
+
+#view_edit_agent button {
+	height: auto;
 }
 
 /* .items_grow > * {

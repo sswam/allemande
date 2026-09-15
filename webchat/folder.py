@@ -32,7 +32,7 @@ __version__ = "0.3.2"
 
 # File categorization
 SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base", "r", "s"]
-MEDIA_FILE_EXTS = ["webm", "jpg", "png"]
+MEDIA_FILE_EXTS = ["webm", "jpg", "png", "webp"]
 VOICE_FILE_EXTS = ["mp3"]
 
 MIME_TYPE_ICONS = {

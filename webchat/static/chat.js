@@ -2037,8 +2037,8 @@ function file_clicked() {
 
 async function files_changed(ev) {
   const files = ev.target.files;
-  // clear the file input so we can upload the same file again
   upload_files(files, false);  // in the background
+  // clear the file input so we can upload the same file again
   ev.target.value = "";
   // set_controls();
 }
@@ -2728,7 +2728,7 @@ async function edit_close(ev) {
   return true;
 }
 
-// edit agent ----------------------------------------------------------------
+// agent editor --------------------------------------------------------------
 
 async function agent_new() {
   const name = await Prompts.prompt("Agent name?");
@@ -2769,6 +2769,8 @@ async function edit_agent_reset() {
   $id("ea_visual_clothes").value = blank_to_dash(agent.visual?.clothes);
   $id("ea_visual_emo").value = blank_to_dash(agent.visual?.emo);
   $id("ea_voice").value = blank_to_dash(ea_voice_abbrev(agent.voice));
+  $id("ea_art_model").value = blank_to_dash(agent.art_model);
+  $id("ea_ref_image").value = ea_ref_image_from_visual_person(agent.visual?.person);
   const visual_age = $id("ea_visual_age").value = blank_to_dash(agent.visual?.age);
 
   const show_visual_age = visual_age !== calc_visual_age_from_age(age);
@@ -2788,6 +2790,15 @@ function ea_voice_expand(voice) {
   if (!voice.match(/\/|,/))
     voice = "voice/" + voice;
   return voice;
+}
+
+function ea_ref_image_from_visual_person(visual) {
+  const match = visual.match(/\bREF="([^"]*)"/);
+  let ref = match ? match[1] : "";
+  const dir = editor_file.replace(/[^\/]*$/, "");
+  if (ref.startsWith(dir))
+    ref = ref.substr(dir.length);
+  return ref;
 }
 
 function blank_to_dash(s) {
@@ -2903,6 +2914,7 @@ async function edit_agent_update_text() {
   agent.visual.clothes = dash_to_blank($id("ea_visual_clothes").value);
   agent.visual.emo = dash_to_blank($id("ea_visual_emo").value);
   agent.voice = ea_voice_expand(dash_to_blank($id("ea_voice").value));
+  agent.art_model = dash_to_blank($id("ea_art_model").value);
 
   if ($id("ea_visual_age").classList.contains("hidden")) {
     agent.visual.age = dash_to_blank(calc_visual_age_from_age(agent.age));
@@ -2934,6 +2946,62 @@ function calc_visual_age_from_age(age) {
     age >= 1 ? "toddler" :
     "baby";
   return `${word} ${age} years old`;
+}
+
+function ea_ref_image_upload() {
+  $id("ea_ref_image_file").click();
+}
+
+async function ea_ref_image_file_changed(ev) {
+  const files = ev.target.files;
+  // sanity check
+  if (files.length != 1) {
+    console.log("ea_ref_image_file_changed: files.length != 1:", files.length);
+    return;
+  }
+  active_inc("ea_ref_image_upload")
+  const file = files[0];
+  const ext = file.name.replace(/[^\/]*[^.]*/, "");
+  const name = $id("ea_name").value + (ext ? "." + ext : ".jpg");
+  const data = await upload_file(file, name);  // TODO use agent name? force overwrite
+  if (!data) {
+    await error("ea_ref_image_upload");
+  } else {
+    edit_agent_set_ref_image(data.name);
+  }
+  active_dec("ea_ref_image_upload")
+  // clear the file input so we can upload the same file again
+  ev.target.value = "";
+}
+
+function ea_ref_image_changed() {
+  edit_agent_set_ref_image($id("ea_ref_image").value);
+}
+
+function edit_agent_set_ref_image(name) {
+  let path;
+  if (name === "")
+    path = null;
+  else if (name.match(/\//))
+    path = name.replace(/^\//, "");
+  else {
+    const dir = editor_file.replace(/[^\/]*$/, "");
+    path = dir + name;
+  }
+  $id("ea_ref_image").value = name;
+  let visual = $id("ea_visual_person").value;
+  visual = visual.replace(/\s*REF=".*?"/, "");
+  if (path) {
+    visual += ` REF="${path}"`;
+    // also set ea_art_model to Krie or Xrie
+    if (!["Krie", "Xrie"].includes($id("ea_art_model").value))
+      $id("ea_art_model").value = user_nsfw ? "Xrie" : "Krie";
+  } else {
+    // also clear ea_art_model if it's Krie or Xrie
+    if (["Krie", "Xrie"].includes($id("ea_art_model").value))
+      $id("ea_art_model").value = "";
+  }
+  $id("ea_visual_person").value = visual;
 }
 
 // voice activity detection (VAD) --------------------------------------------
@@ -4468,6 +4536,13 @@ export function nsfw_zone_room_changed() {
   nsfw_zone_gate(in_nsfw_zone);
 }
 
+function remove_nsfw_options() {
+  const $$options = Array.from($$("option.nsfw"));
+  for (const $o of $$options) {
+    $o.remove();
+  }
+}
+
 // TODO remove export when no longer needed for testing
 
 // Run on page load
@@ -4960,8 +5035,11 @@ export async function init() {
   if (location.pathname === START_URL)
     return;
 
-  if (user_nsfw)
+  if (user_nsfw) {
     nsfw_zone_init();
+  } else {
+    remove_nsfw_options();
+  }
 
   setup_help();
   await setup_icons();
@@ -5140,6 +5218,11 @@ export async function init() {
   $on($content, "input", vad_disable_while_typing);
   $on($content, "keypress", vad_disable_while_typing);  // for arrow keys, etc
   $on($content, "click", vad_disable_while_typing);
+
+  // agent editor: upload reference image
+  $on($id("ea_ref_image_upload"), "click", ea_ref_image_upload);
+  $on($id("ea_ref_image_file"), "change", ea_ref_image_file_changed);
+  $on($id("ea_ref_image"), "change", ea_ref_image_changed);
 
   if (isMobile)
     setup_view_option_swipe();
