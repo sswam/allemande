@@ -348,6 +348,7 @@ async def process_image_queue():
                     try:
                         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
 
+                        logger.info("model: %s", job.config.get("model", "?"))
                         logger.debug("image prompt:\n%s", job.prompt)
 
                         # Check for img2img mode
