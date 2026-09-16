@@ -144,7 +144,7 @@ body.simple .message {
 
 .message:has(div.image) +
 .message:not(.turn) {
-	padding-top: 1.5625rem;
+	padding-top: 1.75rem;
 }
 
 /*
