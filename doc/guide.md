@@ -440,7 +440,6 @@ digraph Google {
     "Gema" [label=<<b>Gema</b><br/><font point-size="10">Gemma 4 26B A4B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Mixture of Experts</font>>]
     "Gem" [label=<<b>Gem</b><br/><font point-size="10">Gemma 4 31B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Strongest Gemma</font>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.5 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, less censored</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
     "Gemi" [label=<<b>Gemi</b><br/><font point-size="10">Gemini 3 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Most strong and capable</font>>]
@@ -449,7 +448,6 @@ digraph Google {
     "Google" -> "Gema"
     "Google" -> "Gem"
     "Google" -> "Lite"
-    "Google" -> "Flasho"
     "Google" -> "Flashi"
     "Google" -> "Gemmi"
     "Google" -> "Gemi"
@@ -700,7 +698,6 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
 - **Grace** (o3, OpenAI): The strongest reasoning model from OpenAI, ideal for advanced applications [disabled by default due to high cost]
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
-- **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
 - **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
@@ -956,7 +953,6 @@ type: visual
 | Google        | Gemma 4 26B A4B       | Gema    | $0.13  | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
 | Google        | Gemma 4 31B           | Gem     | $0.14  | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                         |
 | Google        | Gemini 2.5 Flash Lite | Lite    | $0.10  | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flasho  | $0.10  | $0.40  | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | $0.30  | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi   | $1.25  | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | Google        | Gemini 3 Pro          | Gemi    | $2     | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |

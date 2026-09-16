@@ -201,7 +201,6 @@ Please do not use languages models other than those listed here for NSFW content
 | Google     | Gemma 4 26B A4B       | Gema   | $0.13 | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                              |
 | Google     | Gemma 4 31B           | Gem    | $0.14 | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                |
 | Google     | Gemini 2.5 Flash Lite | Lite   | $0.10 | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                         |
-| Google     | Gemini 2.0 Flash      | Flasho | $0.10 | $0.40  | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
 | Google     | Gemini 2.5 Flash      | Flashi | $0.30 | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                       |
 | Google     | Gemini 2.5 Pro        | Gemmi  | $1.25 | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
 | Google     | Gemini 3 Pro          | Gemi   | $2    | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                    |
