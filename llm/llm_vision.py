@@ -200,7 +200,7 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
     if is_url(image_source):
         if not image_source.startswith(("http://", "https://")):
             raise ValueError("Invalid URL format. URL must start with http:// or https://")
-        if vendor == ["openai", "openrouter", "xai"]:
+        if vendor in ["openai", "openrouter", "xai"]:
             return {"type": "image_url", "image_url": {"url": image_source, "detail": detail}}
         if vendor == "anthropic":
             return {"type": "image", "source": {"type": "url", "url": image_source}}
