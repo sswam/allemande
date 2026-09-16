@@ -306,7 +306,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
         # if msg in ["list index out of range"] or "connection has been closed" in msg:
         #     msg = ""
         usage_log(c.responsible_human, t0, duration, service, model, agent.name, room.name, 0, 0, 0, msg)
-        return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
+        return f"{agent.name}:" + re.sub(r'(?m)^', '\t', msg)
 
     duration = (datetime.now() - t0).total_seconds()
 
