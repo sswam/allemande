@@ -357,10 +357,22 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
 
     # logger.warning("raw response: %r %r", raw_response, dir(raw_response))
 
-    logger.debug("llm: response: %s", response)
+    # logger.info("llm: raw_response: %r", raw_response)
+    # logger.info("llm: response: %r", response)
 
-    message = response.choices[0].message
-    content = message.content
+    #   File "/home/sam/allemande/llm/llm.py", line 362, in achat_openai
+    # message = response.choices[0].message
+    # TypeError: 'NoneType' object is not subscriptable
+
+    if response and response.choices:
+        message = response.choices[0].message
+        role = message.role
+        content = message.content
+    else:
+        logger.warning("llm: received null response / no choices")
+        message = None
+        role = "assistant"
+        content = ""
 
     # Support Perplexity citations
     try:
@@ -375,7 +387,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
     output_count = response.usage.completion_tokens
 
     output_message = {
-        "role": message.role,
+        "role": role,
         "content": content,
         "usage": {
             "input": input_count,
@@ -383,6 +395,8 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
         },
         "cost": input_count * model["cost_in"] / 1e6 + output_count * model["cost_out"] / 1e6,
     }
+
+    # logger.info("llm: output_message: %r", output_message)
 
     return output_message
 
