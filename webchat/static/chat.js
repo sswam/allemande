@@ -2575,7 +2575,12 @@ async function edit_changed() {
     await edit_agent_update_text();
   // console.log("orig [", editor_text_orig, "]");
   // console.log("new [", edit_get_text(), "]");
-  return edit_get_text() !== editor_text_orig;
+  const changed = edit_get_text() !== editor_text_orig;
+  // if (changed) {
+  //   console.log("editor_text_orig", editor_text_orig);
+  //   console.log("editor_text", editor_text);
+  // }
+  return changed;
 }
 
 async function edit(file) {
@@ -2760,9 +2765,16 @@ async function edit_agent_reset() {
   // console.log(agent);
 
   const name = editor_file.replace(/.*\//, "").replace(/\.[^/.]+$/, "");
+  let model = (agent.base ?? [])[1] ?? "";
+  if (model && model.match(/M$/)) {
+    const model2 = model.replace(/M$/, "");
+    if (is_value_in_datalist(model2, $id("ea_model_options"))) {
+      model = model2;
+    }
+  }
   $id("ea_name").value = name;
   $id("ea_type").value = (agent.base ?? [])[0] ?? "";
-  $id("ea_model").value = (agent.base ?? [])[1] ?? "";
+  $id("ea_model").value = model;
   $id("ea_description").value = blank_to_dash(agent.description);
   const age = $id("ea_age").value = blank_to_dash(agent.age);
   $id("ea_visual_person").value = blank_to_dash(agent.visual?.person);
@@ -2868,8 +2880,8 @@ function convert_agent_for_simple_editor(agent) {
   } else if (model == "StrongestAI") {
     type = "Agent";
     model = "Strong";
-  } else if (model && model.match(/M$/)) {
-    model = model.replace(/M$/, "");
+  // } else if (model && model.match(/M$/)) {
+  //   model = model.replace(/M$/, "");
   } else if (base.length == 1) {
     type = model;
     model = "";
@@ -2889,16 +2901,24 @@ function is_value_in_datalist(str, datalist) {
   return Array.from(datalist.options).some(option => option.value === str);
 }
 
+function ea_type_changed() {
+  const type = $id("ea_type").value;
+  if (type == "Visual" || type == "Human")
+    $id("ea_model").value = "";
+}
+
 async function edit_agent_update_text() {
   const ym = await $import("ym");
 
   const agent = ym.parse(editor_text_orig);
   agent.visual ??= {};
 
+  let type = $id("ea_type").value;
   let model = $id("ea_model").value;
+  if (type == "Visual" || type == "Human")
+    model = "";
   if (model && !["Small", "Medium", "Strong"].includes(model) && is_value_in_datalist(model, $id("ea_model_options")))
     model += "M";
-  let type = $id("ea_type").value;
 
   agent.base = []
   if (type && type !== "-")
@@ -5223,6 +5243,7 @@ export async function init() {
   $on($id("ea_ref_image_upload"), "click", ea_ref_image_upload);
   $on($id("ea_ref_image_file"), "change", ea_ref_image_file_changed);
   $on($id("ea_ref_image"), "change", ea_ref_image_changed);
+  $on($id("ea_type"), "change", ea_type_changed);
 
   if (isMobile)
     setup_view_option_swipe();
