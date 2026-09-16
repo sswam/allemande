@@ -180,7 +180,6 @@ async def request(
         params["distilled_cfg_scale"] = cfg_scale
 
     if img2img:
-        logger.info("img2img resize=%s", resize)
         params["denoising_strength"] = denoise
         resize_map = {
             "stretch": 0,
