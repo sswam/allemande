@@ -86,6 +86,25 @@ def remove_comments(text):
     return re.sub(r"#.*", "", text, flags=re.MULTILINE)
 
 
+def img2img_resize_and_pad(image_path: str, width: int, height: int, pad_color: tuple) -> str:
+    """
+    Resize image to fit within (width, height) without distortion,
+    padding extra space with pad_color. Returns base64-encoded PNG string.
+    """
+    with Image.open(image_path) as img:
+        img = img.convert("RGB")
+        img.thumbnail((width, height), Image.LANCZOS)
+
+        padded = Image.new("RGB", (width, height), pad_color)
+        paste_x = (width - img.width) // 2
+        paste_y = (height - img.height) // 2
+        padded.paste(img, (paste_x, paste_y))
+
+        buffer = io.BytesIO()
+        padded.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
 async def request(
     output: str = "",
@@ -161,15 +180,31 @@ async def request(
         params["distilled_cfg_scale"] = cfg_scale
 
     if img2img:
+        logger.info("img2img resize=%s", resize)
         params["denoising_strength"] = denoise
-        init_images = [load_file_base64(image_path) for image_path in input_images]
-        params["init_images"] = init_images
         resize_map = {
             "stretch": 0,
             "crop": 1,
             "pad": 2,
             "latent": 3,  # yuk!
+            "white": 1,   # handled in Python, tell Forge to crop (no-op)
+            "black": 1,
         }
+
+        pad_colors = {
+            "white": (255, 255, 255),
+            "black": (0, 0, 0),
+        }
+
+        if resize in pad_colors:
+            init_images = [
+                img2img_resize_and_pad(image_path, width, height, pad_colors[resize])
+                for image_path in input_images
+            ]
+        else:
+            init_images = [load_file_base64(image_path) for image_path in input_images]
+
+        params["init_images"] = init_images
         params["resize_mode"] = resize_map.get(resize, resize_map["pad"])
 
     if model:
