@@ -609,6 +609,8 @@ MODEL_FALLBACKS = {
     "venice:*": "google:gemini-2.5-flash",
 }
 
+openrouter_model_variant = "floor"  # or None, "nitro"
+
 # MODEL_FALLBACKS = {
 #     "*:*": "venice:venice-uncensored",
 # }

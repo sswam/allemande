@@ -27,18 +27,20 @@ import asyncio
 import json
 import io
 from copy import deepcopy
+import asyncio
 
 from argh import arg
 import tab
 import tiktoken
-from slug import slug
+import aiohttp
 
 from ally import main, titty
 from ally.lazy import lazy
 from ally.util import open
 import tsv2txt_py as tsv2txt
 import llm_vision
-from ally.llms import MODELS, default_model, default_model_small
+from ally.llms import MODELS, default_model, default_model_small, openrouter_model_variant
+from slug import slug
 
 # Lazy imports for API clients
 lazy("openai", "AsyncOpenAI")
@@ -298,7 +300,11 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
     model = MODELS[opts.model]
     model_id = model["id"]
 
-    logger.debug("model: %s", model_id)
+    # enable appending :floor or :nitro for price / speed
+    if variant == "openrouter" and openrouter_model_variant:
+        model_id += ":" + openrouter_model_variant
+
+    logger.info("model: %s", model_id)
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -372,7 +378,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
         logger.warning("llm: received null response / no choices")
         message = None
         role = "assistant"
-        content = ""
+        content = None
 
     # Support Perplexity citations
     try:
@@ -396,9 +402,50 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
         "cost": input_count * model["cost_in"] / 1e6 + output_count * model["cost_out"] / 1e6,
     }
 
+    # Detect a certain degenerate response with Gemma 4:
+    if variant == "openrouter" and (content is None or "our our our our" in content):
+        logger.warning("Likely degenerate Gemma 4 response from %s", response.model)
+        response_id = response.id
+        logger.warning("  response ID: %s", response_id)
+        provider_name = None
+        try:
+            provider_name = await openrouter_fetch_provider_name(response_id)
+        except Exception as e:
+            logger.exception("openrouter_fetch_provider_name failed", exc_info=True)
+        logger.warning("  provider name: %s", provider_name)
+        with open("/tmp/gemma4bug.txt", "a") as log2:
+            print("Likely degenerate Gemma 4 response from", response.model, "None" if content is None else "our our", provider_name, file=log2)
+
     # logger.info("llm: output_message: %r", output_message)
 
     return output_message
+
+
+# Detect a certain degenerate response with Gemma 4, need to know which OpenRouter provider is doing it.
+async def openrouter_fetch_provider_name(generation_id: str, retries: int = 7, backoff_sec: float = 0.5) -> str | None:
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    url = "https://openrouter.ai/api/v1/generation"
+
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    params = {
+        "id": generation_id
+    }
+
+    async with aiohttp.ClientSession() as session:
+        for attempt in range(retries):
+            async with session.get(url, headers=headers, params=params) as response:
+                if response.status == 404 and attempt < retries - 1:
+                    logger.info("openrouter_fetch_provider_name failed, retrying after sleep %s", backoff_sec * (2 ** attempt))
+                    await asyncio.sleep(backoff_sec * (2 ** attempt))
+                    continue
+
+                response.raise_for_status()
+
+                payload = await response.json()
+                provider_name = payload.get("data", {}).get("provider_name")
+                return provider_name
 
 
 def replace_citations(content, cites):
@@ -470,12 +517,12 @@ def replace_citations(content, cites):
 
 async def achat_perplexity(opts: Options, messages):
     """Chat with Perplexity models asynchronously."""
-    return await achat_openai(opts, messages, client=perplexity_async_client, citations=True)
+    return await achat_openai(opts, messages, client=perplexity_async_client, citations=True, variant="perplexity")
 
 
 async def achat_xai(opts: Options, messages):
     """Chat with xAI models asynchronously."""
-    return await achat_openai(opts, messages, client=xai_async_client)
+    return await achat_openai(opts, messages, client=xai_async_client, variant="xai")
 
 
 async def achat_deepseek(opts: Options, messages):
@@ -485,11 +532,11 @@ async def achat_deepseek(opts: Options, messages):
 
 async def achat_openrouter(opts: Options, messages):
     """Chat with OpenRouter models asynchronously."""
-    return await achat_openai(opts, messages, client=openrouter_async_client)
+    return await achat_openai(opts, messages, client=openrouter_async_client, variant="openrouter")
 
 async def achat_venice(opts: Options, messages):
     """Chat with Venice models asynchronously."""
-    return await achat_openai(opts, messages, client=venice_async_client)
+    return await achat_openai(opts, messages, client=venice_async_client, variant="venice")
 
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
@@ -719,7 +766,7 @@ async def allm_chat(opts: Options, messages):
     if vendor == "anthropic":
         return await achat_claude(opts, messages)
     if vendor == "openai":
-        return await achat_openai(opts, messages)
+        return await achat_openai(opts, messages, variant="openai")
     if vendor == "perplexity":
         return await achat_perplexity(opts, messages)
     if vendor == "google":
