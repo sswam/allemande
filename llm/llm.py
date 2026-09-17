@@ -352,7 +352,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
     # disable openrouter providers that have been giving errors, hardcoded for now
     # Venice: gives null responses with Gemma 4 sometimes.
     if variant == "openrouter":
-        options["extra_body"] = {"provider": {"ignore": ["venice"]}}
+        options["extra_body"] = {"provider": {"ignore": ["venice", "deepinfra"]}}
 
     # logger.info("options: %s", options)
 
