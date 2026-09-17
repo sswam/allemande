@@ -90,6 +90,7 @@ export const icons = {
   voice_pass_through: '<i class="bi bi-voicemail i20"></i>',
   voice_auto: '<i class="bi bi-play i20"></i>',
   voice_send: '<i class="bi bi-send i20"></i>',
+  voice_starred: '<i class="bi bi-asterisk i16"></i>',
   help: '<i class="bi bi-question i22"></i>',
 //  help: '<i class="bi bi-info-lg i20"></i>',
 //  select: '<i class="bi bi-list-check i20"></i>',

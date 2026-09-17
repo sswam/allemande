@@ -1933,6 +1933,8 @@ async function play_message_audio($message, regen) {
     // no audio elements?  do TTS
     const hash = $message.getAttribute("hash");
     let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+    if (view_options.voice_starred)
+      url += "&starred=1";
     if (regen)
       url += "&regen=1&ts=" + Date.now();
 

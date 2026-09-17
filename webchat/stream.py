@@ -256,7 +256,6 @@ def try_loading_extra_header(path, header):
 async def stream(request, path=""):
     """Stream a file to the browser, like tail -f"""
     snapshot = request.query_params.get("snapshot")
-    regen = request.query_params.get("regen")
 
     user = get_user(request)
 
@@ -316,8 +315,10 @@ async def stream(request, path=""):
 
     # Check for TTS files
     if is_tts_file:
+        regen = request.query_params.get("regen")
+        starred = request.query_params.get("starred")
         media_type = "audio/mpeg"
-        await ally_tts.generate_tts_file(path, regen)
+        await ally_tts.generate_tts_file(path, regen=regen, starred=(starred=="1"))
         # TODO return a static empty-ish mp3 for empty file
         if path.exists():
             return FileResponse(path, media_type=media_type)

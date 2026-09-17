@@ -104,6 +104,7 @@ const VIEW_OPTIONS_DEFAULT = {
   voice_auto: 0,
   voice_pass_through: 0,
   voice_send: 0,
+  voice_starred: 0,
   help: 0,
   embed: 0,
   dir_sort: "time",
@@ -3381,6 +3382,7 @@ async function view_options_apply() {
   active_set("voice_auto", view_options.voice_auto);
   active_set("voice_pass_through", view_options.voice_pass_through);
   active_set("voice_send", view_options.voice_send);
+  active_set("voice_starred", view_options.voice_starred);
   active_set("edit_advanced", view_options.edit_advanced > 0);
 
   active_set("help", view_options.help > 0);
@@ -4140,6 +4142,11 @@ async function voice_send(ev) {
     view_options.voice_stt = 1;
     view_options.voice_vad = 1;
   }
+  view_options_apply();
+}
+
+async function voice_starred(ev) {
+  view_options.voice_starred = !view_options.voice_starred;
   view_options_apply();
 }
 
@@ -5197,6 +5204,7 @@ export async function init() {
   $on($id("voice_auto"), "click", voice_auto);
   $on($id("voice_pass_through"), "click", voice_pass_through);
   $on($id("voice_send"), "click", voice_send);
+  $on($id("voice_starred"), "click", voice_starred);
 
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
