@@ -34,6 +34,7 @@ let is_private = false;
 let room_nsfw = false;
 let access_denied = false;
 let icons;
+let folder_reload = false;
 
 // const narrator = "Nova";
 // const illustrator = "Illu";
@@ -1076,14 +1077,21 @@ export async function set_room(room_new, no_history) {
   }
 
   if (type == "room" || type == "dir") {
-    messages_iframe_set_src(await room_url() + "?stream=1");
+    let param_append = "";
+    if (type == "dir" && folder_reload) {
+      folder_reload = false;
+      const now = Date.now();  /* XXX this is not ideal */
+      param_append = "&_=" + now;
+    }
+
+    messages_iframe_set_src(room_url() + "?stream=1" + param_append);
 
     // console.log("set_room, calling check_for_updates");
     check_for_updates();
   }
 }
 
-async function room_url() {
+function room_url() {
   // const type = await get_file_type(room);
   let url = ROOMS_URL + "/" + room;
   if (type == "room") {
@@ -2214,6 +2222,7 @@ async function clear_chat(ev, op) {
 
 async function archive_chat(ev) {
   await clear_chat(ev, "archive");
+  await setup_nav_buttons(); // because page_last changes with archive; also sets access_denied
 }
 
 async function rotate_chat(ev) {
@@ -2573,12 +2582,10 @@ function edit_get_text() {
 async function edit_changed() {
   if (edit_agent_mode())
     await edit_agent_update_text();
-  // console.log("orig [", editor_text_orig, "]");
-  // console.log("new [", edit_get_text(), "]");
   const changed = edit_get_text() !== editor_text_orig;
   // if (changed) {
-  //   console.log("editor_text_orig", editor_text_orig);
-  //   console.log("editor_text", editor_text);
+  //   console.log("editor_text_orig [", editor_text_orig, "]");
+  //   console.log("editor_text  [", editor_text, "]");
   // }
   return changed;
 }
@@ -2650,12 +2657,16 @@ async function edit_save() {
   const noclobber = editor_file !== editor_file_orig;
 
   try {
+    // force the folder view to reload only if add/remove the file
+    folder_reload = Boolean(editor_text_orig) != Boolean(editor_text);
+    // console.log("folder_reload check", Boolean(editor_text_orig), Boolean(editor_text), folder_reload);
     await put_file(editor_file, editor_text, noclobber);
     editor_text_orig = editor_text;
   } catch (err) {
     console.error(err.message);
     active_dec("edit_save");
     await error("edit_save");
+    folder_reload = false;
     return false;
   }
 
@@ -2678,10 +2689,14 @@ async function edit_reset() {
 
 async function edit_clear() {
   if (!await Prompts.confirm("Delete this file?")) return false;
-  editor_text_orig = "";
   edit_set_text("");
-  if (edit_agent_mode())
-    edit_agent_reset();
+  if (edit_agent_mode()) {
+    // reset to blank, without losing the real orig text
+    const editor_text_orig_real = editor_text_orig;
+    editor_text_orig = "";
+    await edit_agent_reset();
+    editor_text_orig = editor_text_orig_real;
+  }
   await edit_save_and_close();
 }
 
@@ -4235,7 +4250,7 @@ async function add_math(ev) {
 async function print_chat(ev) {
   ev.preventDefault();  /* doesn't! WTF */
   // TODO: view options! could save them in local storage in the room, maybe?
-  const url = await room_url() + "?snapshot=1#print";
+  const url = room_url() + "?snapshot=1#print";
   window.location.href = url;
 }
 
@@ -4974,6 +4989,14 @@ function handle_combo_blur(event) {
   if (el.value === '') {
     el.value = el.placeholder;
     el.placeholder = el.dataset.placeholder;
+  }
+  // " " stands for empty string, because datalist doesn't work with an empty string
+  // delay to account for several change / blur events one after another :(
+  if (el.value === ' ') {
+    setTimeout(() => {
+        el.value = '';
+        el.placeholder = el.dataset.placeholder;
+    }, 0);
   }
 }
 
