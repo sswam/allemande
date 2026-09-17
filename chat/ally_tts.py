@@ -30,15 +30,15 @@ def get_tts_lock(key):
     return _tts_locks[key]
 
 
-async def generate_tts_file(path: Path, regen=False):
+async def generate_tts_file(path: Path, regen=False, starred=False):
     """ Generate a TTS file if needed, with locking """
     lock = get_tts_lock(str(path))
     async with lock:
         if regen or not path.exists():
-            await generate_tts_file_2(path)
+            await generate_tts_file_2(path, starred=starred)
 
 
-async def generate_tts_file_2(path: Path):
+async def generate_tts_file_2(path: Path, starred: bool=False):
     """ Generate a missing TTS file """
     stem = path.stem
     m = re.match(r"(\d+)\.([0-9a-f]{8})$", stem)
@@ -77,7 +77,8 @@ async def generate_tts_file_2(path: Path):
     content = re.sub(r"<!--.*?-->", "", content, flags=re.DOTALL)  # strip out HTML comments
     content = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", content)  # replace links with just the link text
     content = re.sub(r"<[A-Za-z/].*?>", "", content)  # strip out HTML tags
-    # content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - disabled for now as it's flaky
+    if not starred:
+        content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - may need work
 
     # experimental:  add a fullstop at the end of each line if it ends with a word character
     content = re.sub(r"(\w|\*)$", r"\1.", content, flags=re.MULTILINE)
