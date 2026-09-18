@@ -229,6 +229,8 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
 
         dir_suffix = ""
         if is_dir:
+            if item.name == "ally_chat_cli":
+                continue
             dir_suffix = "/"
             record.update(
                 {
