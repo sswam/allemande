@@ -276,7 +276,8 @@ class ImageJob:
     count: int
     portal: Path
     request_time: float
-    duration: float
+    duration_estimate: float
+    duration_real: float
     input_images: list[str]
 
 
@@ -397,7 +398,8 @@ async def process_image_queue():
                     if job.i == job.count - 1:
                         asyncio.create_task(complete_batch(job))  # background
                 end_time = time.time()
-                logger.info("Job duration vs estimate: %.2f seconds vs %.2f", end_time - start_time, job.duration)
+                job.duration_real += end_time - start_time
+                logger.info("Job duration vs estimate: %.2f seconds vs %.2f", end_time - start_time, job.duration_estimate)
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -421,6 +423,7 @@ async def complete_batch(job: ImageJob):
         {
             "seed": job.seed - job.count + 1,
             "metadata": metadata,
+            "duration": job.duration_real,
         }
     )
     (job.d / "result.yaml").write_text(data, encoding="utf-8")
@@ -540,8 +543,8 @@ async def enqueue_image_jobs(
             logger.debug("  - different user, skipping")
             continue
         logger.debug("  - checking a job")
-        priority += j.duration or TIME_EPSILON
-        logger.debug("    - added that job's duration %r giving %r", j.duration, priority - current_time)
+        priority += j.duration_estimate or TIME_EPSILON
+        logger.debug("    - added that job's duration %r giving %r", j.duration_estimate, priority - current_time)
         last_job = j
 
     # If would schedule earlier than the user's last job, go after it!
@@ -576,20 +579,21 @@ async def enqueue_image_jobs(
             count=count,
             portal=portal,
             request_time=current_time,
-            duration=0,
+            duration_estimate=0,
+            duration_real=0,
             input_images=input_images,
         )
 
         weight = estimate_job_weight(new_job)
         job_penalty = 0 if not user else get_user_job_penalty(user_usage.get(user, 0.0))
-        duration = weight * job_penalty * job_base_time
-        duration_adjusted = duration * user_multiplier
-        new_job.duration = duration_adjusted
-        logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
+        duration_estimate = weight * job_penalty * job_base_time
+        duration_adjusted = duration_estimate * user_multiplier
+        new_job.duration_estimate = duration_adjusted
+        logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration_estimate)
 
         # first job starts at 1/2 estimated duration, not 0
         if i == 0:
-            priority += (new_job.duration or TIME_EPSILON) / 2
+            priority += (new_job.duration_estimate or TIME_EPSILON) / 2
             new_job.priority = priority
 
         if priority - current_time > MAX_QUEUE_DELAY:
@@ -598,7 +602,7 @@ async def enqueue_image_jobs(
             await complete_batch(new_job)
             break
         await image_queue.put(new_job)
-        priority += new_job.duration or TIME_EPSILON
+        priority += new_job.duration_estimate or TIME_EPSILON
         if user:
             user_usage[user] = user_usage.get(user, 0.0) + weight
 
