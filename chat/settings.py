@@ -52,3 +52,5 @@ TTS_VOICE_NARRATION = "voice/male_uk_vlow"
 TTS_TIMEOUT = 60  # 1 minute
 STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes
+
+GPU_COST_PER_SECOND = 0.01 / 30  # 1c / 30 seconds

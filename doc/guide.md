@@ -39,11 +39,10 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 ## Usage
 
-- Currently, free users enjoy unlimited text chat and image gen.
-- The only case where you might be limited, is if you are using expensive chat models too much.
-- We ask free users to participate in public chat, give feedback, or contribute in some way.
 - You can view your usage and its cost by pressing the <i class="bi-currency-dollar"></i> button at top-right. Press the same button again to close it.
-- Free users should try to keep their usage under $2 per month. Some models are currently free to use, and many are very inexpensive.
+- Free users should try to keep their usage under $3 per month. Some models are very inexpensive.
+- Image gen is accounted at 1c per 30 seconds of GPU time.
+- Please participate in public chat, give feedback, or contribute in some way, that counts for a lot!
 
 ## Rules
 

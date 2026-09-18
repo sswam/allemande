@@ -17,7 +17,7 @@ import conductor
 import chat
 import bb_lib
 import ally_markdown
-from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT, PATH_ROOMS
+from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT, PATH_ROOMS, GPU_COST_PER_SECOND
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
 import ally_room
@@ -495,16 +495,18 @@ async def local_agent(c, agent, _query) -> str:
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT, files=c.images)
 
-    duration = (datetime.now() - t0).total_seconds()
+    # duration = (datetime.now() - t0).total_seconds()
 
     # try to get image seed from response
     image_seed = None
     image_metadata = {}
+    duration = 0
     try:
         # read result.yaml
         data = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
         image_seed = data["seed"]
         image_metadata = data["metadata"]
+        duration = data.get("duration", 0)
     except (FileNotFoundError, KeyError):
         pass
 
@@ -565,7 +567,7 @@ async def local_agent(c, agent, _query) -> str:
 
     output_count += len(response)
 
-    cost = 0  # TODO some pricing for local models?  use image_count?
+    cost = duration * GPU_COST_PER_SECOND
 
     usage_log(c.responsible_human, t0, duration, service, model_name, agent.name, room.name, input_count, output_count, cost, "")
 
