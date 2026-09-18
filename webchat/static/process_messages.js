@@ -730,7 +730,9 @@ function react(id, msgUser, reaction) {
     }
 
     const $react = $create("div");
-    const text = reaction + " —" + msgUser;
+    let showUser = msgUser.replace(/.*?=/, "");
+    showUser = showUser.replace(/\.\d+$/, "");
+    const text = reaction + " —" + showUser;
     $react.appendChild($text(text));
     $react.dataset.user = msgUser.toLowerCase();
     $reacts.appendChild($react);
@@ -749,7 +751,7 @@ function react(id, msgUser, reaction) {
     $summary.classList.add("summary");
     const counters = {};
     for (const $e of $reacts.children) {
-      const t = $e.textContent;
+      const t = $e.textContent.replace(/ —.*/, "");
       const emoji = t.match(/^\p{RGI_Emoji}/v)?.[0];
       const comment = !emoji || t.length > emoji.length;
       if (emoji)
