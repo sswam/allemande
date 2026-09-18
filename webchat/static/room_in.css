@@ -24,11 +24,12 @@ body.simple div.messages {
 }
 */
 
-.message {
+.message > .content {
 	background: var(--background);
 }
 
 .message .label {
+	background: var(--background);
 	font-weight: bold;
 }
 
