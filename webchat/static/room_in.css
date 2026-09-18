@@ -205,6 +205,14 @@ body.simple .message.me.turn, body.simple .message.me:not(:has(p > *)), body.sim
 	margin-left: auto;
 }
 
+/* subsequent hack to try to fix an issue with removed messages / undo, flying blind a bit */
+
+.message:has(div.image):has(+ .message.removed) {
+	padding-bottom: 1.75rem;
+}
+
+/* ---- */
+
 .content {
 	width: fit-content;
 	max-width: 100%;
