@@ -149,3 +149,6 @@ You can set a custom mission file name to use in room options. Omit the .m suffi
 
 
 |  | `Ctrl+\` | New | Go to new numbered page beyond last one |
+
+| <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
+| <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |

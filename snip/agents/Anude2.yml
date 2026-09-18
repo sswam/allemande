@@ -1,0 +1,4 @@
+base: Anima
+image_prompt_template: "completely nude, %s <lora:loraEditZerotwo:1>"
+config:
+  denoise: 1.0

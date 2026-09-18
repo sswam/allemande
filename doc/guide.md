@@ -17,7 +17,7 @@ Novel features include:
 - Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
 - quality AI art with SDXL models, and assisted prompting; not censored
 - a flexible room file system; private, public and group chats
-- undo, retry and edit the chat history; archive or clear old chat rooms
+- freely edit the chat history; archive or clear old chat rooms
 - a numbered "chapters" system, to split up your chats for performance
 - a "conductor" that manages AI responses based on mentions and cues
 - AIs can teach you about the app, including all the models and agents
@@ -1031,6 +1031,8 @@ Note that the buttons are small and only the icons are visible, not any text. Th
 
 Many buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
 
+To remove a message, react or comment, click the message, then press the appropriate button. If TTS is enabled, there's also a button to speak the message.
+
 | Component | Description |
 |---|---|
 | Room Name | Input/display field for current chat room (top center) |
@@ -1096,8 +1098,6 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-image"></i> | `Alt+V` | Artist | Request an image from the artist agent (visible if configured in Room Options) |
 | <i class="bi-justify-left"></i> | `Alt+N` | Writer | Request narrative from the writer agent (visible if configured in Room Options) |
 | <i class="bi-plus-lg"></i> |  | Add | Upload files and record media menu |
-| <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
-| <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
 | <i class="bi-three-dots-vertical"></i> |  | Opt | Opens options and tools |
 
 ## Add Menu
