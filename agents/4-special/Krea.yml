@@ -1,4 +1,5 @@
 base: Krea2
+image_prompt_template: "%s <lora:kunc:1>"
 image_prompt_group_nouns: True
 image_prompt_map:
   1girl: female
