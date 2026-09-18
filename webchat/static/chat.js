@@ -2120,8 +2120,6 @@ export async function add_upload_file_link(promise) {
     return false;
   const { name, url, medium, markdown } = data;
 
-  console.log(`Markdown [${markdown}]`);
-
   if (!markdown)
     return false;
 
