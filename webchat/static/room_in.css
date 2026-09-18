@@ -24,6 +24,10 @@ body.simple div.messages {
 }
 */
 
+.message {
+	background: var(--background);
+}
+
 .message .label {
 	font-weight: bold;
 }
