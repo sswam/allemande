@@ -58,7 +58,7 @@ Most characters can remember past chats. In order for this to work, you need to 
 
 ## Usage
 
-As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is currently free and unlimited. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
+As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is accounted at 1c per 30 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
 
 ## A Few of our Characters and Tools
 
@@ -139,7 +139,7 @@ Illu:	<think>
 
 Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)
 
-Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
+Remember: AIs aren't perfect - feel free to remove the message and poke to retry, if a response seems unusual!
 
 ## Current Limitations and Work in Progress
 

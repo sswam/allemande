@@ -60,7 +60,7 @@ Most characters can remember past chats. In order for this to work, you need to 
 
 ## Usage
 
-As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is currently free and unlimited. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
+As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is accounted at 1c per 30 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
 
 ## A Few of our Characters and Tools
 
@@ -153,14 +153,13 @@ Xilu:	<think>
 
 Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo, Cleo, (adult 20 years old:1.6), 1girl, blue eyes, skinny, Swiss, straight hair, long hair, parted hair, light blonde hair, seductive, black lace lingerie,, (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, raw, realistic, photo \(medium\), rating explicit, (uncensored:2) NEGATIVE score_6, score_5, score_4, (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 (anime, cartoon, 3d:2)](solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg)
 
-Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
+Remember: AIs aren't perfect - feel free to remove the message and poke to retry, if a response seems unusual!
 
 ## Current Limitations and Work in Progress
 
 - It's difficult for new users (WIP)
 - no documents / RAG (WIP)
 - no notifications (WIP)
-- voice chat incomplete (WIP)
 - no direct messaging
 - no video generation
 
