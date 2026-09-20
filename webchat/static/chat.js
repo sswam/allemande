@@ -35,6 +35,7 @@ let room_nsfw = false;
 let access_denied = false;
 let icons;
 let folder_reload = false;
+let editing_message = null;
 
 // const narrator = "Nova";
 // const illustrator = "Illu";
@@ -409,6 +410,10 @@ async function send(ev, prepend, button) {
   const message = $content.value;
   set_content("");
 
+  if (editing_message !== null) {
+    prepend = `<ac edit="${editing_message}">` + (prepend||"");
+  }
+
   if (prepend) {
     formData.append("content", prepend + message);
   } else {
@@ -424,6 +429,9 @@ async function send(ev, prepend, button) {
   }
 
   $content.placeholder = "";
+
+  if (editing_message !== null)
+    edit_message_cancel();
 }
 
 async function artist(ev) {
@@ -609,7 +617,7 @@ function new_chat_message(message) {
 
 // insert text ---------------------------------------------------------------
 
-function content_insert(ev, text) {
+function content_insert(text) {
   textarea_insert($content, text);
 }
 
@@ -852,7 +860,11 @@ function on_room_ready(fn, ...args) {
 
 function message_changed(ev) {
   const $send = $id("send");
-  if ($content.value == "") {
+  $send.classList.toggle("okay", editing_message !== null);
+  if (editing_message !== null) {
+    $send.innerHTML = icons["edit_message_save"];
+    setTitle($send, `update the message: ctrl+enter`);
+  } else if ($content.value == "") {
     $send.innerHTML = icons["poke"];
     setTitle($send, `poke the chat: ${Alt}+enter`);
   } else {
@@ -978,6 +990,10 @@ export async function set_room(room_new, no_history) {
     active_reset("room_ops_copy");
     focus_content_on_pc();
     return;
+  }
+
+  if (editing_message !== null) {
+    edit_message_cancel();
   }
 
   // fix top-level dir not in lower case
@@ -1677,7 +1693,7 @@ function setup_main_ui_shortcuts() {
     ['alt+n', writer, 'Invoke the narrator'],
     ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
     ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
-    ['ctrl+alt+a', (ev) => content_insert(ev, "α"), 'Insert alpha: α'],
+    ['ctrl+alt+a', (ev) => content_insert("α"), 'Insert alpha: α'],
   ]);
 
   add_shortcuts(shortcuts.room, [
@@ -1817,6 +1833,18 @@ function handle_message(ev) {
     const reaction_old = ev.data.reaction_old;
     const prefill = ev.data.prefill;
     react_to_message(id, comment, reaction, reaction_old, prefill);  // async
+    return;
+  }
+
+  if (ev.data.type == "msg_edit") {
+    const id = ev.data.message_id;
+    edit_message(id);  // async
+    return;
+  }
+
+  if (ev.data.type == "msg_copy") {
+    const id = ev.data.message_id;
+    copy_message(id);  // async
     return;
   }
 
@@ -5057,6 +5085,43 @@ async function react_to_message(id, comment, reaction, reaction_old, prefill) {
   active_dec("send");  // FIXME this is wonky
 }
 
+// copy message --------------------------------------------------------------
+
+async function copy_message(id) {
+  const message = await get_message(id);
+  navigator.clipboard.writeText(message.content.trimEnd());
+}
+
+async function get_message(id) {
+  const query = new URLSearchParams({
+    room, id
+  });
+  const response = await fetch("/x/message?" + query, { cache: "no-cache" });
+  if (!response.ok)
+    throw new Error("GET message request failed");
+  const message = await response.json();
+  message.content = message.content.replace(/<\/?ac.*?>/, "");  // remove any <ac edit="123">
+  return message;
+}
+
+// edit message --------------------------------------------------------------
+
+async function edit_message(id) {
+  const message = await get_message(id);
+  $content.setSelectionRange(0, 0);
+  console.log(message.content);
+  editing_message = id;
+  $body.classList.add("edit_message");
+  content_insert(message.content.trimEnd());
+
+  // TODO
+}
+
+function edit_message_cancel() {
+  editing_message = null;
+  $body.classList.remove("edit_message");
+  set_content("");  // FIXME undo option doesn't work!
+}
 
 // main ----------------------------------------------------------------------
 
@@ -5252,16 +5317,16 @@ export async function init() {
 
   $on(document, "fullscreenchange", fullscreenchange);
 
-  $content.addEventListener('dragover', content_dragover);
-  $content.addEventListener('dragleave', content_dragleave);
-  $content.addEventListener('drop', content_drop);
-  $content.addEventListener('paste', content_paste);
+  $on($content, 'dragover', content_dragover);
+  $on($content, 'dragleave', content_dragleave);
+  $on($content, 'drop', content_drop);
+  $on($content, 'paste', content_paste);
 
   // focus and blur handlers for VAD
-  $content.addEventListener('focus', content_focus_changed);
-  $content.addEventListener('blur', content_focus_changed);
-  window.addEventListener('focus', content_focus_changed);
-  window.addEventListener('blur', content_focus_changed);
+  $on($content, 'focus', content_focus_changed);
+  $on($content, 'blur', content_focus_changed);
+  $on(window, 'focus', content_focus_changed);
+  $on(window, 'blur', content_focus_changed);
 
   // disable VAD while typing
   $on($content, "input", vad_disable_while_typing);
@@ -5273,6 +5338,9 @@ export async function init() {
   $on($id("ea_ref_image_file"), "change", ea_ref_image_file_changed);
   $on($id("ea_ref_image"), "change", ea_ref_image_changed);
   $on($id("ea_type"), "change", ea_type_changed);
+
+  // edit message
+  $on($id("edit_message_cancel"), "click", edit_message_cancel);
 
   if (isMobile)
     setup_view_option_swipe();

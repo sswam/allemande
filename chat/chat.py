@@ -273,8 +273,11 @@ def history_remove_thinking_sections(history: list[dict[str, Any]], agent: Agent
 process_fn = None
 
 
-def process_chat_cli(code: str | None = None, func: str | None = None):
+def process_chat_cli(code: str | None = None, func: str | None = None, a: bool = False, d: bool = False):
     """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
+    if code and a:
+        raise ValueError("Can't use -a with --code")
+
     messages = load_chat_messages()
     if func:
         globals()["process_fn"] = globals()[func]
@@ -295,7 +298,15 @@ def process_fn(msg):
     if process_fn is None:
         raise ValueError("No function or code provided for processing.")
 
-    processed_messages = process_chat(messages, process_fn)
+    if a:
+        if d:
+            messages = [{"user":m.user, "content":m.content} for m in messages]
+        processed_messages = process_fn(messages)
+        if d:
+            processed_messages = [ChatMessage(m["user"], m["content"]) for m in processed_messages]
+    else:
+        processed_messages = process_chat(messages, process_fn)
+
     save_chat_messages(processed_messages)
 
 
@@ -336,6 +347,10 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         meta = soup.find("ac")
         if not meta:
             raise ValueError("Invalid ac tag.")
+
+        # # move all nodes inside meta out to be following siblings
+        # for child in reversed(list(meta.children)):
+        #     meta.insert_after(child)
 
         remove = meta.get("rm")
         edit = meta.get("edit")
@@ -620,10 +635,17 @@ def has_at_mention(content: str) -> bool:
     return re.search(r'(\W|^)@\w', content)
 
 
+# Example CLI usage:
+# -a means process all messages together through the function
+# -d means the function expects dict-style messages not ChatMessage objects
+
+# chat proc -f apply_editing_commands -a -d
+
+
 def main():
     """Main function to run the CLI commands."""
-    def proc(code: str | None = None, func: str | None = None):
-        return process_chat_cli(code, func)
+    def proc(code: str | None = None, func: str | None = None, a: bool = False, d: bool = False):
+        return process_chat_cli(code, func, a, d)
 
     argh.dispatch_commands(
         [

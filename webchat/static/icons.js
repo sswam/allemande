@@ -130,4 +130,7 @@ export const icons = {
   agent_new: '<i class="bi bi-person-add i20"></i>',
 
   view_reacts: '<i class="bi bi-heart i20"></i>',
+
+  edit_message_save: '<i class="bi bi-check-lg i20"></i>',
+  edit_message_cancel: '<i class="bi bi-x-lg i20"></i>',
 };

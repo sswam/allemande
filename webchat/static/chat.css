@@ -399,7 +399,8 @@ body:not(.dev) .dev:not(.early),
 body:not(.early) .early,
 body.ios .noios,
 body:not(.nsfw) .nsfw,
-body.nsfw .sfw {
+body.nsfw .sfw,
+body:not(.edit_message) .edit_message {
 	display: none !important;
 }
 

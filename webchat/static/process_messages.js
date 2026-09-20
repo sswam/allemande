@@ -658,6 +658,7 @@ async function process_editing_commands_and_reacts(message) {
   //   console.log("metas", metas);
   // }
   for (const meta of metas) {
+    // console.log(meta);
     const remove_ids = meta.getAttribute("rm");
     const insert_id = meta.getAttribute("insert");
     const edit_id = meta.getAttribute("edit");
@@ -668,11 +669,23 @@ async function process_editing_commands_and_reacts(message) {
     meta.removeAttribute("edit");
     meta.removeAttribute("react");
 
+    // hack: move contained elements out
+    // if (edit_id) {
+    //   console.log("message 1:", message.outerHTML);
+    // }
+    while (meta.lastChild) {
+      meta.after(meta.lastChild);
+    }
+    // if (edit_id) {
+    //   console.log("message 1:", message.outerHTML);
+    // }
+
     // if no attributes remain on the tag, remove the meta tag
     if (!meta.hasAttributes())
       meta.remove();
 
     const empty = message_is_empty(message);
+    // console.log("empty?", empty);
 
     // if the message content is now empty, aside from the label, hide the message
     if (empty) {
@@ -684,11 +697,14 @@ async function process_editing_commands_and_reacts(message) {
         remove(id);
     }
 
-    if (edit_id)
+    if (edit_id) {
+      // console.log("editing message", edit_id);
       remove(edit_id, true);
+    }
 
     const point = insert_id || edit_id;
     if (point) {
+      // console.log("point", point)
       insert(point, message);
       message.dataset.prev = point;
     }

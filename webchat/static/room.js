@@ -2176,6 +2176,18 @@ async function msg_comment_click(e) {
   hide_message_menu();
 }
 
+async function msg_edit_click(e) {
+  const id = await get_message_id($message_with_menu);
+  window.parent.postMessage({ type: "msg_edit", message_id: id }, ALLYCHAT_CHAT_URL);
+  hide_message_menu();
+}
+
+async function msg_copy_click(e) {
+  const id = await get_message_id($message_with_menu);
+  window.parent.postMessage({ type: "msg_copy", message_id: id }, ALLYCHAT_CHAT_URL);
+  hide_message_menu();
+}
+
 function msg_reaction_get($message) {
   const $reacts = $message.querySelector('.message_reacts');
   let reaction = null;
@@ -2330,6 +2342,8 @@ export async function room_main() {
   $on($id("msg_tts"), "click", msg_tts_click);
   $on($id("msg_react"), "click", msg_react_click);
   $on($id("msg_comment"), "click", msg_comment_click);
+  $on($id("msg_edit"), "click", msg_edit_click);
+  $on($id("msg_copy"), "click", msg_copy_click);
 
   setup_keyboard_shortcuts();
   if (inIframe)

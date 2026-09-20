@@ -21,7 +21,7 @@ import aiofiles
 
 from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME, PATH_USERS
 from util import backup_file, tree_prune, tac, sanitize_pathname, sanitize_filename, safe_join, ee
-from bb_lib import load_chat_messages, save_chat_messages, message_to_text
+from bb_lib import load_chat_messages, save_chat_messages, message_to_text, ChatMessage
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
 import filters
 import video_compatible  # type: ignore  # pylint: disable=wrong-import-order
@@ -472,6 +472,14 @@ class Room:
         last = "" if last == -1 else str(last)
 
         return last
+
+    def get_messages(self, user: str) -> list[ChatMessage]:
+        """Get messages in a list"""
+        access = self.check_access(user).value
+        if not access & Access.READ.value == Access.READ.value:
+            raise PermissionError(f"You are not allowed to read this room: {self.name}, user: {user}")
+        messages = load_chat_messages(self.path)
+        return messages
 
 
 def check_access(user: str | None, pathname: Path | str, agent_check: bool = False) -> Access:

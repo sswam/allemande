@@ -295,6 +295,39 @@ async def nag_remove(request):
     return JSONResponse({})
 
 
+@app.route("/x/message", methods=["GET"])
+async def message(request):
+    """Get a single message from a room."""
+    room_name = request.query_params["room"]
+    msg_id = request.query_params["id"]
+    user = get_user(request)
+
+    logger.info("GET message: %s %s", room_name, msg_id)
+    room = Room(name=room_name)
+
+    exists = room.exists()
+    if not exists:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    try:
+        messages = room.get_messages(user)
+    except PermissionError as e:
+        logger.warning("PermissionError: %r", e, exc_info=True)
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
+
+    logger.info("message count: %s", len(messages))
+
+    try:
+        message = messages[int(msg_id)]
+    except IndexError:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    user = message.user
+    content = message.content
+
+    return JSONResponse({"user": user, "content": content})
+
+
 @app.route("/x/subscribe", methods=["POST"])
 async def subscribe(request):
     """Subscribe to push notifications."""
