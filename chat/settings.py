@@ -53,4 +53,4 @@ TTS_TIMEOUT = 60  # 1 minute
 STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes
 
-GPU_COST_PER_SECOND = 0.01 / 30  # 1c / 30 seconds
+GPU_COST_PER_SECOND = 0.01 / 60  # 1c / 60 seconds

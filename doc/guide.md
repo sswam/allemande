@@ -41,7 +41,7 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 - You can view your usage and its cost by pressing the <i class="bi-currency-dollar"></i> button at top-right. Press the same button again to close it.
 - Free users should try to keep their usage under $3 per month. Some models are very inexpensive.
-- Image gen is accounted at 1c per 30 seconds of GPU time.
+- Image gen is accounted at 1c per 60 seconds of GPU time.
 - Please participate in public chat, give feedback, or contribute in some way, that counts for a lot!
 
 ## Rules
