@@ -10,6 +10,12 @@
 !*.base
 !*.css
 !*.js
+!**/agents/**/*.jpg
+!**/agents/**/*.jpeg
+!**/agents/**/*.png
+!**/agents/**/*.webp
+!**/voice/**/*.mp3
+
 !mission.m.*
 
 .*
