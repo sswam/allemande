@@ -277,8 +277,8 @@ We are using Whisper Large 2 for speech to text, OmniVoice for text to speech, a
 ### How to enable full voice chat
 
 1. Press the <i class="bi-three-dots-vertical"></i> **Options** button.
-2. Under <i class="bi bi-headset i20"></i> Voice Options, press the <i class="bi bi-sun-fill i20"></i> **Full Voice Chat** button.
-3. If you don't want to share your recorded audio, turn off the <i class="bi bi-voicemail i20"></i> **Pass Through** option.
+2. Under <i class="bi-headset"></i> Voice Options, press the <i class="bi-sun-fill"></i> **Full Voice Chat** button.
+3. If you don't want to share your recorded audio, turn off the <i class="bi-voicemail"></i> **Pass Through** option.
 
 There are many options for voice chat, see below in the User Interface Guide.
 
@@ -317,21 +317,21 @@ voice: yourname/myvoice
 
 Ally Chat supports memory for some characters, so that they can roughly recall the current chat, a few of their recent chats, and other relevant chats. A chat will only be memorized when it is archived. Memories are always saved in the same folder as the chat, which is good for privacy and has other uses. Memories won't leak from private chat to public chat, for example.
 
-If you don't want characters to recall previous chats, set the Recall option to <i class="bi bi-lightbulb"></i> for recall of the current chat only. If you don't want them to save new memories when you archive a chat (for a sort of incognito mode), turn off the Memorize option.
+If you don't want characters to recall previous chats, set the Recall option to <i class="bi-lightbulb"></i> for recall of the current chat only. If you don't want them to save new memories when you archive a chat (for a sort of incognito mode), turn off the Memorize option.
 
 Read on for technical details of how this works, and options to control it!
 
 All agents can see a certain number of previous messages in the current chat, this is called the context. Most agents have a context of 30 messages. You can adjust the context on the fly, in room options. Please keep it reasonably small most of the time, for efficiency.
 
-If the Recall button in Room Options is turned off <i class="bi bi-lightbulb-off"></i>, agents will ONLY see this limited context, and no other memories.
+If the Recall button in Room Options is turned off <i class="bi-lightbulb-off"></i>, agents will ONLY see this limited context, and no other memories.
 
 We have three other memory recall settings, and each builds on the previous. You can cycle through them by pressing the Recall button. Note that each level can slow down the chat a little.
 
-1. <i class="bi bi-lightbulb"></i> Recap: Agents can see a recap summary of the current chat, up to at least the start of their context window. So they should remember at least an overview of what has been happening in the entire chat.
+1. <i class="bi-lightbulb"></i> Recap: Agents can see a recap summary of the current chat, up to at least the start of their context window. So they should remember at least an overview of what has been happening in the entire chat.
 
-2. <i class="bi bi-lightbulb-fill"></i> Recent: In addition to the recap, agents can see summaries of several recent chats that they were in (normally 3 recent chats). So they will remember the flow of a narrative that spans several chats.
+2. <i class="bi-lightbulb-fill"></i> Recent: In addition to the recap, agents can see summaries of several recent chats that they were in (normally 3 recent chats). So they will remember the flow of a narrative that spans several chats.
 
-3. <i class="bi bi-sun-fill"></i> Relevant: In addition to the recap and recent chats, agents can see summaries of other relevant chats that they were in. The measure of relevance is based on a few recent messages in the current chat (normally the last 2 messages).
+3. <i class="bi-sun-fill"></i> Relevant: In addition to the recap and recent chats, agents can see summaries of other relevant chats that they were in. The measure of relevance is based on a few recent messages in the current chat (normally the last 2 messages).
 
 There is also a Memorize option in Room Options. If this is enabled, each character in a chat will make a summary of the chat and save it as a memory, when the room is archived - if memory is enabled for that character. If you don't want to archive a room, you can also activate this by typing `-@summaries` as a chat message at the end of the room.
 
@@ -1028,9 +1028,7 @@ We have a wide range of models to choose from, so if one model is too censored f
 
 Note that the buttons are small and only the icons are visible, not any text. The "Name" text is visible as tool-tips on computers, but not on mobile.
 
-Many buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
-
-To remove a message, react or comment, click the message, then press the appropriate button. If TTS is enabled, there's also a button to speak the message.
+Some buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
 
 | Component | Description |
 |---|---|
@@ -1099,6 +1097,19 @@ To remove a message, react or comment, click the message, then press the appropr
 | <i class="bi-plus-lg"></i> |  | Add | Upload files and record media menu |
 | <i class="bi-three-dots-vertical"></i> |  | Opt | Opens options and tools |
 
+## Message Controls
+
+Click a message to show a menu of buttons at the top right. You can react, comment, copy, edit, or remove the message. If TTS is enabled in Room Options, you can speak the message.
+
+| Icon | Name | Description |
+|---|---|---|
+| <i class="bi-heart"></i> | React | Click to react with a heart. Hover or hold to select a different reaction emoji. If you already reacted or commented, you can click to remove it. |
+| <i class="bi-chat-right"></i> | Comment | Comment on the message. |
+| <i class="bi-volume-down"></i> | Speak | Speak this message (if TTS is enabled). If auto-play is enabled, it will continue speaking following messages. Click anywhere in the message area to stop the speach. |
+| <i class="bi-copy"></i> | Copy | Copy this message to the clipboard, as markdown. |
+| <i class="bi-pencil"></i> | Edit | Edit this message. Press the green <i class="bi-check-lg"></i> tick to save, or the <i class="bi-x-lg"></i> cross to cancel. |
+| <i class="bi-x-lg"></i> | Remove | Remove this message. |
+
 ## Add Menu
 
 | Icon | Shortcut | Name | Description |
@@ -1134,7 +1145,7 @@ To remove a message, react or comment, click the message, then press the appropr
 
 This is a large screen which takes up the bottom half of the display, and includes View Options, Room Options and Room Tools.
 
-### <i class="bi bi-eye"></i> View Options
+### <i class="bi-eye"></i> View Options
 
 | Icon | Shortcut | Setting | Description |
 |---|---|---|---|
@@ -1150,19 +1161,20 @@ This is a large screen which takes up the bottom half of the display, and includ
 | <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
 | <i class="bi-arrows-fullscreen"></i> |  | Full-screen | Make chat area full-screen (off, whole window, full-screen) |
 
-### <i class="bi bi-headset"></i> Voice Options
+### <i class="bi-headset"></i> Voice Options
 
 | Icon | Shortcut | Setting | Description |
 |---|---|---|---|
-| <i class="bi bi-sun-fill i20"></i> |  | Full Voice Chat | Enable / disable all voice chat options together |
-| <i class="bi bi-volume-down i20"></i> |  | Text to Speech | Enable speaking messages (by selecting them) |
-| <i class="bi bi-play i20"></i> |  | Auto Play | Auto-speak new messages, and continuous replay |
-| <i class="bi bi-mic i20"></i> |  | Speech to Text | Enable speech to text on recorded audio |
-| <i class="bi bi-soundwave i20"></i> |  | Voice Activity Detection | VAD: automatically record spoken audio for text to speech |
-| <i class="bi bi-voicemail i20"></i> |  | Pass Through | Keep VAD recorded audio for replay. May be privacy concerns. |
-| <i class="bi bi-send i20"></i> |  | Auto Send | Auto-send messages from VAD after a short time |
+| <i class="bi-sun-fill"></i> |  | Full Voice Chat | Enable / disable all voice chat options together |
+| <i class="bi-volume-down"></i> |  | Text to Speech | Enable speaking messages (by selecting them) |
+| <i class="bi-asterisk"></i> |  | Speak Starred | Enable speaking *thoughts and actions* between asterisks |
+| <i class="bi-play"></i> |  | Auto Play | Auto-speak new messages, and continuous replay |
+| <i class="bi-mic"></i> |  | Speech to Text | Enable speech to text on recorded audio |
+| <i class="bi-soundwave"></i> |  | Voice Activity Detection | VAD: automatically record spoken audio for text to speech |
+| <i class="bi-voicemail"></i> |  | Pass Through | Keep VAD recorded audio for replay. May be privacy concerns. |
+| <i class="bi-send"></i> |  | Auto Send | Auto-send messages from VAD after a short time |
 
-### <i class="bi bi-gear"></i> Room Options
+### <i class="bi-gear"></i> Room Options
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
@@ -1173,10 +1185,10 @@ This is a large screen which takes up the bottom half of the display, and includ
 |  |  | Name | Change your name in the chat |
 |  |  | Artist | An agent to make images when you press the Artist button (default: Illu) |
 |  |  | Writer | An agent to write narrative when your press the Writer button (default: none; try Novi) |
-| <i class="bi bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi bi-lightbulb-off"></i> none, <i class="bi bi-lightbulb"></i> recap of this chat, <i class="bi bi-lightbulb-fill"></i> also recent chats, <i class="bi bi-sun-fill"></i> also relevant older chats |
-| <i class="bi bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
+| <i class="bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi-lightbulb-off"></i> none, <i class="bi-lightbulb"></i> recap of this chat, <i class="bi-lightbulb-fill"></i> also recent chats, <i class="bi-sun-fill"></i> also relevant older chats |
+| <i class="bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
-### <i class="bi bi-shield"></i> Room Options
+### <i class="bi-shield"></i> Room Options
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
