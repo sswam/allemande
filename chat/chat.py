@@ -337,12 +337,12 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
     #     logger.info("\n\n\n")
     lookup = messages.copy()
     for i, message in enumerate(messages):
-        m = re.search(r"""(<ac\b[-a-z0-9 ="']*>).*""", message["content"], flags=re.IGNORECASE)
+        m = re.match(r"""(<ac\b[-a-z0-9 ="']*>).*""", message["content"], flags=re.IGNORECASE)
         if not m:
             continue
         xmltext = m.group(1).strip()
         # chop it off the message content
-        message["content"] = message["content"][: m.start()].rstrip()
+        message["content"] = message["content"][len(xmltext) :]
         soup = BeautifulSoup(xmltext, "html.parser")
         meta = soup.find("ac")
         if not meta:
