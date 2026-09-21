@@ -396,6 +396,13 @@ async def local_agent(c, agent, _query) -> str:
 
     if image_agent:
         fulltext2 = fulltext
+
+        # strip off start in case agent was invoked later; somewhat inexact
+        invocation_pos = fulltext2.lower().find("@"+name.lower())
+        if invocation_pos > 0:
+            fulltext2 = fulltext2[invocation_pos+1+len(name):]
+            fulltext2 = re.sub(r"^\s*,\s*", "", fulltext2)
+
         fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), c.config.get("vmacs")])
         logger.debug("image prompt after soma: %r", fulltext2)
 
