@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import subprocess
 import threading
+import re
 
 from watchfiles import Change
 from deepmerge import Merger, STRATEGY_END
@@ -20,12 +21,13 @@ from safety import safety  # type: ignore
 from util import uniqo, join_with_commas_and_word
 from ally import yaml
 from settings import *
+from ally import macro
 
-unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
-sys.path.insert(0, unprompted_dir)
-
-# Import after adding unprompted_dir to sys.path
-from unprompted_run import unprompted
+# unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
+# sys.path.insert(0, unprompted_dir)
+#
+# # Import after adding unprompted_dir to sys.path
+# from unprompted_run import unprompted
 
 
 logger = logging.getLogger(__name__)
@@ -374,13 +376,15 @@ class Agent:
         else:  # public or unknown
             agents_folder = "agents/$user"
 
+        macro_vars = {}
+
         # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
         # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
         # We do this on get, rather than initially, because we can define
         # a derived agent with different names.
         # TODO do this more generally for other variables?
         # replace $ROOM with the room name
-        if value and key in ["system_top", "system_bottom", "system_bottom_role", "visual"]:
+        if value and key in ["system_top", "system_bottom", "visual"]:
             name = self.get("name")
             fullname = self.get("fullname", name)
             aliases = self.get("aliases") or [name]
@@ -413,9 +417,27 @@ class Agent:
                 name_fullname_aliases += f". I'm also known as {aliases_s}"
 
             # art model preference
-            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Krea, ` or another art model")
+            art_model = self.get("art_model")
+            art_model_prompt = art_model or "`@Coni, ` or `@Krea, ` or another art model"
             if "@" not in art_model_prompt:
                 art_model_prompt = f"`@{art_model_prompt}` (always use this preferred art model)"
+
+            # load art model tags if a single model was specified
+            art_model_tags = None
+            if art_model:
+                art_model_agent_name = art_model.replace("@", "").strip()
+                art_model_agent = self.agents.get(art_model_agent_name)
+                if art_model_agent:
+                    art_model_tags = art_model_agent.get("tags")
+            if art_model_tags:
+                art_model_tags = re.split(r",\s*", art_model_tags)
+            else:
+                art_model_tags = []
+
+            # set macro vars based on art_model_tags
+            for tag in ART_MODEL_TAGS:
+                val = tag in art_model_tags
+                macro_vars[tag] = val
 
             value = replace_variables(value, {
                 "NAME": name,
@@ -437,13 +459,13 @@ class Agent:
             })
 
         if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", [], with_over=with_over):
-            seed = self.get("unp_seed")
+            # seed = self.get("unp_seed")
             try:
-                logger.info("Applying Unprompted for agent %r key %s", self.name, key)
-                value = unprompted(value, seed)
-                logger.info("Unprompted applied for agent %r key %s: %s", self.name, key, value)
+                logger.info("Applying macros for agent %r key %s", self.name, key)
+                value = macro.process_macros(value, macro_vars)
+                logger.info("Macros applied for agent %r key %s: %s", self.name, key, value)
             except Exception as e:
-                logger.error("Unprompted error for agent %r key %r: %s %s", self.name, key, type(e).__name__, str(e))
+                logger.error("Macros error for agent %r key %r: %s %s", self.name, key, type(e).__name__, str(e))
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 

@@ -54,3 +54,5 @@ STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes
 
 GPU_COST_PER_SECOND = 0.01 / 60  # 1c / 60 seconds
+
+ART_MODEL_TAGS = ["short", "long", "booru", "sdxl", "pony", "anima", "f2k", "krea"]

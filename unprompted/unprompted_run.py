@@ -29,27 +29,35 @@ from lib_unprompted.shared import Unprompted  # pylint: disable=import-error,wro
 unp = Unprompted(base_dir=unprompted_dir)
 
 
-def unprompted(input_string, unp_seed=None, cleanup=True, unprompted=None):
+def unprompted(input_string, unp_seed=None, cleanup=True, unprompted=None, user_vars=None):
     """
     Process input string through Unprompted template engine.
 
     Args:
         input_string: The template string to process
         seed: Optional seed value for random operations
+        cleanup: Do cleanup or not
+        unprompted: Optionally pass in an Unprompted object
+        user_vars: Optionally pass in a dict of variables
 
     Returns:
-        Processed output from Unprompted
+        - Processed output from Unprompted
+        - User vars after running Unprompted
     """
     unprompted = unprompted or unp
 
+    if user_vars is None:
+        user_vars = {}
+    if "seed" not in user_vars:
+        user_vars["seed"] = random.randint(0, 2**32-1)
+
+    unprompted.shortcode_user_vars = user_vars
+
+    # Use random seed if provided
+    if unp_seed is not None:
+        random.seed(unp_seed)
+
     try:
-        seed = random.randint(0, 2**32-1)
-        unprompted.shortcode_user_vars = {"seed": seed}
-
-        # Use random seed if provided
-        if unp_seed is not None:
-            random.seed(unp_seed)
-
         result = unprompted.start(input_string)
 
     finally:

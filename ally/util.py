@@ -129,3 +129,8 @@ def read_lines_from_file(filename: str|Path) -> list[str]:
     with open(str(filename), 'r') as file:
         lines = [line.rstrip('\n') for line in file if not line.startswith("#")]
     return lines
+
+
+# class UniversalSet:
+#     def __contains__(self, item):
+#         return True
