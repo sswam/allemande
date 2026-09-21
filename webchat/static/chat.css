@@ -865,6 +865,11 @@ div.large_controls > .back {
 	margin-top: 1.25rem;
 }
 
+#inputrow .large_controls input {
+	width: calc(5rem + var(--pad));
+	min-width: calc(5rem + var(--pad));
+}
+
 #view_edit_agent > * {
 	min-height: 2rem;
 }

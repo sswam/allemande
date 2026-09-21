@@ -4036,6 +4036,21 @@ async function opt_writer(ev) {
   opt_writer_changed();
 }
 
+async function opt_art_model(ev) {
+  let art_model = ev.target.value;
+  art_model = art_model === "" ? null : art_model;
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          art_model
+        }
+      }
+    }
+  });
+}
+
 function opt_artist_changed() {
   if (embed) return;
   const artist = $id("opt_artist").value;
@@ -4047,6 +4062,7 @@ function opt_writer_changed() {
   const writer = $id("opt_writer").value;
   $id("writer").classList.toggle("hidden", writer === "");
 }
+
 
 async function opt_show(ev) {
   const show = active_toggle("opt_show")
@@ -5275,6 +5291,7 @@ export async function init() {
   $on($id("opt_temp"), "change", opt_temp);
   $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_name"), "change", opt_name);
+  $on($id("opt_art_model"), "change", opt_art_model);
   $on($id("opt_artist"), "change", opt_artist);
   $on($id("opt_writer"), "change", opt_writer);
   $on($id("opt_show"), "click", opt_show);
