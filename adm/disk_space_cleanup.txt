@@ -1,0 +1,26 @@
+# possible ways to clean up disk space
+# DON'T just run this, some commands are examples, be careful with it!
+
+# ~/.logs
+cd ~/.logs && truncate -s 0 *
+
+# allemande spool history
+find /var/spool/allemande/ -name '\.*' -prune -o -type d -path '*/history/*' -name '*-req-*' -print | xa rm -rf
+
+# var log
+cd /var/log && sudo find -type f \( -name '*.[0-9]' -o -name '*.gz' \) | xa sudo rm -f
+cd /var/log && truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log
+cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log crowdsec_api.log
+cd /var/log/apache2 && sudo truncate -s 0 *
+
+# old and new linux kernel packages
+dpkg -l 'linux-image*' | grep '^ii'
+# reboot if needed
+# remove old kernel packages
+
+# apt
+sudo apt-get dist-upgrade
+sudo apt-get clean
+
+# rooms
+cd ~/rooms && 0du
