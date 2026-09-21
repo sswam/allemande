@@ -176,14 +176,7 @@ export async function processMessage(newMessage) {
   await process_editing_commands_and_reacts(newMessage);
 
   // Hide the label if same user as previous message
-//  if (hideLabelForSameUser) {
-  let prevMessage = newMessage.previousElementSibling;
-  while (prevMessage && prevMessage.classList.contains('hidden'))
-    prevMessage = prevMessage.previousElementSibling;
-  if (prevMessage && msgUser == prevMessage.getAttribute("user") && label)
-    label.classList.add("label-hidden");
-  else
-    newMessage.classList.add("turn");
+  hide_message_label_if_same_user(newMessage);
 
   // Move images back if same user
   // in future might put images together with or directly after the prompt that creates them; but how?
@@ -408,6 +401,18 @@ export async function processMessage(newMessage) {
   return id;
 }
 
+function hide_message_label_if_same_user(message) {
+  const msgUser = message.getAttribute("user");
+  const label = message.querySelector(".label");
+  let prevMessage = message.previousElementSibling;
+  while (prevMessage && prevMessage.classList.contains('hidden'))
+    prevMessage = prevMessage.previousElementSibling;
+  const should_hide = prevMessage && msgUser == prevMessage.getAttribute("user");
+  if (label)
+    label.classList.toggle("label-hidden", should_hide);
+  message.classList.toggle("turn", !should_hide);
+}
+
 function getLastVisibleMessageId() {
   // while (message && messages.classList.contains("hidden"))
   //   message = message.previousElementSibling;
@@ -598,6 +603,14 @@ function remove(messageId, edit = false) {
     // console.log("marking message as edited", message);
     message.classList.add("edited");
   }
+
+  // find the next not hidden message, if any, and re-run the code to show / hide its label
+  let nextMessage = message.nextElementSibling;
+  while (nextMessage && nextMessage.classList.contains('hidden'))
+    nextMessage = nextMessage.nextElementSibling;
+  if (nextMessage)
+    hide_message_label_if_same_user(nextMessage);
+
   return message;
 }
 
