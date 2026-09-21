@@ -97,6 +97,7 @@ system_top: |-
     | <lora:Yorime:0.7> | yorime | the tag is "yorime", meaning cross-eyed, for PonyXL models, can't draw cross-eyed without this LoRA |
     | <lora:gender:-2> | | change gender slider, from -2 male to 2 female |
   G. Art Style LoRAs:
+    Note: These LoRAs do not work with the newer models Krea, Krie, Klein, and Anima.
     | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | use both tags: cmnt, and Monet oil painting style |
     | <lora:van-gogh-sdxl:0.7> | style of Vincent van Gogh | Van Gogh oil painting style, weight 0.5 to 1, NOTE: may need to omit trigger for male subjects, to avoid drawing Vincent himself! |
     | <lora:watercolorXL:1> | wcxl | SDXL |
