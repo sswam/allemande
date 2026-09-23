@@ -422,17 +422,15 @@ class Agent:
             if "@" not in art_model_prompt:
                 art_model_prompt = f"`@{art_model_prompt}` (always use this preferred art model)"
 
-            # load art model tags if a single model was specified
-            art_model_tags = None
+            # load art model tags if a single model was specified  FIXME not entirely type safe
+            art_model_tags = ART_MODEL_TAGS
             if art_model:
+                logger.info("agent art_model: %s, %s", name, art_model)
                 art_model_agent_name = art_model.replace("@", "").strip()
                 art_model_agent = self.agents.get(art_model_agent_name)
-                if art_model_agent:
+                if art_model_agent and "tags" in art_model_agent:
                     art_model_tags = art_model_agent.get("tags")
-            if art_model_tags:
-                art_model_tags = re.split(r",\s*", art_model_tags)
-            else:
-                art_model_tags = []
+                    art_model_tags = re.split(r",\s*", art_model_tags)
 
             # set macro vars based on art_model_tags
             for tag in ART_MODEL_TAGS:
