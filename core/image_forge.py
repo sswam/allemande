@@ -138,9 +138,17 @@ def process_hq_macro(config: dict, sets: dict) -> dict:
     """Process hq macro and update config accordingly"""
     hq = float(sets.get("hq", config.get("hq", 0)))
 
+    refiner = config.get("refiner")
+    if refiner:
+        config_hq = refiner
+        config["adetailer"] = None
+        config["hires"] = 0.0
+    else:
+        config_hq = config
+
     if hq == 0:
         # hq=0 - disable adetailer, no hires
-        config["adetailer"] = None
+        config_hq["adetailer"] = None
         # config["hires"] = 0.0  # Allow hires to be set separately
     elif hq == 1:
         # hq=1 - keep adetailer from config, no hires fix
@@ -148,7 +156,7 @@ def process_hq_macro(config: dict, sets: dict) -> dict:
         pass
     else:
         # hq != 1 - set hires to hq value
-        config["hires"] = hq
+        config_hq["hires"] = hq
 
     return config
 
