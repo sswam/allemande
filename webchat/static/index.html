@@ -141,7 +141,7 @@
 				<option value="Aion" label="$$$ - Aion - DeepSeek 3.2 Uncensored Roleplay">
 				<option value="Gemmi" label="$$$ - Gemini 2.5 Pro">
 				<option value="Claude" label="$$$ - Claude Sonnet">
-				<option value="Claudo" label="$$$$ - Claude 4.7 Opus">
+				<!--<option value="Claudo" label="$$$$ - Claude 4.7 Opus">-->
 				<option value="Dav" label="GPT-4.1-mini">
 				<option value="Dese" label="DeepSeek Chat V3">
 				<option value="Ellyn" label="Llama 3.3 70B">
@@ -155,7 +155,7 @@
 				<option value="Gokk" label="Grok 3 Mini">
 				<option value="Gos" label="gpt-oss-20b">
 				<option value="Goss" label="gpt-oss-120b">
-				<option value="Grace" label="$$$$ - o3">
+				<!--<option value="Grace" label="$$$$ - o3">-->
 				<option value="Groc" label="Grok Code Fast">
 				<option value="Grok" label="$$$ - Grok 4">
 				<option value="Heise" label="GPT-5-mini">
@@ -262,8 +262,8 @@
 			<button id="mod_archive_2" title="archive this room" class="simple option">archive</button>
 			<button id="view_theme_bw" title="change the theme" class="simple option">theme</button>
 			<button id="view_standard" title="standard mode" class="simple standard advanced option hidden">standard mode</button>
-			<button id="mod_undo" title="remove the last message: alt+z" class="hidden">undo</button>
-			<button id="mod_retry" title="retry the last message: alt+r" class="hidden">retry</button>
+			<button id="mod_undo" title="remove the last message: alt+z" class="extra">undo</button>
+			<button id="mod_retry" title="retry the last message: alt+r" class="extra">retry</button>
 			<button id="opt" title="options and tools">opt</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_add">
@@ -318,6 +318,7 @@
 				<button id="view_compact" title="compact view">compact</button>
 				<button id="view_history" title="view change history">history</button>
 				<button id="view_fullscreen" title="view fullscreen" class="noios">fullscreen</button>
+				<button id="view_extra" title="view extra buttons on main UI: undo and retry">view extra</button>
 				<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
 				<button id="view_advanced" title="boffin mode / early access" class="hidden dev">boffin</button>
 			</div>
@@ -378,8 +379,8 @@
 			id="guide_nsfw" href="/#nsfw/guide" target="help-frame" class="nsfw" title="the NSFW guide">Adult</a>
 		</div>
 		<div id="help-widget-controls">
-			<button id="help_undo" title="remove the last help message" class="advanced hidden">undo</button>
-			<button id="help_retry" title="retry the last help message" class="advanced hidden pc">retry</button>
+			<button id="help_undo" title="remove the last help message" class="advanced extra">undo</button>
+			<button id="help_retry" title="retry the last help message" class="advanced extra pc">retry</button>
 			<button id="help_archive" title="archive this help">archive</button>
 			<button id="help_clear" title="clear the help">clear</button>
 			<button id="help_close" title="close"></button>

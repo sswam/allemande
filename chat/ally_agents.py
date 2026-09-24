@@ -418,7 +418,7 @@ class Agent:
 
             # art model preference
             art_model = self.get("art_model")
-            art_model_prompt = art_model or "`@Coni, ` or `@Krea, ` or another art model"
+            art_model_prompt = art_model or ART_MODEL_PROMPT_DEFAULT
             if "@" not in art_model_prompt:
                 art_model_prompt = f"`@{art_model_prompt}` (always use this preferred art model)"
 

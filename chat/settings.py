@@ -55,4 +55,8 @@ STT_MAX_LENGTH = 300  # 5 minutes
 
 GPU_COST_PER_SECOND = 0.01 / 60  # 1c / 60 seconds
 
+ART_MODEL_PROMPT_DEFAULT = "`@Coni` or `@Krea` or another art model"  # TODO use the following instead, somehow
+ART_MODEL_PROMPT_DEFAULT_SFW = "`@Jily` or `@Krea` or another art model"
+ART_MODEL_PROMPT_DEFAULT_NSFW = "`@Anima` or `@Lusy` or another art model"
+
 ART_MODEL_TAGS = ["short", "long", "booru", "sdxl", "pony", "anima", "f2k", "krea"]

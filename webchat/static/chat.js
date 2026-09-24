@@ -88,6 +88,7 @@ const VIEW_OPTIONS_DEFAULT = {
   columns: 0,
   compact: 0,
   history: 0,
+  extra: 0,
   image_size: image_size_default,
   font_size: font_size_default,
   input_row_height: 72, // 48 // 32 // 72
@@ -1004,7 +1005,7 @@ export async function set_room(room_new, no_history) {
   }
 
   is_private = room_new.startsWith(user + "/");
-  room_nsfw = room_new.startsWith("nsfw/"); // || is_private;
+  room_nsfw = room_new.startsWith("nsfw/") || (user_nsfw && is_private);
 
   $body.classList.toggle("private", is_private);
   $body.classList.toggle("nsfw_zone", room_nsfw);
@@ -3397,6 +3398,7 @@ async function view_options_apply() {
   active_set("view_compact", view_options.compact);
   active_set("view_history", view_options.history);
   active_set("view_fullscreen", view_options.fullscreen);
+  active_set("view_extra", view_options.extra);
   $id("view_items").value = view_options.items ?? "";
   active_set("view_advanced", view_options.advanced > 1);
   active_set("view_standard", view_options.advanced >= 0);
@@ -3455,6 +3457,7 @@ async function view_options_apply() {
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
   cl.toggle("embed", embed);
+  cl.toggle("extra", view_options.extra);
 
   // help embed
   show("help-widget", view_options.help > 0);
@@ -3648,6 +3651,11 @@ function view_fullscreen(ev) {
 
 function view_history(ev) {
   view_options.history = !view_options.history;
+  view_options_apply();
+}
+
+function view_extra(ev) {
+  view_options.extra = !view_options.extra;
   view_options_apply();
 }
 
@@ -3871,6 +3879,7 @@ async function get_options() {
   const temp = data?.agents?.all?.temp ?? "";
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   const name = data?.users?.[user]?.name ?? "";
+  const art_model = data?.art_model ?? (room_nsfw ? config.ART_MODEL_NSFW : config.ART_MODEL_SFW);
   const artist = data?.artist ?? (room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW);
   const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
   const show = data?.agents?.all?.show ?? true;
@@ -3894,6 +3903,7 @@ async function get_options() {
   $id("opt_temp").value = temp;
   $id("opt_mission").value = mission;
   $id("opt_name").value = name;
+  $id("opt_art_model").value = art_model;
   $id("opt_artist").value = artist;
   $id("opt_writer").value = writer;
   active_set("opt_show", show);
@@ -5274,6 +5284,7 @@ export async function init() {
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_advanced"), "click", view_advanced);
   $on($id("view_standard"), "click", view_standard);
+  $on($id("view_extra"), "click", view_extra);
   // $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("voice_all"), "click", voice_all);

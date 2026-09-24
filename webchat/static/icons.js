@@ -133,4 +133,6 @@ export const icons = {
 
   edit_message_save: '<i class="bi bi-check-lg i20"></i>',
   edit_message_cancel: '<i class="bi bi-x-lg i20"></i>',
+
+  view_extra: '<i class="bi bi-plus-lg i20"></i>',
 };

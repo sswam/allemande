@@ -400,7 +400,8 @@ body:not(.early) .early,
 body.ios .noios,
 body:not(.nsfw) .nsfw,
 body.nsfw .sfw,
-body:not(.edit_message) .edit_message {
+body:not(.edit_message) .edit_message,
+body:not(.extra) .extra {
 	display: none !important;
 }
 
