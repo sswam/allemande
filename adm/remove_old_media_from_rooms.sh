@@ -9,7 +9,7 @@ remove_old_media_from_rooms() {
 	eval "$(ally)"
 
 	local dir="${1:-$ALLEMANDE_ROOMS}"
-	local days="${2:-2}"
+	local days="${3:-3}"
 
 	cd "$dir"
 
