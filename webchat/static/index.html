@@ -124,7 +124,7 @@
 			</datalist>
 			<input list="ea_model_options" id="ea_model" title="model" placeholder="model" class="grow">
 			<datalist id="ea_model_options">
-				<option value=" " label="no chat model, or inherited">
+				<option value=" " label="no chat model">
 				<!--<option value="Small" label="Ø - fast free chat → Elly">-->
 				<option value="Medium" label="$ - Gem - Gemma 4 31B">
 				<option value="Strong" label="$$ - Deseri - DeepSeek 4 Pro">
@@ -181,7 +181,7 @@
 			<textarea id="ea_visual_emo" title="visual - expression" placeholder="visual - expression" class="grow"></textarea>
 			<input list="ea_voice_options" id="ea_voice" title="voice" placeholder="voice" class="grow">
 			<datalist id="ea_voice_options">
-				<option value=" " label="no voice, or inherited">
+				<option value=" " label="no voice">
 				<option value="female_us" label="English, American">
 				<option value="female_uk" label="English, British">
 				<option value="female_au" label="English, Australian">
@@ -211,18 +211,18 @@
 			</datalist>
 		</div>
 		<div class="row wide gap">
-			<input list="ea_art_model_options" id="ea_art_model" title="preferred art model - blank for flexibility" placeholder="art model" class="grow">
-			<datalist id="ea_art_model_options">
-				<option value=" " label="no preferred art model, or inherited">
+			<input list="art_model_options" id="ea_art_model" title="preferred art model - blank for flexibility" placeholder="art model" class="grow">
+			<datalist id="art_model_options">
+				<option value=" " label="no preferred art model">
 				<option value="Jily" label="Juggernaut XL: realistic">
 				<option value="Krea" label="Krea 2: powerful modern model, SFW">
-				<option value="Krie" label="Krea 2 Identity Edit: use for reference image">
+				<option value="Krie" label="Krea 2 Identity Edit: use for reference image, editing">
 				<option value="Coni" label="CyberRealistic Pony: realistic, good for NSFW">
 				<option value="Anima" label="Anima Turbo: fast, artistic not realistic, good for NSFW">
-				<option value="Klein" label="Flux 2 Klein: modern model, SFW">
-				<option value="Xlein" label="Flux 2 Klein + NSFW: modern model, limited NSFW" class="nsfw">
+				<option value="Klein" label="Flux 2 Klein: modern model, SFW, editing">
+				<option value="Xlein" label="Flux 2 Klein + NSFW: modern model, limited NSFW, editing" class="nsfw">
 				<option value="Xrea" label="Krea 2 + NSFW: powerful modern model, limited NSFW" class="nsfw">
-				<option value="Xrie" label="Krea 2 IE + NSFW: use for reference image" class="nsfw">
+				<option value="Xrie" label="Krea 2 IE + NSFW: use for reference image, editing" class="nsfw">
 				<option value="Lusy" label="Lustify V6 OLT: NSFW model" class="nsfw">
 				<option value="Bigi" label="Big Love XL: NSFW model" class="nsfw">
 				<option value="Boni" label="Babes: NSFW model" class="nsfw">
@@ -342,7 +342,7 @@
 				<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high">
 				<input id="opt_mission" placeholder="mission" title="mission files to use, - for none" class="hidden">
 				<input id="opt_name" placeholder="name" title="change your name in the chat">
-				<input id="opt_art_model" placeholder="art model" title="preferred art model">
+				<input list="art_model_options" id="opt_art_model" title="preferred art model - blank for flexibility, setting it can save money" placeholder="art model">
 				<input id="opt_artist" placeholder="artist" title="the Artist button triggers this agent">
 				<input id="opt_writer" placeholder="writer" title="the Writer button triggers this agent">
 				<button id="opt_show" title="all characters can show images">show</button>

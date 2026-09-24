@@ -867,8 +867,8 @@ div.large_controls > .back {
 }
 
 #inputrow .large_controls input {
-	width: calc(5rem + var(--pad));
-	min-width: calc(5rem + var(--pad));
+	width: calc(6rem + var(--pad));
+	min-width: calc(6rem + var(--pad));
 }
 
 #view_edit_agent > * {
