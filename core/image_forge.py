@@ -349,48 +349,21 @@ async def process_image_queue():
                     try:
                         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
 
-                        logger.info("model: %s", job.config.get("model", "?"))
-                        logger.debug("image prompt:\n%s", job.prompt)
+                        output_filename = str(job.d / f"{job.output_stem}_{job.seed}")
 
-                        # Check for img2img mode
-                        img2img_kwargs = {}
-                        if job.input_images:
-                            logger.info("img2img mode detected with input images: %r", job.input_images)
-                            # TODO: Placeholder - need to pass image data to forge_client
-                            # img2img_kwargs["init_images"] = [...]
-                            # img2img_kwargs["denoising_strength"] = job.config.get("denoising_strength", 0.75)
-                            img2img_kwargs["img2img"] = True
-                            img2img_kwargs["input_images"] = job.input_images
-                            img2img_kwargs["denoise"] = job.config.get("denoise", 0.5)
-                            logger.info("denoise: %r", img2img_kwargs["denoise"])
+                        await generate_image(job.config, job.input_images, output_filename, job.seed, job.prompt, job.negative_prompt, job.regional_kwargs)
 
-                        await forge_client.request(
-                            output=str(job.d / f"{job.output_stem}_{job.seed}"),
-                            prompt=job.prompt,
-                            negative_prompt=job.negative_prompt,
-                            seed=job.seed,
-                            sampler_name=job.config.get("sampler_name", "DPM++ 2M"),
-                            scheduler=job.config.get("scheduler", "Karras"),
-                            steps=min(job.config.get("steps", 15), MAX_STEPS),
-                            cfg_scale=job.config.get("cfg_scale", 7.0),
-                            cfg_scale_raw=job.config.get("cfg_scale_raw", None),
-                            resize=job.config.get("resize", "pad"),
-                            width=job.config.get("width", 1024),
-                            height=job.config.get("height", 1024),
-                            count=1,
-                            adetailer=job.config.get("adetailer", None),
-                            ad_checkpoint=job.config.get("ad_checkpoint", None),
-                            pag=job.config.get("pag", 0),
-                            hires=job.config.get("hires", 0.0),
-                            pony=job.config.get("pony", 0.0),
-                            ad_mask_k_largest=job.config.get("ad_mask_k_largest", 0),
-                            model=job.config.get("model", None),
-                            clip_skip=job.config.get("clip_skip"),
-                            modules=job.config.get("modules", None),
-                            preset=job.config.get("preset", None),
-                            **img2img_kwargs,
-                            **job.regional_kwargs,
-                        )
+                        # refiner support, postprocess with a different model
+                        refiner = job.config.get("refiner")
+                        if refiner:
+                            for key in ["width", "height"]:
+                                if key in job.config:
+                                    refiner[key] = job.config[key]
+                            if "denoise2" in job.config:
+                                refiner["denoise"] = job.config["denoise2"]
+                            await generate_image(refiner, [output_filename+".png"], output_filename+"_r", job.seed, job.prompt, job.negative_prompt, job.regional_kwargs)
+                            if not job.config.get("keep"):
+                                os.remove(output_filename+".png")
                     finally:
                         fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
 
@@ -403,11 +376,57 @@ async def process_image_queue():
         except asyncio.CancelledError:
             break
         except Exception as e:
-            print(f"Error processing image job: {e}")
+            logger.exception(f"Error processing image job: {e}", exc_info=True)
             # Mark task as done even if it failed
         finally:
             job = None
             image_queue.task_done()
+
+
+async def generate_image(config, input_images, output_filename, seed, prompt, negative_prompt, regional_kwargs):
+    """ Generate an image using forge_client """
+    logger.info("model: %s", config.get("model", "?"))
+    logger.debug("image prompt:\n%s", prompt)
+
+    # Check for img2img mode
+    img2img_kwargs = {}
+    if input_images:
+        logger.info("img2img mode detected with input images: %r", input_images)
+        # TODO: Placeholder - need to pass image data to forge_client
+        # img2img_kwargs["init_images"] = [...]
+        # img2img_kwargs["denoising_strength"] = config.get("denoising_strength", 0.75)
+        img2img_kwargs["img2img"] = True
+        img2img_kwargs["input_images"] = input_images
+        img2img_kwargs["denoise"] = config.get("denoise", 0.5)
+        logger.info("denoise: %r", img2img_kwargs["denoise"])
+
+    await forge_client.request(
+        output=output_filename,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        seed=seed,
+        sampler_name=config.get("sampler_name", "DPM++ 2M"),
+        scheduler=config.get("scheduler", "Karras"),
+        steps=min(config.get("steps", 15), MAX_STEPS),
+        cfg_scale=config.get("cfg_scale", 7.0),
+        cfg_scale_raw=config.get("cfg_scale_raw", None),
+        resize=config.get("resize", "pad"),
+        width=config.get("width", 1024),
+        height=config.get("height", 1024),
+        count=1,
+        adetailer=config.get("adetailer", None),
+        ad_checkpoint=config.get("ad_checkpoint", None),
+        pag=config.get("pag", 0),
+        hires=config.get("hires", 0.0),
+        pony=config.get("pony", 0.0),
+        ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
+        model=config.get("model", None),
+        clip_skip=config.get("clip_skip"),
+        modules=config.get("modules", None),
+        preset=config.get("preset", None),
+        **img2img_kwargs,
+        **regional_kwargs,
+    )
 
 
 async def complete_batch(job: ImageJob):
@@ -475,6 +494,10 @@ def estimate_job_weight(job: ImageJob) -> float:
     # multiply by 0.5 if it's a fast model
     if config.get("preset") == "anima" and steps <= 12:
         job_weight *= 0.5
+
+    # multiply by 2 if using a refiner!
+    if config.get("refiner"):
+        job_weight *= 2
 
     log("Estimated job weight: %.2f", job_weight)
 
