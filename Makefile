@@ -53,7 +53,8 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat brain.xt shortcuts.xt
+server:: server2
+server2: webchat brain.xt shortcuts.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
