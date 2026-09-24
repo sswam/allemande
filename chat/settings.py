@@ -59,4 +59,4 @@ ART_MODEL_PROMPT_DEFAULT = "`@Coni` or `@Krea` or another art model"  # TODO use
 ART_MODEL_PROMPT_DEFAULT_SFW = "`@Jily` or `@Krea` or another art model"
 ART_MODEL_PROMPT_DEFAULT_NSFW = "`@Anima` or `@Lusy` or another art model"
 
-ART_MODEL_TAGS = ["short", "long", "booru", "sdxl", "pony", "anima", "f2k", "krea"]
+ART_MODEL_TAGS = ["short", "long", "booru", "sdxl", "sdxl_only", "pony", "illustrious", "anima", "f2k", "krea", "chroma", "sd1.5", "edit"]
