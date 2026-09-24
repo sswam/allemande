@@ -1,0 +1,26 @@
+base: Anima
+# image_prompt_template: "masterpiece, best quality, [use aphoto], %s, more realistic skin, more realistic images and people <lora:areal:1> <lora:realskin:1> <lora:realism:1>"
+# image_prompt_template: "masterpiece, best quality, [use aart], photorealistic, %s"  #, more realistic skin, more realistic images and people <lora:realskin:1> <lora:realism:1>"
+image_prompt_template: 'masterpiece, best quality, (realistic, photo \(medium\), real life:1.7), photorealistic, %s'
+config:
+  refiner:
+    preset: "xl"
+    model: cyberrealisticPony_v85
+    denoise: 0.3
+    steps: 15
+    cfg_scale: 4
+    pony: 1.0
+    pag: 3
+    adetailer:
+    - adetailerFootYolov8x_v20.pt
+    - PitHandDetailer-v2-Test-v9c.pt
+    - face_yolov8n.pt
+    adetailer_adult:
+    - female-breast-v4.7.pt
+    - pussyV2.pt
+    - adetailerFootYolov8x_v20.pt
+    - PitHandDetailer-v2-Test-v9c.pt
+    - face_yolov8n.pt
+    ad_mask_k_largest: 10
+    hires: 0.0
+    clip_skip: 2
