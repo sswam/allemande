@@ -4,3 +4,4 @@ config:
   denoise: 1.0
   resize: black
 allow_ref_image: true
+tags: krea, edit, long
