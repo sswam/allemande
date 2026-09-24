@@ -572,7 +572,7 @@ def _check_access_2(user: str | None, pathname: str, agent_check: bool = False) 
         return result
 
     if result := _check_shared_folder_access(
-        dir_path, file_status.exists, file_status.is_dir
+        dir_path, file_status.exists, file_status.is_dir, access_conf, user
     ):
         return result
 
@@ -735,15 +735,19 @@ def _check_root_access(pathname: str, file_status: FileStatus) -> tuple[Access, 
 
 
 def _check_shared_folder_access(
-    dir_path: Path, exists: bool, is_dir: bool
+        dir_path: Path, exists: bool, is_dir: bool, access_conf: dict, user: str
 ) -> tuple[Access, str] | None:
     """Check access for shared public writable folders"""
     try:
+        user_access = Access.READ
+        if "write" not in access_conf or user in access_conf.get("write"):
+            user_access = Access.READ_WRITE
+
         dir_stat = dir_path.lstat()
         if not is_dir and dir_stat.st_mode & S_IWGRP:
-            return Access.READ_WRITE, "shared_public_writable"
+            return user_access, "shared_public_writable"
         if not exists:
-            return Access.READ_WRITE, "new_file"
+            return user_access, "new_file"
     except FileNotFoundError:
         return Access.NONE, "dir_not_found"
     return None
