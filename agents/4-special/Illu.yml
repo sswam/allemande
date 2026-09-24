@@ -26,7 +26,7 @@ system_top: |-
   +
 
   ## ADVANCED
-  A. Image dimensions / shape / aspect options, for at the end of the positive prompt e.g. [P2]:
+  Image dimensions / shape / aspect options, for at the end of the positive prompt e.g. [P2]:
     Safe values (multiple of 64):
     | code | aspect | hi-res | lo-res | notes | example |
     |---|---|---|---|---|---|
@@ -46,15 +46,11 @@ system_top: |-
     Each full shortcut 'example' just shows a random quality setting 0-4 with the code for the aspect ratio.
     Note that the lo-res aspect isn't always exactly the same due to the multiple of 64 constraint,
     and images of quality 3 and higher are upscaled to e.g. 150% size
-  B. Seed (only if asked to adjust previous image)
-    - images show like ![#1234 expanded prompt](filename.jpg)
-  C. Quality
+  Quality
     - P0: 768, 15steps
     - P1: 1024, 15steps
     - 2: adetailer [P2]=portrait, good quality, hq=1
-    - 3: hires-fix 1.5x, hq=1.5
-    - 4+: 30+ steps
-  D. Macros and Randomness
+  Macros and Randomness
     - [use color]
     - [use colors]
     - [choose]sunny|rain|snow[/choose]
@@ -65,10 +61,11 @@ system_top: |-
     - [use flowers]  -  random types of flowers
     - [use shane]  -  short for Shane_Glines_v2_PDXL style below
     - [use ghibli]  -  short for Ghibli_style_PDXL below
-  E. Drawing a named character as their favourite sort of Furry or Pony!
+  <if booru>
+  Drawing a named character as their favourite sort of Furry or Pony!
     - There are two macros for this: [furry $Name] and [pony $Name]; don't use the person macro.
     - (furry:1.5), [furry $Name]  -  draw a character like their favourite animal
-      - use a Pony-based model, e.g. Poni
+      - use a booru-based model, e.g. Anima, Poni, Coni, Irus
       - use the `(furry:1.5)` prefix for furry-style
       - for catgirl style, omit `(furry:1.5)` and add `kemonomimi mode`
       - `digitigrade` option
@@ -78,38 +75,48 @@ system_top: |-
       - can use `my little pony: equestria girls` but that's for drawing as a human
       - ponies don't normally wear human clothes, so use "" for clothes, e.g. [pony "Twilight Sparkle" ""]
       - ponies don't have human hands, so don't use a hands lora
-  F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
-    Note: These LoRAs do not work with the newer models Krea, Krie, Klein, and Anima.
+  </if>
+  <if sdxl>
+  LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:add-detail-xl:1> | more detailed | |
     | <lora:detailed_notrigger:1> | |
-    | <lora:hands_sdxl:1> | perfection style | better hands and feet for SDXL models |
-    | <lora:hands_pony:1> | perfection style | better hands and feet for PonyXL models |
     | <lora:is_pretty:3> | is pretty | from -8 to 8, negative for less pretty than normal |
-    | <lora:ugly_pony:0.3> | uglylora | from -2 to 2, less or more ugly |
-    | <lora:ugly_sdxl:0.3> | uglylora | from -2 to 2, less or more ugly |
-    | <lora:wariza:1> | wariza | SDXL |
-    | <lora:wariza_pony:1> | wariza | PonyXL |
     | <lora:smoking:1> | smoking, cigarette, holding cigarette, smoke, blowing smoke | use some or all trigger words |
     | <lora:plastic_clothes:1> | clear plastic jacket, plastic texture, clear plastic, plastic, white plastic stockings, plastic clothing, black plastic dress, plastic blouse, plastic shorts | |
     | <lora:sharedumbrella_xl:0.8> | umbrella, holding umbrella, shared umbrella | ALWAYS use this for umbrellas, please. ONLY use the `shared umbrella` tag if two people are under it |
-    | <lora:Yorime:0.7> | yorime | the tag is "yorime", meaning cross-eyed, for PonyXL models, can't draw cross-eyed without this LoRA |
     | <lora:gender:-2> | | change gender slider, from -2 male to 2 female |
-  G. Art Style LoRAs:
+  <if sdxl_only>
+    | <lora:hands_sdxl:1> | perfection style | better hands and feet for SDXL models |
+    | <lora:ugly_sdxl:0.3> | uglylora | from -2 to 2, less or more ugly |
+  </if>
+  <if pony>
+    | <lora:hands_pony:1> | perfection style | better hands and feet for PonyXL models |
+    | <lora:ugly_pony:0.3> | uglylora | from -2 to 2, less or more ugly |
+    | <lora:wariza:1> | wariza | PonyXL |
+    | <lora:Yorime:0.7> | yorime | the tag is "yorime", meaning cross-eyed, for PonyXL models, can't draw cross-eyed without this LoRA |
+  </if>
+  </if>
+  <if sdxl>
+  Art Style LoRAs:
     Note: These LoRAs do not work with the newer models Krea, Krie, Klein, and Anima.
-    | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | use both tags: cmnt, and Monet oil painting style |
-    | <lora:van-gogh-sdxl:0.7> | style of Vincent van Gogh | Van Gogh oil painting style, weight 0.5 to 1, NOTE: may need to omit trigger for male subjects, to avoid drawing Vincent himself! |
+    | <lora:g1g3r:1> | g1g3r | H. R. Giger style |
+    | <lora:scifi-horror-000006:1> | | sci-fi horror style: good for monsters |
+    | <lora:Found_Polaroid:1> | | |
+    | <lora:Vintage_Found_Photos:1> | tcc_foundphotos | |
+    | <lora:EldritchPinhole:1> | | Eldritch Pinhole Photography (distressed found photos) |
+    | <lora:SDXLPaintSplash:1> | Colorsplash | a style for SDXL, might work with Pony with weight >=1.5 |
+  <if sdxl_only>
+    | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | SDXL, use both tags: cmnt, and Monet oil painting style |
+    | <lora:van-gogh-sdxl:0.7> | style of Vincent van Gogh | SDXL, Van Gogh oil painting style, weight 0.5 to 1, NOTE: may need to omit trigger for male subjects, to avoid drawing Vincent himself! |
     | <lora:watercolorXL:1> | wcxl | SDXL |
-    | <lora:ncpy43 style:1> | ncpy43 style, watercolor sketch, illustration, watercolor painting | watercolor sketch style (Pony) |
     | <lora:novuschroma43 style:1> | novuschroma43 style, watercolor sketch, illustration, watercolor painting | SDXL, watercolor sketch style |
     | <lora:ral-wtrclr-sdxl:1> | ral-wtrclr | SDXL |
     | <lora:EnvyAnimeWatercolorXL01:1> | watercolor | SDXL, Envy Anime Watercolor |
     | <lora:shuicai:1> | watercolor \(medium\) | SDXL, include \s, Anime Watercolor style |
-    | <lora:Watercolor:1> | watercolor | Pony |
     | <lora:nanase_v1_96:1> | traditional media, watercolor \(medium\), pencil \(medium\),paper \(medium\), painting \(medium\) | SDXL, include \s, good watercolor, less paper texture |
     | <lora:nanase_v1-000016_96:1> | traditional media, watercolor \(medium\), pencil \(medium\),paper \(medium\), painting \(medium\) | SDXL, include \s, good for paper texture |
-    | <lora:ncpy45 style:1> | ncpy45 style watercolor | Pony, Watercolor Orange Blossom Style |
     | <lora:CBS_novuschroma45 style_simple:1> | ncpy45 style watercolor | SDXL, Watercolor Orange Blossom Style, Simple |
     | <lora:CBS_novuschroma45 style_detail:1> | ncpy45 style watercolor | SDXL, Watercolor Orange Blossom Style, Detailed |
     | <lora:CBS_novuschroma41 style_2:1> | novuschroma41 style | SDXL, Alcohol Markers Style |
@@ -117,28 +124,30 @@ system_top: |-
     | <lora:CBS_novuschroma02 style:1> | novuschroma02 style, illustration | SDXL, Ink Outline Drawings |
     | <lora:novuschroma57 style_simple:1> | novuschroma57 style cartoon | SDXL, Simple Cartoon Style, Simple |
     | <lora:novuschroma57 style_detail:1> | novuschroma57 style cartoon | SDXL, Simple Cartoon Style, Detailed |
+    | <lora:drew-struzan-sdxl-v1-000046:1> | a painting of ... in the style of drew-struzan | for SDXL, fill in the ellipsis, can be extended |
+    | <lora:SDXL_MSPaint_Portrait:1> | MSPaint portrait, MSPaint drawing | abysmal quality MS Paint-style "art"! |
+    | <lora:SDXL_FILM_PHOTOGRAPHY_STYLE_V1:0.8> | film photography style, light grain / medium grain / heavy grain | for SDXL |
+    | <lora:LogoRedmondV2-Logo-LogoRedmAF:1> | logo, logoredmaf | for SDXL, for drawing logos |
+    | <lora:logomkrdsxl:1> | logomkrdsxl, vector, logo | for SDXL, for drawing logos |
+    | <lora:JCLeyendecker1-000001:1> | JCLeyendecker | for SDXL, can mention 'vintage illustration', or 'oil painting', etc |
+    | <lora:Lightsaber_ComicStyle_v01:1> | | for SDXL, It works well with tags like:  "holding a [color] lightsaber", "holding a [color] lightsaber with both hands", "holding two [color] lightsabers", "comic book style", "dynamic pose", "clean line art", "bold ink lines", "cel-shaded", etc. You can also add pose tags like “in a defensive stance” or “attacking”, etc. |
+  </if>
+  <if pony>
+    | <lora:jc_leyendecker_pony_v6_smooth_fix_metadata:1> | leyendecker, white background, simple background | JC Leyendecker style for Pony, background tags might not be needed |
+    | <lora:ncpy43 style:1> | ncpy43 style, watercolor sketch, illustration, watercolor painting | watercolor sketch style (Pony) |
+    | <lora:Watercolor:1> | watercolor | Pony |
+    | <lora:ncpy45 style:1> | ncpy45 style watercolor | Pony, Watercolor Orange Blossom Style |
     | <lora:Shane_Glines_PDXL:0.8> | shaneglixl, cartoon style, flat color | Pony, cartoon style |
     | <lora:Shane_Glines_v2_PDXL:0.9> | shaneglixl, cartoon style, black eyes, narrow waist, flat color | Pony, cartoon style |
     | <lora:ShaneGlinesPony:1> | ict style, no pupils | Pony, cartoon style |
-    | <lora:g1g3r:1> | g1g3r | H. R. Giger style |
-    | <lora:scifi-horror-000006:1> | | sci-fi horror style: good for monsters |
-    | <lora:Found_Polaroid:1> | | |
-    | <lora:Vintage_Found_Photos:1> | tcc_foundphotos | |
-    | <lora:EldritchPinhole:1> | | Eldritch Pinhole Photography (distressed found photos) |
     | <lora:InsideOutCH_Style-10:1> | InsideOutXLP, cartoon, colored skin, cute, chibi, big eyes | Inside Out (Feelings) STYLE (Disney Pixar) |
     | <lora:klimspreeaandrewcockroach:1> | | andrewcockroach style for Pony |
     | <lora:Ghibli_style_PDXL:1> | source anime, Ghiblistyle, anime coloring | for Pony |
-    | <lora:SDXL_MSPaint_Portrait:1> | MSPaint portrait, MSPaint drawing | abysmal quality MS Paint-style "art"! |
-    | <lora:SDXL_FILM_PHOTOGRAPHY_STYLE_V1:0.8> | film photography style, light grain / medium grain / heavy grain | for SDXL |
-    | <lora:Lightsaber_ComicStyle_v01:1> | | for SDXL, It works well with tags like:  "holding a [color] lightsaber", "holding a [color] lightsaber with both hands", "holding two [color] lightsabers", "comic book style", "dynamic pose", "clean line art", "bold ink lines", "cel-shaded", etc. You can also add pose tags like “in a defensive stance” or “attacking”, etc. |
-    | <lora:LogoRedmondV2-Logo-LogoRedmAF:1> | logo, logoredmaf | for SDXL, for drawing logos |
-    | <lora:logomkrdsxl:1> | logomkrdsxl, vector, logo | for SDXL, for drawing logos |
-    | <lora:jc_leyendecker_pony_v6_smooth_fix_metadata:1> | leyendecker, white background, simple background | JC Leyendecker style for Pony, background tags might not be needed |
-    | <lora:JCLeyendecker1-000001:1> | JCLeyendecker | for SDXL, can mention 'vintage illustration', or 'oil painting', etc |
-    | <lora:drew-struzan-sdxl-v1-000046:1> | a painting of ... in the style of drew-struzan | for SDXL, fill in the ellipsis, can be extended |
-    | <lora:SDXLPaintSplash:1> | Colorsplash | a style for SDXL, might work with Pony with weight >=1.5 |
+  </if>
+  </if>
 
-  G. Booru tags for Pony-based models, also Illustrious, Anima  [synonyms typically don't work]:
+  <if booru>
+  Booru tags for Pony-based models, also Illustrious, Anima  [synonyms typically don't work]:
     - appearance
       - ahoge
     - age  [omit for a young adult; may need weighting]
@@ -292,6 +301,7 @@ system_top: |-
       - heavy breathing
       - drunk
       - dazed
+  </if>
 
   ## Tiny Full Response Example
 
@@ -329,7 +339,9 @@ system_top: |-
   ESSENTIAL: Only draw ONE character at a time, unless explicitly told to draw two or more together. The image gen works MUCH better with a solo single character. If you are a participant in the chat, you normally draw yourself in the scene, with consistent clothes, etc.
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: ONLY draw one person at a time, unless EXPLICITLY told to draw several.
+  <if pony>
   IMPORTANT: Pony models DO NOT LIKE long phrases! Always split noun phrases and repeat the noun, e.g. long wavy red hair -> long hair, wavy hair, red hair
+  </if>
   ESSENTIAL: When changing or editing an image, or using a reference image with Klein or Krie, you MUST ALWAYS include markdown for the input image.
   ESSENTIAL: Use the full thinking process, especially DO NOT skip the detailed sanity check, which is important to avoid mistakes.
 
@@ -414,8 +426,12 @@ system_top: |-
 #   | W | [sets width=1344 height=768] | 7:4 | 1120x640 | Wide |
 #   | x | [sets width=1536 height=768] | 2:1 | 1280x640 | |
 #   | X | [sets width=1536 height=640] | 12:5 | 1280x512 | eXtra wide |
+# Seed (only if asked to adjust previous image)
+#   - images show like ![#1234 expanded prompt](filename.jpg)
 # - [sets seed=1234] to use same seed
 # - [sets gender=male] [use face]  -  a random male
+# - 3: hires-fix 1.5x, hq=1.5
+# - 4+: 30+ steps
 age: 20
 # period: 14
 visual:
