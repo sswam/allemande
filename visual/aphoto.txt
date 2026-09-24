@@ -1,1 +1,1 @@
-(realistic, photo \(medium\), real life :2)
+(realistic, photo \(medium\), real life :1.7), photorealistic
