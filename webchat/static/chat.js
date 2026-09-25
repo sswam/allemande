@@ -3934,8 +3934,8 @@ async function set_options(options) {
 }
 
 async function opt_context(ev) {
-  // console.log("opt_context", ev.target.value);
-  let context = ev.target.value;
+  // console.log("opt_context", ev.target.value.trim());
+  let context = ev.target.value.trim();
   context = context === "" ? null : +context;
   await set_options({
     room: room,
@@ -3950,7 +3950,7 @@ async function opt_context(ev) {
 }
 
 async function opt_lines(ev) {
-  let lines = ev.target.value;
+  let lines = ev.target.value.trim();
   lines = lines === "" ? null : +lines;
   await set_options({
     room: room,
@@ -3965,7 +3965,7 @@ async function opt_lines(ev) {
 }
 
 async function opt_images(ev) {
-  let images = ev.target.value;
+  let images = ev.target.value.trim();
   images = images === "" ? null : +images;
   await set_options({
     room: room,
@@ -3980,7 +3980,7 @@ async function opt_images(ev) {
 }
 
 async function opt_temp(ev) {
-  let temp = ev.target.value;
+  let temp = ev.target.value.trim();
   temp = temp === "" ? null : +temp;
   await set_options({
     room: room,
@@ -3995,7 +3995,7 @@ async function opt_temp(ev) {
 }
 
 async function opt_mission(ev) {
-  let mission = ev.target.value;
+  let mission = ev.target.value.trim();
   mission = mission === "" ? null : mission === "-" ? "" : mission.trim();
   await set_options({
     room: room,
@@ -4006,7 +4006,7 @@ async function opt_mission(ev) {
 }
 
 async function opt_name(ev) {
-  let name = ev.target.value;
+  let name = ev.target.value.trim();
   name = name === "" ? null : name.trim();
   await set_options({
     room: room,
@@ -4021,7 +4021,7 @@ async function opt_name(ev) {
 }
 
 async function opt_artist(ev) {
-  let artist = ev.target.value;
+  let artist = ev.target.value.trim();
   const artist_default = room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW;
   artist = artist === artist_default ? null : artist.trim();
   await set_options({
@@ -4034,7 +4034,7 @@ async function opt_artist(ev) {
 }
 
 async function opt_writer(ev) {
-  let writer = ev.target.value;
+  let writer = ev.target.value.trim();
   const writer_default = room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW;
   writer = writer === writer_default ? null : writer.trim();
   await set_options({
@@ -4047,7 +4047,7 @@ async function opt_writer(ev) {
 }
 
 async function opt_art_model(ev) {
-  let art_model = ev.target.value;
+  let art_model = ev.target.value.trim();
   art_model = art_model === "" ? null : art_model;
   await set_options({
     room: room,
