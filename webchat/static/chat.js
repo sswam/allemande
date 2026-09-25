@@ -1352,7 +1352,8 @@ async function load_user_files() {
   ]);
   let nag = nag_response.ok ? await nag_response.text() : "";
   // title case
-  const name = user.replace(/\b./g, c => c.toUpperCase());
+  let name = user.replace(/\b./g, c => c.toUpperCase());
+  name = name.replace(/\..*/, "");
   nag = nag.replace(/\$USER\b/g, encode_entities(name));
   nag = nag.replace(/\$CONTACT\b/g, config.CONTACT);
   nag = nag.replace(/\$PATREON\b/g, config.PATREON);
