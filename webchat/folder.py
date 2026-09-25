@@ -114,7 +114,7 @@ SPECIAL_TYPES = {
     "s": "text/x-allychat-summary",
 }
 
-ADVANCED_TYPES = { "base", "r", "s" }
+ADVANCED_TYPES = { "base", "r", "s", "tts" }
 
 
 @dataclasses.dataclass
