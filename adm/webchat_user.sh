@@ -164,13 +164,13 @@ END
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
-	if ((!nsfw)); then
-		ln -sf ../../doc/help.md rooms/"$user"/.help.m
-	fi
+	# if ((!nsfw)); then
+	# 	ln -sf ../../doc/help.md rooms/"$user"/.help.m
+	# fi
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
-		ln -sf ../../doc/nsfw/help.md rooms/"$user"/.help.m
+		# ln -sf ../../doc/nsfw/help.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
 	else
 		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
