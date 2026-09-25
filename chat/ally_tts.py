@@ -10,7 +10,7 @@ import asyncio
 
 import bb_lib
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
-from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT, TTS_VOICE_HUMAN_DEFAULT, TTS_VOICE_NARRATION
+from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT, TTS_VOICE_HUMAN_DEFAULT, TTS_VOICE_NARRATION, TTS_MAX_TEXT_LENGTH
 import chat
 import filters
 import ally_room
@@ -89,6 +89,11 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
 
     # handle empty content
     if not content:
+        path.write_text("")
+        return
+
+    # handle content that is too long - TODO support long content by splitting paragraphs and sentences if needed
+    if len(content) > TTS_MAX_TEXT_LENGTH:
         path.write_text("")
         return
 

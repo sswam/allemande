@@ -50,10 +50,11 @@ TTS_VOICE_DEFAULT = "voice/female_uk"
 TTS_VOICE_HUMAN_DEFAULT = "voice/male_uk"
 TTS_VOICE_NARRATION = "voice/male_uk_vlow"
 TTS_TIMEOUT = 60  # 1 minute
+TTS_MAX_TEXT_LENGTH = 2000 # chars
 STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes
 
-GPU_COST_PER_SECOND = 0.01 / 60  # 1c / 60 seconds
+GPU_COST_PER_SECOND = 0.005 / 60  # 0.5c / minute
 
 ART_MODEL_PROMPT_DEFAULT = "`@Coni` or `@Krea` or another art model"  # TODO use the following instead, somehow
 ART_MODEL_PROMPT_DEFAULT_SFW = "`@Jily` or `@Krea` or another art model"
