@@ -500,10 +500,11 @@ MODELS = {
     },
     "aion": {
         "vendor": "venice",
-        "id": "aion-labs-aion-2-0",
-        "description": "Aion 2.0 is an Uncensored DeepSeek V3.2-based roleplaying model",
-        "cost_in": 1,
-        "cost_out": 2,
+        "id": "aion-labs-aion-3-5-mini",
+        # "id": "aion-labs-aion-2-0",
+        # "description": "Aion 2.0 is an Uncensored DeepSeek V3.2-based roleplaying model",
+        "cost_in": 0.88,
+        "cost_out": 1.75,
     },
     "kimi": {
         "aliases": ["kimi-k2"],
