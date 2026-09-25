@@ -44,7 +44,7 @@ You can read our detailed [Terms of Service](/terms).
 
 - **Uncensored LLMs**: Most of our 1000+ AI characters are up for sexual chat and role-play.
 - **Uncensored AI art**: We have many AI-art models that can make sexual images.
-- **AI art LoRAs**: Many LoRAs are available to improve your images.
+- **AI art LoRAs**: Many image-gen plugins called LoRAs are available to improve your images.
 - **Search**: We have search engines that can return sexual images and videos.
 - **Fantasy Characters**: You can chat with a large number of famous fantasy characters, and draw them: Alice (in Wonderland), Geralt (the Witcher), Bonnibel (Princess Bubblegum), and various Muppets!
 - **Custom Characters**: We can easily create custom characters, with help from Chaz or Chara, our character gen agents.
@@ -166,13 +166,16 @@ These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: 
 - Using the AI art models directly can be a bit technical. For best results, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.
 - **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
-- **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style (based on PonyXL)
+- **Coni, Boni, Yoni**: NSFW image generation with a semi-realistic style (based on PonyXL)
 - **Poni**: NSFW image generation with a cartoon / anime style (based on PonyXL)
 - **Lusy, Bigi, Pigi**: Very realistic NSFW image generation (Pigi has more PonyXL)
 - **Bboy, Coci**: Male focus and trans female focus models, good for female gaze / bara / yaoi / gay.
 - **Basp**: A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity
-- **Ilus**: NSFW image generation with a cartoon / anime style (Illustrious XL)
 - **Irus**: NSFW image generation with a realistic style (Illustrious Realism)
+- **Xrea**: Fast strong image generation using Krea 2 Turbo (incl. NSFW)
+- **Xrie**: Identity-preserving image editing using Krea 2 Identity Edit (incl. NSFW Lora)
+- **Xlein**: Fast image generation and editing using FLUX.2 Klein 9B (incl. NSFW Lora)
+- **Anima**: Anime and non-photorealistic art, the strongest model for NSFW
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -215,7 +218,7 @@ Please do not use languages models other than those listed here for NSFW content
 | MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
 | MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
 | Z.AI       | GLM 4.6               | Glimi  | $0.50 | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
-| Aion       | DeepSeek 3 Uncensored | Aion   | $1    | $2     | Based on DeepSeek 3.2, a strong uncensored model for chat, writing and role play.                       |
+| Aion       | DeepSeek 3 Uncensored | Aion   | $0.88 | $1.75  | Based on DeepSeek 3.2, a strong uncensored model for chat, writing and role play.                       |
 
 Input and output costs are measured in US dollars per million tokens.
 
@@ -240,9 +243,8 @@ Input and output costs are measured in US dollars per million tokens.
 | nutbutter        | bigasp_v20           | Basp  | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity                       |
 | Tauron           | Eros Ultima Hybrid   | Yoni  | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                                    |
 | klaabu           | Illustrious Realism  | Irus  | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni                                                                 |
-| aria1th261       | IllustriousXL        | Ilus  | SFW&NSFW anime/cartoons, more advanced than Poni, but not working correctly!                                             |
 
-The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
+The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the "nsfw" LoRA, or try the Lusy model.
 
 Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using [Danbooru tags](https://danbooru.donmai.us/wiki_pages/tag_groups).
 

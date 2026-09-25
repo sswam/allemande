@@ -15,7 +15,7 @@ Novel features include:
 - The chat is displayed in a secure cross-domain iframe,
   so JavaScript in the chat is not very dangerous.
 - Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
-- quality AI art with SDXL models, and assisted prompting; not censored
+- quality AI art with many art models, and assisted prompting; not censored
 - a flexible room file system; private, public and group chats
 - freely edit the chat history; archive or clear old chat rooms
 - a numbered "chapters" system, to split up your chats for performance
@@ -41,7 +41,7 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 - You can view your usage and its cost by pressing the <i class="bi-currency-dollar"></i> button at top-right. Press the same button again to close it.
 - Free users should try to keep their usage under $3 per month. Some models are very inexpensive.
-- Image gen is accounted at 1c per 60 seconds of GPU time.
+- Image gen is counted at 0.5c per 60 seconds of GPU time.
 - Please participate in public chat, give feedback, or contribute in some way, that counts for a lot!
 
 ## Rules
@@ -747,12 +747,19 @@ Llama 3.1 8B is a small model. All of the others are quite strong.
 
 ### AI Artists
 
-Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gemu, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model
+Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, who has extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
 
 - **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
-- **Poni**: Anime-style image generation using AutismMix Confetti
+- **Krea**: Fast strong image generation using Krea 2 Turbo
+- **Krie**: Identity-preserving image editing using Krea 2 Identity Edit
+- **Klein**: Fast image generation and editing using FLUX.2 Klein 9B
+
+The following art models can give great SFW results, but may draw NSFW images if you're not careful:
+
+- **Anima**: Anime and non-photorealistic image generation using Anima Turbo
 - **Coni**: Realistic image generation using CyberRealistic Pony
+- **Poni**: Anime-style image generation using AutismMix Confetti
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -984,7 +991,7 @@ type: visual
 | MoonshotAI    | Kimi K2 0905          | Kimi    | $0.39  | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
 | MoonshotAI    | Kimi K2.5             | Kimmi   | $0.45  | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
 | Z.AI          | GLM 4.6               | Glimi   | $0.50  | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
-| Aion          | DeepSeek 3 Uncensored | Aion    | $1     | $2     | Based on DeepSeek 3.3, a strong uncensored model for chat, writing and role play.                                |
+| Aion          | DeepSeek 3 Uncensored | Aion    | $0.88  | $1.75  | Based on DeepSeek 3.3, a strong uncensored model for chat, writing and role play.                                |
 
 Input and output costs are measured in US dollars per million tokens.
 
@@ -1017,8 +1024,8 @@ OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with most NSFW topics.
 Llama 3: Can engage with any NSFW topic, practically uncensored, but may be reluctant by default.
 Venice Uncensored, Aion: Fully uncensored, or as close as it gets. The Aio may work better than Aion, it gives shorter reponses.
-Krea2: Avoids nudity without a NSFW LoRA.
-F2K: Avoids nudity without a NSFW LoRA.
+Krea2 / Krea: Avoids nudity (without a plugin called a LoRA)
+F2K / Klein: Avoids nudity (without a LoRA)
 
 If you notice any unexpected censorship, please report it to us. Many issues can be fixed by adjusting character prompts.
 

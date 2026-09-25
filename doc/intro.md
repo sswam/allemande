@@ -58,7 +58,7 @@ Most characters can remember past chats. In order for this to work, you need to 
 
 ## Usage
 
-As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is accounted at 1c per 60 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
+As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is counted at 0.5c per 60 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
 
 ## A Few of our Characters and Tools
 
