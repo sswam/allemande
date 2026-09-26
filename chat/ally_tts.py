@@ -14,6 +14,7 @@ from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT, TTS_VOICE_HUMAN_DEFAULT, TT
 import chat
 import filters
 import ally_room
+from split_sentences import split_sentences_with_strict_limit, chunk_sentences
 
 
 logging.basicConfig(level=logging.INFO)
@@ -100,7 +101,6 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
 
     # if any paragraph is longer than TTS_MAX_TEXT_LENGTH,
     # split it by sentences and chunk to be as long as possible within the limit (adding new "paragraphs")
-    # (using something smart like spaCy)
     paragraphs = [
         chunk
         for paragraph in paragraphs
@@ -151,39 +151,19 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
     await portal.remove_response(resp)
 
 
-nlp = None
+# nlp = None
 
 
-def split_into_sentences(text: str) -> list[str]:
-    global nlp
-    import spacy  # This is slow, so defer it until it's needed
-    nlp = nlp or spacy.load("en_core_web_sm")
-    return [sent.text.strip() for sent in nlp(text).sents]
-
-
-def chunk_sentences(sentences: list[str], max_length: int) -> list[str]:
-    chunks = []
-    current = ""
-
-    for sentence in sentences:
-        candidate = f"{current} {sentence}".strip() if current else sentence
-        if len(candidate) <= max_length:
-            current = candidate
-        else:
-            if current:
-                chunks.append(current)
-            current = sentence
-
-    if current:
-        chunks.append(current)
-
-    return chunks
+# def split_into_sentences(text: str) -> list[str]:
+#     global nlp
+#     import spacy  # This is slow, so defer it until it's needed
+#     nlp = nlp or spacy.load("en_core_web_sm")
+#     return [sent.text.strip() for sent in nlp(text).sents]
 
 
 def split_paragraph_if_needed(paragraph: str, max_length: int) -> list[str]:
-    if len(paragraph) <= max_length:
-        return [paragraph]
-    sentences = split_into_sentences(paragraph)
+    """Split a paragraph into chunks not exceeding max_length characters."""
+    sentences = split_sentences_with_strict_limit(paragraph, max_length)
     return chunk_sentences(sentences, max_length)
 
 

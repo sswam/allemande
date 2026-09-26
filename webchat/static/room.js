@@ -2057,7 +2057,7 @@ function get_tts_msg_paragraph_count(id, $message) {
   // hack to avoid 404 fetches on the common case of a single paragraph or just an image
   if (pg_count === undefined) {
     const estimate = message_count_lines_estimate($message);
-    if (estimate <= 1)
+    if (estimate <= 1 && $message.innerText.length < 1900)  // support splitting long paragraphs, based on TTS_MAX_TEXT_LENGTH == 2000
       pg_count = tts_msg_paragraph_count[id] = estimate;
   }
   return pg_count;

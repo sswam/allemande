@@ -5,6 +5,7 @@ import regex
 import argparse
 from io import StringIO
 import subprocess
+from typing import Iterable
 
 __version__ = '0.1.5'
 
@@ -90,7 +91,23 @@ SENTENCE_PATTERN = rf"""
     )
 """
 
-def split_sentences(text):
+SENTENCE_PATTERN_NO_UPPERCASE = rf"""
+    (  # 1. exceptions
+        {EXCEPTION_PATTERN}
+    )
+|
+    (  # 2. stop mid text
+        {STOP_WESTERN}+
+        {CLOSING_MODIFIERS}*
+        \s+  # require spacing
+        |
+        {STOP_CJK}+
+        \s*
+    )
+"""
+
+
+def split_sentences(text, check_uppercase=True):
 	"""
 	Split text into sentences using regex substitution.
 	Handles common abbreviations, titles, and other exceptions that contain periods
@@ -110,7 +127,8 @@ def split_sentences(text):
 			return match.group(2) + '\n'
 		raise AssertionError("logic error in split_sentences.replace_func")
 
-	result = regex.sub(SENTENCE_PATTERN, replace_func, text, flags=regex.VERBOSE)
+	pattern = SENTENCE_PATTERN if check_uppercase else SENTENCE_PATTERN_NO_UPPERCASE
+	result = regex.sub(pattern, replace_func, text, flags=regex.VERBOSE)
 
 	# Split on newlines and clean up
 	sentences = [s.strip() for s in result.split('\n')]
@@ -157,8 +175,62 @@ def format_sentences_as_lines(inp, splitter):
 				yield sentence
 		first = False
 
-def split_sentences_test(text, splitter):
+def split_sentences_text(text, splitter):
 	return "\n".join(format_sentences_as_lines(text, splitter))
+
+
+def chunk_sentences(sentences: list[str], max_length: int) -> list[str]:
+    """Combine sentences into chunks, ensuring no chunk exceeds max_length characters."""
+    chunks = []
+    current = ""
+
+    for sentence in sentences:
+        candidate = f"{current} {sentence}".strip() if current else sentence
+        if len(candidate) <= max_length:
+            current = candidate
+        else:
+            if current:
+                chunks.append(current)
+            current = sentence
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
+def split_sentences_with_strict_limit(paragraph: str, max_length: int) -> Iterable[str]:
+    """Yield sentences from a paragraph, splitting further if any exceed max_length characters."""
+    if len(paragraph) <= max_length:
+        yield paragraph
+        return
+
+    sentences = split_sentences(paragraph, check_uppercase=True)
+
+    for sentence in sentences:
+        if len(sentence) <= max_length:
+            yield sentence
+            continue
+        sentences2 = split_sentences(sentence, check_uppercase=False)
+        for sentence2 in sentences2:
+            while len(sentence2) > max_length:
+                pos = find_whitespace_before(sentence2, max_length + 1)
+                if pos == -1:
+                    pos = max_length
+                part = sentence2[:pos].strip()
+                sentence2 = sentence2[pos:].strip()
+                if part:
+                    yield part
+            if sentence2:
+                yield sentence2
+
+
+def find_whitespace_before(s: str, pos: int) -> int:
+    """Find the index of the last whitespace character in s before the given position."""
+    match = re.search(r'\s\S*$', s[:pos])
+    if match:
+        return match.start()
+    return -1
 
 
 def main():
