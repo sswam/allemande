@@ -6,7 +6,7 @@
 gent() {
 	local model= m=      # model
 	local style= s=1     # refer to test_hello.py for test style
-	local edit= e=1      # do not edit
+	local edit= e=1      # open the test file in an editor after generation
 	local test= t=1      # run tests after generating
 	local funcs= f=()    # process only listed functions
 	local append= a=0    # append to existing tests file without reading it
