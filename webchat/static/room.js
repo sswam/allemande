@@ -1774,7 +1774,6 @@ function fix_browser_copy(ev) {
   ev.preventDefault();
   ev.clipboardData.setData('text/plain', selection.toString());
   ev.clipboardData.setData('text/html', container.innerHTML);
-  console.log(container.innerHTML);
 }
 
 // message menu --------------------------------------------------------------
