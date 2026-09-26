@@ -220,7 +220,7 @@ async function call_process_messages(messages) {
     if (!playing_message_id)
       play_message_audio(first_visible_message_not_me);
     else
-      precache_message_audio(first_visible_message_not_me, 100);
+      precache_message_audio(first_visible_message_not_me, 0, false, 100);
   }
 }
 
@@ -930,8 +930,9 @@ function image_click($el, ev) {
 }
 
 async function click(ev) {
-  // stop audio on click anywhere, if a little time has elapsed
-  if (Date.now() > playing_audio_start_time + 500)
+  // stop audio on click anywhere, if a little time has elapsed,
+  // except not for images, so can view images while listening.
+  if (ev.target.tagName !== "IMG" && Date.now() > playing_audio_start_time + 500)
     stop_playing_audio();
 
   if (!$messages.contains(ev.target))
@@ -1889,23 +1890,26 @@ function stop_playing_audio() {
   playing_message_id = null;
 }
 
-async function play_message_audio($message, regen) {
+// a cache of paragraph count to avoid unnecessary 404 requests
+const tts_msg_paragraph_count = [];
+
+async function play_message_audio($message, regen, paragraph_number) {
+  let delay = voice_delay_between_messages;
+
   const id = await get_message_id($message);
+  if (paragraph_number === undefined)
+    paragraph_number = 0;
+
+  const pg_count = get_tts_msg_paragraph_count(id, $message);
+  const paragraph_exists = pg_count === undefined || paragraph_number < pg_count;
 
   // scroll into view with voice_auto, to read along!
+  // TODO scroll to paragraph?  tricky as content cleanup and paragraphing is done on the server
   if (view_options.voice_auto) {
     $message.scrollIntoView({
       "behavior": "smooth",
       "block": "nearest",
     });
-  }
-
-  // if voice_auto, get the next message and precache the TTS
-  let $message_next;
-  if (view_options.voice_auto) {
-    $message_next = find_next_visible_message($message);
-    if ($message_next)
-      precache_message_audio($message_next, 100);  // 100ms delay so we gen for this message first!
   }
 
   // If the same message is already playing, stop it and clear globals
@@ -1919,48 +1923,78 @@ async function play_message_audio($message, regen) {
     stop_playing_audio();
   }
 
-  // if the message has audio elements, play them in turn instead of doing TTS
   const audios = $message.querySelectorAll("audio");
-  if (audios.length) {
+
+  let $message_next = find_next_visible_message($message);
+
+  const play = audios.length ? "audios" : paragraph_exists ? "paragraph" : "";
+
+  // if (play)
+  //   console.log("play_message_audio", id, paragraph_number, play);
+
+  // precache the next paragraph or message if appropriate
+  if (play == "audios" && view_options.voice_auto) {
+    precache_message_audio($message_next, 0, false, 100);  // 100ms delay so we gen for this message first!
+  } else if (play == "paragraph") {
+    precache_message_audio($message, paragraph_number + 1, regen, 100);  // should precache next message if no paragraph
+  }
+
+  let play_next = "";
+
+  if (play == "audios") {
+    // if the message has audio elements, play them in turn instead of doing TTS
     playing_message_id = id;
-    const continue_playing = await play_audio_sequence(audios);
+    const status = await play_audio_sequence(audios);
     playing_audio = null;
     playing_message_id = null;
-    if (!continue_playing)
-      return;
-  } else {
+    if (status == 0)
+      play_next = "message";
+  } else if (play == "paragraph") {
     // no audio elements?  do TTS
-    const hash = $message.getAttribute("hash");
-    let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
-    if (view_options.voice_starred)
-      url += "&starred=1";
-    if (regen)
-      url += "&regen=1&ts=" + Date.now();
-
-    if (!await play_audio_from_url(url, id))
-      return;
+    const url = await get_tts_url($message, paragraph_number, regen);
+    const status = await play_audio_from_url(url, id)
+    if (status == 0)
+      play_next = "paragraph";
+    else if (status == 2) { // no such paragraph
+      tts_msg_paragraph_count[id] = paragraph_number;
+      play_next = "message";
+      delay = 0; // already did delay before the nonexistent paragraph
+    }
+  } else {
+    play_next = "message";
+    delay = 0;
   }
 
-  if (!view_options.voice_auto)
-    return;
+  // continue playing the next paragraph / message
+  if (play_next == "paragraph") {
+    if (delay)
+      await $wait(delay);
+    play_message_audio($message, regen, paragraph_number + 1); // don't wait
+  } else if (play_next == "message" && view_options.voice_auto) {
+    // check again in case message removed, edited, or new messages added - but not if the message is from the user!
+    if (!$message_next || $message_next.classList.contains("hidden")) {
+      $message_next = find_next_visible_message_not_me($message);
+    }
 
-  // check again in case new messages added - but not if the message is from the user!
-  if (!$message_next || $message_next.classList.contains("hidden")) {
-    $message_next = find_next_visible_message_not_me($message);
+    if ($message_next) {
+      if (delay)
+        await $wait(delay);
+      play_message_audio($message_next, false, 0); // don't wait
+    } else {
+      scroll_to_end($messages_wrap);
+    }
   }
+}
 
-  if (!$message_next) {
-    scroll_to_end($messages_wrap);
-    return;
-  }
-
-  // continue playing the next message
-
-  // Wait before the next audio
-  if (voice_delay_between_messages)
-    await $wait(voice_delay_between_messages);
-
-  play_message_audio($message_next);  // don't pass regen through
+async function get_tts_url($message, paragraph_number, regen) {
+  const id = await get_message_id($message);
+  const hash = $message.getAttribute("hash");
+  let url = `/${room}.tts/${id}.${paragraph_number}.${hash}.mp3?stream=1`;
+  if (view_options.voice_starred)
+    url += "&starred=1";
+  if (regen)
+    url += "&regen=1&ts=" + Date.now();
+  return url;
 }
 
 function vad_active_duck_volume(active) {
@@ -2013,22 +2047,60 @@ function find_next_visible_message_not_me($message) {
   return $message;
 }
 
-async function precache_message_audio($message, delay) {
+function message_count_lines_estimate($message) {
+  return $message.querySelectorAll(':scope > .content > :not(.label, .think, span, pre, p:has(.image))').length
+}
+
+function get_tts_msg_paragraph_count(id, $message) {
+  let pg_count = tts_msg_paragraph_count[id];
+
+  // hack to avoid 404 fetches on the common case of a single paragraph or just an image
+  if (pg_count === undefined) {
+    const estimate = message_count_lines_estimate($message);
+    if (estimate <= 1)
+      pg_count = tts_msg_paragraph_count[id] = estimate;
+  }
+  return pg_count;
+}
+
+async function precache_message_audio($message, paragraph_number, regen, delay) {
   // if the message has audio elements, don't worry about it
+  if (!$message)
+    return;
+
   const audios = $message.querySelectorAll("audio");
   if (audios.length)
     return;
 
   const id = await get_message_id($message);
 
-  // do TTS precache
-  const hash = $message.getAttribute("hash");
-  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+  const pg_count = get_tts_msg_paragraph_count(id, $message);
+
+  const paragraph_exists = pg_count === undefined || paragraph_number < pg_count;
+  if (!paragraph_exists)
+    return;
+
+  // console.log("  precache_message_audio", id, paragraph_number);
 
   if (delay)
     await $wait(delay);
 
-  precache_url(url)  // don't wait
+  // do TTS precache
+  const url = await get_tts_url($message, paragraph_number, regen);
+  if (await precache_url(url))
+    return;  // ok
+
+  // paragraph didn't exist
+  if (tts_msg_paragraph_count[id] === undefined || paragraph_number < tts_msg_paragraph_count[id])
+    tts_msg_paragraph_count[id] = paragraph_number;
+
+  // otherwise, if voice_auto is on and paragraph_number was > 0, try precaching the next message
+  if (!view_options.voice_auto || paragraph_number == 0)
+    return;
+
+  const $message_next = find_next_visible_message($message);
+
+  return await precache_message_audio($message_next, 0, false, 0);
 }
 
 async function play_audio_sequence(audioElements) {
@@ -2061,14 +2133,14 @@ async function play_audio_sequence(audioElements) {
 
     // Break the loop immediately if the audio was paused
     if (isPaused)
-      return false;
+      return 1;
 
     // Wait before the next audio, but not after the last one
     const isLastElement = i === audioElements.length - 1;
     if (voice_delay_between_clips && !isLastElement)
       await $wait(voice_delay_between_clips);
   }
-  return true;
+  return 0;
 }
 
 function handle_media_error(event) {
@@ -2077,6 +2149,9 @@ function handle_media_error(event) {
 }
 
 async function play_audio_from_url(url, id) {
+  // returning 0 indicates ended, 1 indicates paused,
+  // 2 indicates an error, e.g. 0 length file or 404 not found
+
   const audio = new Audio(url);
   playing_audio_start_time = Date.now();
   playing_audio = audio;
@@ -2087,39 +2162,44 @@ async function play_audio_from_url(url, id) {
 
     audio.addEventListener('ended', () => {
       playing_audio_clear(id);
-      resolve(true);
+      resolve(0);
     });
 
     audio.addEventListener('pause', () => {
       if (audio.ended)
         return;
       playing_audio_clear(id);
-      resolve(false);
+      resolve(1);
     });
 
     audio.addEventListener('error', (e) => {
       handle_media_error(e);
       playing_audio_clear(id);
-      resolve(true);
+      resolve(2);
     });
 
     audio.play().catch((error) => {
       console.error("Playback failed:", error.message);
       playing_audio_clear(id);
-      resolve(true);
+      resolve(2);
     });
   });
 }
 
 async function precache_url(url) {
+  // doesn't seem to actually cache in the browser, just generates: so will use HEAD
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {method: 'HEAD'});
 
-    if (!response.ok)
+    if (!response.ok) {
       console.warn(`Pre-cache failed for ${url}: Status ${response.status}`);
+      return false
+    }
   } catch (error) {
     console.error(`Network error while pre-caching ${url}:`, error);
+    return false;
   }
+  return true;
 }
 
 function playing_audio_clear(id) {

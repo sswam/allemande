@@ -34,6 +34,8 @@ async def generate_tts_file(path: Path, regen=False, starred=False):
     """ Generate a TTS file if needed, with locking """
     lock = get_tts_lock(str(path))
     async with lock:
+        if regen:
+            path.unlink(missing_ok=True)
         if regen or not path.exists():
             await generate_tts_file_2(path, starred=starred)
 
@@ -41,11 +43,12 @@ async def generate_tts_file(path: Path, regen=False, starred=False):
 async def generate_tts_file_2(path: Path, starred: bool=False):
     """ Generate a missing TTS file """
     stem = path.stem
-    m = re.match(r"(\d+)\.([0-9a-f]{8})$", stem)
+    m = re.match(r"(\d+)\.(\d+)\.([0-9a-f]{8})$", stem)
     if not m:
         logger.error("generate_tts_file, bad path: %r", path)
         return
-    msg_id, msg_hash = m.groups()
+    msg_id, paragraph_number, msg_hash = m.groups()
+    paragraph_number = int(paragraph_number)
     room_file = re.sub(r"\.tts$", r".bb", str(path.parent))
 
     # logger.info("pathname, room_file, msg_id, msg_hash: %r, %r, %r, %r", pathname, room_file, msg_id, msg_hash)
@@ -71,28 +74,48 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
     content, _n_own_messages = chat.remove_thinking_sections(content, None, 0)
     content = filters.filter_in_remove_code(content, 0)
     content = filters.filter_in_remove_images(content, 0)
-    content = re.sub(r"(^|\s)@(\w)", r"\2", content)  # strip @ signs from @mentions
     content = re.sub(r"<script\b.*?>.*?</script>", "", content, flags=re.DOTALL | re.IGNORECASE)  # strip out script containers
     content = re.sub(r"<style\b.*?>.*?</style>", "", content, flags=re.DOTALL | re.IGNORECASE)  # strip out style containers
     content = re.sub(r"<!--.*?-->", "", content, flags=re.DOTALL)  # strip out HTML comments
-    content = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", content)  # replace links with just the link text
     content = re.sub(r"<[A-Za-z/].*?>", "", content)  # strip out HTML tags
+    content = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", content)  # replace links with just the link text
+    content = re.sub(r"(^|\s)@(\w)", r"\1\2", content)  # strip @ signs from @mentions
     if not starred:
         content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - may need work
 
     # experimental:  add a fullstop at the end of each line if it ends with a word character
     content = re.sub(r"(\w|\*)$", r"\1.", content, flags=re.MULTILINE)
-
-    logger.info("cleaned up content for TTS: %s", content)
+    content = content.strip()
 
     path.parent.mkdir(exist_ok=True)
 
     # handle empty content
-    if not content:
+    if not content and paragraph_number == 0:
         path.write_text("")
         return
 
-    # handle content that is too long - TODO support long content by splitting paragraphs and sentences if needed
+    # split into paragraphs, exclude empty
+    paragraphs = [x.strip() for x in re.split(r'\n\s*\n', content)]
+    paragraphs = [x for x in paragraphs if x]
+
+    # if any paragraph is longer than TTS_MAX_TEXT_LENGTH,
+    # split it by sentences and chunk to be as long as possible within the limit (adding new "paragraphs")
+    # (using something smart like spaCy)
+    paragraphs = [
+        chunk
+        for paragraph in paragraphs
+        for chunk in split_paragraph_if_needed(paragraph, TTS_MAX_TEXT_LENGTH)
+    ]
+
+    try:
+        content = paragraphs[paragraph_number]
+    except IndexError:
+        return  # will 404
+
+    logger.info("cleaned up content for TTS: %s", content)
+
+    # don't play content that is too long
+    # e.g. a "sentence" that is over 2000 chars! it's not worth handling this
     if len(content) > TTS_MAX_TEXT_LENGTH:
         path.write_text("")
         return
@@ -126,6 +149,42 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
         logger.error("generate_tts_file, response / copy failed: %r", e)
 
     await portal.remove_response(resp)
+
+
+nlp = None
+
+
+def split_into_sentences(text: str) -> list[str]:
+    global nlp
+    import spacy  # This is slow, so defer it until it's needed
+    nlp = nlp or spacy.load("en_core_web_sm")
+    return [sent.text.strip() for sent in nlp(text).sents]
+
+
+def chunk_sentences(sentences: list[str], max_length: int) -> list[str]:
+    chunks = []
+    current = ""
+
+    for sentence in sentences:
+        candidate = f"{current} {sentence}".strip() if current else sentence
+        if len(candidate) <= max_length:
+            current = candidate
+        else:
+            if current:
+                chunks.append(current)
+            current = sentence
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
+def split_paragraph_if_needed(paragraph: str, max_length: int) -> list[str]:
+    if len(paragraph) <= max_length:
+        return [paragraph]
+    sentences = split_into_sentences(paragraph)
+    return chunk_sentences(sentences, max_length)
 
 
 async def client_request(portal, input_text, config=None, timeout=None):
