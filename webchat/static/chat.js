@@ -3880,7 +3880,7 @@ async function get_options() {
   const temp = data?.agents?.all?.temp ?? "";
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   const name = data?.users?.[user]?.name ?? "";
-  const art_model = data?.art_model ?? (room_nsfw ? config.ART_MODEL_NSFW : config.ART_MODEL_SFW);
+  const art_model = data?.agents?.all?.art_model ?? (room_nsfw ? config.ART_MODEL_NSFW : config.ART_MODEL_SFW);
   const artist = data?.artist ?? (room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW);
   const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
   const show = data?.agents?.all?.show ?? true;
