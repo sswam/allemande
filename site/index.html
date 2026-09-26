@@ -53,7 +53,9 @@
 		chatDomain = hostname.startsWith('local.')
 		    ? hostname.replace(/^local\./, 'chat-local.')
 		    : 'chat.' + hostname;
-		document.getElementById("chatlink").href = `https://${chatDomain}`;
+		var urlParams = new URLSearchParams(window.location.search + window.location.hash);
+		var returnUrl = urlParams.get('return_url');
+		document.getElementById("chatlink").href = returnUrl ? returnUrl : `https://${chatDomain}` + "/start.html";
 		for ($info of document.querySelectorAll(".info"))
 			for ([index, p] of $info.querySelectorAll("p").entries())
 				p.style.textIndent = `${index}em`;
