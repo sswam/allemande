@@ -52,10 +52,10 @@ class Shortcode:
         # Construct the prompt: name, age, person, emotion, clothes
         # prompt = f"{name}, "
         prompt = ""
+        prompt += f"""[use "{_name},"] """
+        prompt += f"""[use "pony/{_name}," 100 1.5]"""
         if _age:
             prompt += f"{_age} "
-        prompt += f"""[use "pony/{_name}," 100 1.5]"""
-        prompt += f"""[use "{_name},"] """
         if _emo:
             prompt += f"{_emo} "
         if _clothes:
