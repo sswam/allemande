@@ -1,3 +1,6 @@
+// import { enableDragDropTouch } from "https://cdn.jsdelivr.net/npm/@dragdroptouch/drag-drop-touch@latest/dist/drag-drop-touch.esm.min.js";
+// enableDragDropTouch();
+
 const offline_timeout_seconds = 60;
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -2362,12 +2365,11 @@ function dragstart(ev) {
 
 function dragend(ev) {
   const isImage = ev.target.tagName === 'IMG';
-  let text = pendingDragText;
-  pendingDragText = null;
-  if (!text)
+  if (!pendingDragText)
     return;
   // console.log("dragend", alt, text);
-  window.parent.postMessage({ type: "drop", text, x: ev.clientX, y: ev.clientY }, ALLYCHAT_CHAT_URL);
+  window.parent.postMessage({ type: "drop", text: pendingDragText, x: ev.clientX, y: ev.clientY }, ALLYCHAT_CHAT_URL);
+  pendingDragText = null;
 }
 
 function img_markdown(img, alt, ctrl) {

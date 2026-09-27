@@ -1840,6 +1840,7 @@ function handle_message(ev) {
 
   if (ev.data.type == "drop") {
     drop_from_iframe(ev.data.text, ev.data.x, ev.data.y);
+    return;
   }
 
   /*
@@ -2100,7 +2101,7 @@ function drop_from_iframe(text, x, y) {
   // Get the iframe's position relative to the parent window
   const iframeRect = $messages_iframe.getBoundingClientRect();
 
-  if (x !== undefined) {
+  if (x !== undefined) { // && !isMobile) {
     // Translate iframe coords to window coords
     const windowX = x + iframeRect.left;
     const windowY = y + iframeRect.top;
@@ -5142,7 +5143,11 @@ async function react_to_message(id, comment, reaction, reaction_old, prefill) {
 
 async function copy_message(id) {
   const message = await get_message(id);
-  navigator.clipboard.writeText(message.content.trimEnd());
+  const text = message.content.trim();
+  if (isMobile)
+    drop_from_iframe(text);
+  else
+    navigator.clipboard.writeText(text);
 }
 
 async function get_message(id) {
