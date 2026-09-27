@@ -1489,7 +1489,7 @@ function escape() {
     return;
   if (view == "view_usage")
     return usage();
-  if (editing_message)
+  if (editing_message !== null)
     return edit_message_cancel();
 
   set_fullscreen(0);
@@ -5177,7 +5177,7 @@ async function edit_message(id) {
 }
 
 function edit_message_cancel() {
-  if (!editing_message)
+  if (editing_message === null)
     return;
   editing_message = null;
   $body.classList.remove("edit_message");
