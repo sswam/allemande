@@ -41,3 +41,39 @@ function edit_paste(ev) {
 }
 
   $on($edit, "paste", edit_paste);
+
+
+function copy_to_clipboard(text) {
+  try {
+    navigator.clipboard.writeText(text);
+
+    // check if spans multiple lines
+    const multiline = text.match(/\n/);
+
+    // if a likely name, ends with , and not multiline FIXME
+    // put it in the input box
+    const paste_to_input = text.endsWith(",") && !multiline;
+    if (paste_to_input) {
+      $content.focus();
+
+      const sep = multiline ? "\n" : " ";
+
+      const old = $content.value;
+      const selStart = $content.selectionStart;
+      const beforeChar = selStart > 0 ? old.charAt(selStart - 1) : sep;
+      const afterChar = selStart < old.length ? old.charAt(selStart) : '';
+
+      if (beforeChar !== sep)
+        text = sep + text;
+      if (afterChar !== sep && !text.endsWith(sep))
+        text += sep;
+
+      document.execCommand('insertText', false, text);
+      message_changed();
+    }
+  }
+  catch (err) {
+    console.error("copy failed", err);
+    // TODO ideally indicate to user via copy button in iframe
+  }
+}

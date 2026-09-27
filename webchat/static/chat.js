@@ -36,6 +36,7 @@ let access_denied = false;
 let icons;
 let folder_reload = false;
 let editing_message = null;
+let editing_message_prev_content = null;
 
 // const narrator = "Nova";
 // const illustrator = "Illu";
@@ -352,7 +353,7 @@ function setup_dev_early() {
 
 function set_content(content, allow_undo) {
   if (allow_undo) {
-    $content.setRangeText(content, 0, $content.value.length, 'end');
+    content_replace(content);
   } else {
     $content.value = content;
   }
@@ -618,12 +619,28 @@ function new_chat_message(message) {
 
 // insert text ---------------------------------------------------------------
 
-function content_insert(text) {
-  textarea_insert($content, text);
+function content_insert(text, pos) {
+  textarea_insert($content, text, pos);
 }
 
-function textarea_insert(textarea, text) {
+function content_replace(text) {
+  textarea_replace($content, text);
+}
+
+function textarea_insert(textarea, text, pos) {
+  if (pos == -1)
+    pos = textarea.value.length;
+  if (pos !== undefined)
+    textarea.setSelectionRange(pos, pos);
   textarea.focus();
+  document.execCommand('insertText', false, text);
+  message_changed();
+}
+
+function textarea_replace(textarea, text) {
+  textarea.focus();
+  textarea.select();
+  document.execCommand('delete', false);
   document.execCommand('insertText', false, text);
   message_changed();
 }
@@ -1470,8 +1487,10 @@ function select_room_basename() {
 function escape() {
   if (active_get("add_math"))
     return;
-  if (active_get("usage"))
+  if (view == "view_usage")
     return usage();
+  if (editing_message)
+    return edit_message_cancel();
 
   set_fullscreen(0);
 
@@ -1688,7 +1707,9 @@ function setup_main_ui_shortcuts() {
     ['alt+x', clear_chat, 'Clear messages', ADMIN],
     ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
 //    ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
-    ['alt+e', () => edit(), 'Edit file', ADMIN],
+    ['shift+alt+e', () => edit(), 'Edit file', ADMIN],
+//    ['alt+e', () => edit_my_last_message(), 'Edit your last message'], // couldn't get this working yet!
+    ['alt+e', () => edit_last_message(), 'Edit last message'],
     ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
     ['alt+v', artist, 'Invoke the illustrator'],
@@ -1783,40 +1804,7 @@ function handle_message(ev) {
   }
 
   if (ev.data.type == "copy") {
-    // copy to clipboard
-    try {
-      let text = ev.data.text;
-      navigator.clipboard.writeText(text);
-
-      // check if spans multiple lines
-      const multiline = text.match(/\n/);
-
-      // if a likely name, ends with , and not multiline FIXME
-      // put it in the input box
-      const paste_to_input = text.endsWith(",") && !multiline;
-      if (paste_to_input) {
-        $content.focus();
-
-        const sep = multiline ? "\n" : " ";
-
-        const old = $content.value;
-        const selStart = $content.selectionStart;
-        const beforeChar = selStart > 0 ? old.charAt(selStart - 1) : sep;
-        const afterChar = selStart < old.length ? old.charAt(selStart) : '';
-
-        if (beforeChar !== sep)
-          text = sep + text;
-        if (afterChar !== sep && !text.endsWith(sep))
-          text += sep;
-
-        document.execCommand('insertText', false, text);
-        message_changed();
-      }
-    }
-    catch (err) {
-      console.error("copy failed", err);
-      // TODO ideally indicate to user via copy button in iframe
-    }
+    navigator.clipboard.writeText(ev.data.text);
     return;
   }
 
@@ -1848,6 +1836,10 @@ function handle_message(ev) {
     const id = ev.data.message_id;
     copy_message(id);  // async
     return;
+  }
+
+  if (ev.data.type == "drop") {
+    drop_from_iframe(ev.data.text, ev.data.x, ev.data.y);
   }
 
   /*
@@ -2100,6 +2092,40 @@ function content_drop(event) {
   $content.classList.remove("drop_target");
   const files = event.dataTransfer.files;
   upload_files(files, false);
+}
+
+function drop_from_iframe(text, x, y) {
+  // console.log("drop_from_iframe", text, x, y);
+
+  // Get the iframe's position relative to the parent window
+  const iframeRect = $messages_iframe.getBoundingClientRect();
+
+  if (x !== undefined) {
+    // Translate iframe coords to window coords
+    const windowX = x + iframeRect.left;
+    const windowY = y + iframeRect.top;
+
+    // console.log("  window coords", windowX, windowY);
+
+    // Find the element under those coords
+    const element = document.elementFromPoint(windowX, windowY);
+
+    // console.log("  element under drop", element);
+    if (element !== $content)
+      return;
+  }
+
+  // also copy to clipboard
+  navigator.clipboard.writeText(text);
+
+  // ensure 2 newlines gap 
+  const t = $content.value;
+  if (t) {
+    const count = t.match(/\n*$/)[0].length;
+    text = "\n".repeat(Math.max(0, 2 - count)) + text;
+  }
+
+  content_insert(text, -1);
 }
 
 function content_paste(event) {
@@ -5135,19 +5161,28 @@ async function get_message(id) {
 
 async function edit_message(id) {
   const message = await get_message(id);
-  $content.setSelectionRange(0, 0);
-  console.log(message.content);
   editing_message = id;
+  editing_message_prev_content = $content.value;
   $body.classList.add("edit_message");
-  content_insert(message.content.trimEnd());
-
-  // TODO
+  const text = message.content.trim() + ($content.value ? "\n\n" : "");
+  content_insert(text, 0);
+  const length = $content.value.length;
+  $content.setSelectionRange(length, length);
+  message_changed();
 }
 
 function edit_message_cancel() {
+  if (!editing_message)
+    return;
   editing_message = null;
   $body.classList.remove("edit_message");
-  set_content("");  // FIXME undo option doesn't work!
+  set_content(editing_message_prev_content, true);  // FIXME undo option doesn't work!
+  editing_message_prev_content = null;
+}
+
+function edit_last_message() {
+  if (lastMessageId !== null)
+    edit_message(lastMessageId);  // async
 }
 
 // main ----------------------------------------------------------------------

@@ -140,7 +140,7 @@ export async function processMessage(newMessage) {
 
   // if hidden, don't process
   if (newMessage.classList.contains("hidden"))
-    return;
+    return id;
 
   // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
@@ -508,7 +508,7 @@ function decorateCodeBlock(codeBlock) {
 
   // Add click handler for ~~copy button~~ code block
   //  copyButton.addEventListener("click", async () => {
-  codeBlock.addEventListener("click", async () => {
+  codeBlock.addEventListener("click", async (ev) => {
     let text = codeBlock.textContent.trim();
     if (parentIsPre) {
       text = text.replace(/\n*$/, "\n");
@@ -518,7 +518,8 @@ function decorateCodeBlock(codeBlock) {
     }
     if (inIframe) {
       // send text to parent window
-      window.parent.postMessage({ type: "copy", text: text }, ALLYCHAT_CHAT_URL);
+      const type = ev.altKey ? "drop" : "copy";
+      window.parent.postMessage({ type, text }, ALLYCHAT_CHAT_URL);
     } else {
       // copy text to clipboard
       await navigator.clipboard.writeText(text);

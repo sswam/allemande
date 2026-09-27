@@ -956,15 +956,17 @@ async function click(ev) {
     ev.stopPropagation();
     // TODO factor with similar code in process_messages.js
     const username = ev.target.closest(".message").getAttribute("user");
-    const text = username + ",";
-    if (inIframe) {
-      // send text to parent window
-      window.parent.postMessage({ type: "copy", text: text }, ALLYCHAT_CHAT_URL);
-    } else {
-      // copy text to clipboard
-      await navigator.clipboard.writeText(text);
-    }
+    const text = username + ", ";
+    await copy_to_input_or_clipboard(text);
   }
+
+  // copy image markdown
+  if (ev.target.tagName == "IMG" && (ev.shiftKey || ev.altKey || ev.ctrlKey)) {
+    const text = img_markdown(ev.target, ev.altKey, ev.ctrlKey);
+    await copy_to_input_or_clipboard(text);
+  }
+
+  // TODO move code block copy here from process_messages.js
 
   // click a embed > thumb, to show an embed video
   if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
@@ -974,6 +976,13 @@ async function click(ev) {
   }
 
   // click_check_image(ev);
+}
+
+async function copy_to_input_or_clipboard(text) {
+  if (inIframe)
+    window.parent.postMessage({ type: "drop", text }, ALLYCHAT_CHAT_URL);
+  else
+    await navigator.clipboard.writeText(text);
 }
 
 function click_check_image(ev) {
@@ -2334,6 +2343,39 @@ function setup_msg_react_options() {
   }
 }
 
+// dragging images to input --------------------------------------------------
+
+let pendingDragText = null;
+
+function dragstart(ev) {
+  const alt = ev.altKey;
+  const ctrl = ev.ctrlKey;
+  const isImage = ev.target.tagName === 'IMG';
+  if (isImage) {
+    pendingDragText = img_markdown(ev.target, alt, ctrl);
+  } else {
+    pendingDragText = ev.dataTransfer?.getData('text/plain').trim().replace(/\r/g, "").replace(/\n\n\n+/g, "\n\n");
+    if (!alt)
+      pendingDragText = pendingDragText.replace(/^/gm, '> ');
+  }
+}
+
+function dragend(ev) {
+  const isImage = ev.target.tagName === 'IMG';
+  let text = pendingDragText;
+  pendingDragText = null;
+  if (!text)
+    return;
+  // console.log("dragend", alt, text);
+  window.parent.postMessage({ type: "drop", text, x: ev.clientX, y: ev.clientY }, ALLYCHAT_CHAT_URL);
+}
+
+function img_markdown(img, alt, ctrl) {
+  let text = `![${alt ? img.alt || "" : ""}](${img.getAttribute("src")})`;
+  if (ctrl)
+    text = `<!-- ${text} -->`;
+  return text;
+}
 
 // main ----------------------------------------------------------------------
 
@@ -2441,6 +2483,9 @@ export async function room_main() {
   $on(document, "fullscreenchange", fullscreenchange);
 
   $on($id("overlay_help"), "click", hide_overlay_help);
+
+  $on($messages, "dragstart", dragstart);
+  $on($messages, "dragend", dragend);
 
   if (typeof room_user_script === 'function') {
     room_user_script();

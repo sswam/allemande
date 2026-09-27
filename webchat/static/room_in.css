@@ -320,6 +320,10 @@ div.embed > img {
 	margin: 0;
 }
 
+img {
+	user-drag: element;
+}
+
 /*
 body.images.simple div.image:before,
 body.images.simple div.embed:before {
