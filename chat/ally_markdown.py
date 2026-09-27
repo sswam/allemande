@@ -1028,8 +1028,8 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         return 0, 0
 
     if image_count_max is None:
-        # The default is to send one image from the most recent message
-        image_count_max = 1
+        # The default is to send images from the most recent message
+        image_count_max = 10
         message_count_max = 1   # 2 could be nice but would make regular image gen expensive
     else:
         message_count_max = None
