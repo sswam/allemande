@@ -53,14 +53,14 @@ def test_format_sentences_basic_spacy(nlp):
 	assert "How are you?" in result
 
 
-# Tests for split_sentences_test helper
-def test_split_sentences_test_spacy(nlp):
-	"""Test the split_sentences_test helper with spaCy."""
+# Tests for split_sentences_text helper
+def test_split_sentences_text_spacy(nlp):
+	"""Test the split_sentences_text helper with spaCy."""
 	splitter = lambda text: subject.split_sentences_spacy(text, nlp)
-	assert subject.split_sentences_test("Hello\nworld.", splitter) == "Hello world."
-	assert subject.split_sentences_test("", splitter) == ""
-	assert subject.split_sentences_test("Two. Sentences.", splitter) == "Two.\nSentences."
-	assert subject.split_sentences_test("- foo\n- bar", splitter) == "- foo\n- bar"
+	assert subject.split_sentences_text("Hello\nworld.", splitter) == "Hello world."
+	assert subject.split_sentences_text("", splitter) == ""
+	assert subject.split_sentences_text("Two. Sentences.", splitter) == "Two.\nSentences."
+	assert subject.split_sentences_text("- foo\n- bar", splitter) == "- foo\n- bar"
 
 
 def test_integration_spacy_full_workflow(nlp):
@@ -72,7 +72,7 @@ Dr. Smith went to the store. He bought milk.
 Then he went home.
 """.strip()
 
-	result = subject.split_sentences_test(text, splitter)
+	result = subject.split_sentences_text(text, splitter)
 
 	# Should split sentences
 	assert "Dr. Smith went to the store." in result or "Dr. Smith went to the store" in result

@@ -169,18 +169,18 @@ def test_format_sentences_from_string(simple_splitter):
 	assert "World." in result
 
 
-def test_split_sentences_test_simple(simple_splitter):
-	"""Test the split_sentences_test helper with simple splitter."""
-	assert subject.split_sentences_test("Hello\nworld.", simple_splitter) == "Hello world."
-	assert subject.split_sentences_test("", simple_splitter) == ""
-	assert subject.split_sentences_test("Two. Sentences.", simple_splitter) == "Two.\nSentences."
-	assert subject.split_sentences_test("- foo\n- bar", simple_splitter) == "- foo\n- bar"
+def test_split_sentences_text_simple(simple_splitter):
+	"""Test the split_sentences_text helper with simple splitter."""
+	assert subject.split_sentences_text("Hello\nworld.", simple_splitter) == "Hello world."
+	assert subject.split_sentences_text("", simple_splitter) == ""
+	assert subject.split_sentences_text("Two. Sentences.", simple_splitter) == "Two.\nSentences."
+	assert subject.split_sentences_text("- foo\n- bar", simple_splitter) == "- foo\n- bar"
 
 
-def test_split_sentences_test_complex_example(simple_splitter):
+def test_split_sentences_text_complex_example(simple_splitter):
 	"""Test with a more complex example."""
 	text = "Dr. Smith said hello. Then he left. Mr. Jones arrived at 3 p.m. yesterday."
-	result = subject.split_sentences_test(text, simple_splitter)
+	result = subject.split_sentences_text(text, simple_splitter)
 	lines = result.split("\n")
 	assert len(lines) == 3
 	assert "Dr. Smith said hello." in lines[0]
@@ -202,7 +202,7 @@ Later, Prof. Jones called at 3 p.m. They discussed important matters.
 Final paragraph here.
 """.strip()
 
-	result = subject.split_sentences_test(text, simple_splitter)
+	result = subject.split_sentences_text(text, simple_splitter)
 	lines = result.split("\n")
 
 	# Should have sentences split properly
@@ -250,7 +250,7 @@ if __name__ == "__main__":
 # - Bullet point preservation
 # - String vs StringIO input
 #
-# 5. **Tests for `split_sentences_test`** (the helper function):
+# 5. **Tests for `split_sentences_text`** (the helper function):
 # - Both spaCy and simple splitter versions
 # - Complex examples
 #
@@ -260,7 +260,7 @@ if __name__ == "__main__":
 #
 # The tests cover edge cases, degenerate inputs (empty strings, single elements), and the new simple splitter functionality you requested!
 
-from split_sentences import split_sentences, split_sentences_test, format_sentences_as_lines
+from split_sentences import split_sentences, split_sentences_text, format_sentences_as_lines
 
 sentences = split_sentences
 
@@ -409,11 +409,11 @@ def test_uppercase_accented_start():
 	assert result[1] == "Était-il là?"
 
 
-# format_sentences_as_lines / split_sentences_test integration
+# format_sentences_as_lines / split_sentences_text integration
 
 def test_format_sentences_multiline_french():
 	text = "Bonjour le monde. Comment allez-vous?\nTrès bien, merci."
-	result = split_sentences_test(text, split_sentences)
+	result = split_sentences_text(text, split_sentences)
 	lines = result.split("\n")
 	# Should contain the individual sentences as lines
 	assert any("Bonjour le monde." in l for l in lines)
@@ -423,14 +423,14 @@ def test_format_sentences_multiline_french():
 
 def test_format_sentences_japanese_paragraph():
 	text = "これは文です。次の文です。"
-	result = split_sentences_test(text, split_sentences)
+	result = split_sentences_text(text, split_sentences)
 	lines = [l for l in result.split("\n") if l]
 	assert len(lines) == 2
 
 
 def test_format_sentences_two_paragraphs_german():
 	text = "Guten Morgen. Wie geht es?\n\nSehr gut. Danke schön."
-	result = split_sentences_test(text, split_sentences)
+	result = split_sentences_text(text, split_sentences)
 	lines = result.split("\n")
 	# Blank line should separate paragraphs
 	assert "" in lines
