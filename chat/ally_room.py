@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from deepmerge import always_merger
 import aiofiles
 
-from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME, PATH_USERS
+from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME, PATH_USERS, MAX_CONTEXT, MAX_IMAGES, MAX_TEMP, MAX_NAME_LENGTH
 from util import backup_file, tree_prune, tac, sanitize_pathname, sanitize_filename, safe_join, ee
 from bb_lib import load_chat_messages, save_chat_messages, message_to_text, ChatMessage
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
@@ -392,9 +392,13 @@ class Room:
         options = {}
         if options_file:
             try:
-                options = cache.load(options_file)
+                options = cache.load(options_file) or {}
             except Exception as e:
                 logger.error("Error loading options file %s: %s", options_file, e)
+
+        # validate on load
+        validate_options(options)
+
         return options
 
     def set_options(self, user, new_options):
@@ -403,6 +407,12 @@ class Room:
         if not access & Access.MODERATE.value == Access.MODERATE.value:
             raise PermissionError(f"You are not allowed to set options for this room: {self.name}, user: {user}")
         options_file = self.find_resource_file("yml", "options", create=True)
+
+        if not options_file:
+            raise FileNotFoundError("Options file not found.")
+
+        # validate new options
+        validate_options(new_options)
 
         # access control for mission option: user setting the mission must have access to the resolved mission file
         # It's a bit wack, because it could resolve to a different file later. But good enough I guess.
@@ -416,23 +426,24 @@ class Room:
                 logger.warning("set_options: mission access denied: %s", mission_new)
                 del new_options["mission"]
 
-        if options_file:
-            logger.debug("options file: %s", options_file)
-            options = cache.load(options_file) or {}
-            logger.debug("old options: %r", options)
-            logger.debug("new options: %r", new_options)
+        logger.debug("options file: %s", options_file)
+        options = cache.load(options_file) or {}
+        logger.debug("old options: %r", options)
+        logger.debug("new options: %r", new_options)
 
-            # otherwise they double up
-            if "mediator" in new_options:
-                new_options["mediator"] = []
+        # otherwise they double up
+        if "mediator" in new_options:
+            new_options["mediator"] = []
 
-            always_merger.merge(options, new_options)  # modifies options
-            logger.debug("merged options: %r", options)
-            options = tree_prune(options)
-            logger.debug("pruned options: %r", options)
-            cache.save(options_file, options)
-        else:
-            raise FileNotFoundError("Options file not found.")
+        always_merger.merge(options, new_options)  # modifies options
+        logger.debug("merged options: %r", options)
+
+        # validation to remove old bad options
+        validate_options(options)
+
+        options = tree_prune(options)
+        logger.debug("pruned options: %r", options)
+        cache.save(options_file, options)
 
     def get_last_room_number(self, user: str) -> str:
         """Get the last room number."""
@@ -480,6 +491,47 @@ class Room:
             raise PermissionError(f"You are not allowed to read this room: {self.name}, user: {user}")
         messages = load_chat_messages(self.path)
         return messages
+
+
+def option_limit_range(options, key, low, high, frac=False):
+    val = options.get(key)
+    if val in ["", None]:
+        return
+    if not (isinstance(val, int) or (frac and isinstance(val, float))):
+        del options[key]
+        return
+    if low is not None:
+        val = max(val, low)
+    if high is not None:
+        val = min(val, high)
+    options[key] = val
+
+
+def option_limit_length(options, key, max_length):
+    val = options.get(key)
+    if val in ["", None]:
+        return
+    if not isinstance(val, str):
+        del options[key]
+        return
+    options[key] = val[:max_length]
+
+
+def validate_options(options):
+    if "agents" in options:
+        for _a, ao in options["agents"].items():
+            option_limit_range(ao, "context", 0, MAX_CONTEXT)
+            option_limit_range(ao, "images", 0, MAX_IMAGES)
+            option_limit_range(ao, "lines", 0, None)
+            option_limit_range(ao, "temp", 0, MAX_TEMP, frac=True)
+            option_limit_length(ao, "art_model", MAX_NAME_LENGTH)
+
+    if "users" in options:
+        for _u, uo in options["users"].items():
+            option_limit_length(uo, "name", MAX_NAME_LENGTH)
+
+    option_limit_length(options, "artist", MAX_NAME_LENGTH)
+    option_limit_length(options, "writer", MAX_NAME_LENGTH)
 
 
 def check_access(user: str | None, pathname: Path | str, agent_check: bool = False) -> Access:

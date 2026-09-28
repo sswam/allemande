@@ -61,3 +61,8 @@ ART_MODEL_PROMPT_DEFAULT_SFW = "`@Jily` or `@Krea` or another art model"
 ART_MODEL_PROMPT_DEFAULT_NSFW = "`@Anima` or `@Lusy` or another art model"
 
 ART_MODEL_TAGS = ["short", "long", "booru", "sdxl", "sdxl_only", "pony", "illustrious", "anima", "f2k", "krea", "chroma", "sd1.5", "edit"]
+
+MAX_CONTEXT = 100  # agents are not limited by this, e.g. Summi
+MAX_IMAGES = 10
+MAX_TEMP = 2
+MAX_NAME_LENGTH = 20
