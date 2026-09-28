@@ -5144,10 +5144,11 @@ async function react_to_message(id, comment, reaction, reaction_old, prefill) {
 async function copy_message(id) {
   const message = await get_message(id);
   const text = message.content.trim();
-  if (isMobile)
-    drop_from_iframe(text);
-  else
-    navigator.clipboard.writeText(text);
+  drop_from_iframe(text);  // copy into the input and clipboard
+  // if (isMobile)
+  //   drop_from_iframe(text);
+  // else
+  //   navigator.clipboard.writeText(text);
 }
 
 async function get_message(id) {
