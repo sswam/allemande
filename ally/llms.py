@@ -1,12 +1,20 @@
 # Define available LLM models and their properties
 MODELS = {
-    "glm-4.6": {
-        "aliases": ["glm", "glm4.6"],
+    "glm-5.3-flash": {
+        "aliases": ["glm"],
         "vendor": "openrouter",
-        "id": "z-ai/glm-4.6",
-        "description": "Z.AI's GLM 4.6 model, with 200K context window and improved reasoning, coding, and agent capabilities.",
-        "cost_in": 0.50,
-        "cost_out": 1.75,
+        "vision": True,
+        "id": "z-ai/glm-5.3-flash",
+        "description": "Z.AI's GLM 5.3 Flash, the first native multimodal model in the GLM-5 series.",
+        "cost_in": 0.15,
+        "cost_out": 0.5,
+    },
+    "glm-5.3": {
+        "vendor": "openrouter",
+        "id": "z-ai/glm-5.3",
+        "description": "Z.AI's GLM 5.3, their latest flagship model.",
+        "cost_in": 1.4,
+        "cost_out": 4.4,
     },
     "gpt-5": {
         "aliases": ["5", "heisen"],
@@ -501,8 +509,7 @@ MODELS = {
     "aion": {
         "vendor": "venice",
         "id": "aion-labs-aion-3-5-mini",
-        # "id": "aion-labs-aion-2-0",
-        # "description": "Aion 2.0 is an Uncensored DeepSeek V3.2-based roleplaying model",
+        "description": "Aion 3.5 Mini is a strong uncensored model for chat, writing and role play.",
         "cost_in": 0.88,
         "cost_out": 1.75,
     },
@@ -610,7 +617,7 @@ MODEL_FALLBACKS = {
     "venice:*": "google:gemini-2.5-flash",
 }
 
-openrouter_model_variant = "floor"  # or None, "nitro"
+openrouter_model_variant = None  # None, "floor", "nitro"
 
 # MODEL_FALLBACKS = {
 #     "*:*": "venice:venice-uncensored",
