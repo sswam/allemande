@@ -134,7 +134,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
         logger.info("  model vision: %r", llm.MODELS[opts.model].get("vision", False))
         if not llm.MODELS[opts.model].get("vision", False):
             # 4. if not, fall back to configured vision_model
-            service, model = vision_model.split(":")
+            service, model = vision_model.split(":", 1)
             logger.info("vision fallback for %s: using %s", name, vision_model)
 
     # preprocess markdown in messages for includes

@@ -279,9 +279,12 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
     repetition_penalty: float | None = None
     thinking_level: str | None = None
     thinking_budget: str | None = None
+    provider: str | None = None
 
     def __init__(self, **kwargs):
         if "model" in kwargs:
+            if ":" in kwargs["model"]:
+                kwargs["model"], kwargs["provider"] = kwargs["model"].split(":")
             if kwargs["model"] in ("", None):
                 kwargs["model"] = default_model
             elif kwargs["model"] in ("s", "small"):
@@ -299,12 +302,16 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
         client = openai_async_client
     model = MODELS[opts.model]
     model_id = model["id"]
+    provider = opts.provider
 
-    # enable appending :floor or :nitro for price / speed
-    if variant == "openrouter" and openrouter_model_variant:
-        model_id += ":" + openrouter_model_variant
+    # enable appending :floor or :nitro for price / speed, also specific provider
+    if variant == "openrouter":
+        if openrouter_model_variant and provider is None:
+            provider = openrouter_model_variant
+        if provider in ["floor", "nitro"]:
+            model_id += ":" + provider
 
-    logger.info("model: %s", model_id)
+    logger.info("model: %s %s", model_id, provider or "")
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -351,8 +358,18 @@ async def achat_openai(opts: Options, messages, client=None, citations=False, va
 
     # disable openrouter providers that have been giving errors, hardcoded for now
     # Venice: gives null responses with Gemma 4 sometimes.
+    # DeepInfra does: our our our ...
+    # And enable preferred provider if set.
     if variant == "openrouter":
-        options["extra_body"] = {"provider": {"ignore": ["venice", "deepinfra"]}}
+        options["extra_body"] = {
+            "provider": {
+                "ignore": ["venice", "deepinfra"]
+            }
+        }
+        if provider and provider not in ["floor", "nitro"]:
+            options["extra_body"]["provider"]["order"] = [provider]
+            # options["extra_body"]["provider"]["sort"] = "price"
+        logger.info("provider: %r", options["extra_body"]["provider"])  # REMOVE
 
     # logger.info("options: %s", options)
 
