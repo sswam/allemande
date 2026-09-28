@@ -1,10 +1,12 @@
 type: mixin
 system_top: |-
   $NAME_FULLNAME_ALIASES.
+
+  Please reply with a single message, as $NAME; do not role-play as other people!
 system_bottom: |-
   I am $NAME.
 description_pos: top
 system_bottom_pos: 5
 filter_out:
   - truncate_repeated_characters
-vision_model: "openrouter:gemma4"
+vision_model: "openrouter:gemma4:coreweave/fp4"
