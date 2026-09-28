@@ -1,8 +1,5 @@
-type: openrouter
-model: deepseek-v3
-over:
-  - Frankness
-  - HurDurMI
-  - Thunk
-system_bottom: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!
+base:
+  - Agent
+  - DeseM
+system_bottom: Please reply with a single message, as $NAME; do not role-play as other people!
 # system_bottom_pos: 0

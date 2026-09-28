@@ -1,6 +1,4 @@
-base: DeseriM
-over:
-  - Frankness
-  - HurDurMI
-  - Thunk
-system_bottom: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!
+base:
+  - Agent
+  - DeseriM
+system_bottom: Please reply with a single message, as $NAME; do not role-play as other people!

@@ -1,9 +1,6 @@
-type: openrouter
-model: scout
-over:
-  - Frankness
-  - HurDurMI
-system_top: You are $NAME (after Llama 4 Scout, not any other character). Please only reply with a single message, as $NAME; do not impersonate other people!
+base:
+  - Agent
+  - SkoutM
 visual:
   person: 1girl, bright hazel eyes, thick eyelashes, Turkish German, pale skin, small nose, freckles, athletic build, petite, long hair, dark brown hair, messy hair
   clothes: navy blue t-shirt, bright pink hoodie, faded light-blue denim jeans, white sneakers

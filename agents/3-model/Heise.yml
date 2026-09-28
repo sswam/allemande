@@ -1,2 +1,3 @@
-base: Heisen
-model: gpt-5-mini
+base:
+  - Agent
+  - HeiseM

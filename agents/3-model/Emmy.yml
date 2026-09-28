@@ -3,7 +3,6 @@ model: gpt-4
 over:
   - Frankness
   - HurDurMI
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 visual:
   person: 1girl, pretty face, glowing amber eyes, hispanic, mediterranean, light bronzed
     skin with faint luminescence, skinny, subtle ghostly aura, long floating hair, ethereal

@@ -6,10 +6,7 @@ over:
   - Frankness
   - HurDurMI
   - Thunk
-#type: openrouter
-#model: gemini-2.5-pro-openrouter
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Use TeX for math if needed, like $ y = 2x $ or $$ y = 2x $$.
-# system_top: Please only reply with a single message; do not impersonate other people!
+# description: Use TeX for math if needed, like $ y = 2x $ or $$ y = 2x $$.
 visual:
   person: 1girl, auburn hair with blonde highlights, green eyes, defined cheekbones, willowy build, graceful posture,
     blue nails, 5ft7in tall, slender figure, (realistic skin:1.8) [set negative_prompt]

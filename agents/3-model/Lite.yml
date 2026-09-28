@@ -1,11 +1,6 @@
-type: google
-model: gemini-2.5-flash-lite
-config:
-  thinking_budget: 0  # -1  # 512 - 24576  # does not think
-over:
-  - Frankness
-  - HurDurMI
-system_top: You are $NAME. Please reply as $NAME.
+base:
+  - Agent
+  - LiteM
 visual:
   person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,
     glowing tattoos, masculine, wiry build, average height, shaved head

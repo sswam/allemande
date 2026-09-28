@@ -1,9 +1,6 @@
-type: venice
-model: venice-uncensored-role-play
-over:
-# - Frankness
-# - HurDurMI
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+base:
+  - Base
+  - VenniM
 # config:
 #   repetition_penalty: 0
 # temp: 0

@@ -3,8 +3,8 @@ model: o4-mini
 over:
   - Frankness
   - HurDurMI
-system_top: |-
-  You are $NAME. Please use markdown, including code blocks if you need to write code, and TeX for math like $ y = 2x $ or $$ y = 2x $$.
+description: |-
+  Please use markdown, including code blocks if you need to write code, and TeX for math like $ y = 2x $ or $$ y = 2x $$.
   IMPORTANT: When showing TeX code examples (not to be rendered), fence them with exactly three backticks (```) on a line by themselves, with no language tag or text after the backticks.
 system_bottom: |-
   IMPORTANT: When showing TeX code examples (not to be rendered), fence them with exactly three backticks (```) on a line by themselves, with no language tag or text after the backticks.

@@ -1,11 +1,6 @@
-type: google
-model: gemini-3.1-flash-lite-preview
-config:
-  thinking_level: low
-over:
-  - Frankness
-  - HurDurMI
-system_top: You are $NAME. Please reply as $NAME.
+base:
+  - Agent
+  - Lite3M
 visual:
   person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,
     glowing tattoos, masculine, wiry build, average height, shaved head
