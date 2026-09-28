@@ -1,2 +1,2 @@
 type: openrouter
-model: gemma4
+model: gemma4:coreweave/fp4
