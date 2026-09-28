@@ -500,6 +500,9 @@ async def local_agent(c, agent, _query) -> str:
 
     t0 = datetime.now()
 
+    # can only handle 1 input image, lose any more
+    if c.images:
+        c.images = c.images[:1]
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT, files=c.images)
 
     # duration = (datetime.now() - t0).total_seconds()
