@@ -439,7 +439,7 @@ async function send(ev, prepend, button) {
 async function artist(ev) {
   if (ev)
     ev.preventDefault();
-  await invoke_agent($id("opt_artist").value, "artist");
+  await invoke_agent($id("opt_artist").value, "artist", "Please make an image prompt, but NO chat for this one!");
 }
 
 async function writer(ev) {
@@ -448,21 +448,22 @@ async function writer(ev) {
   await invoke_agent($id("opt_writer").value, "writer");
 }
 
-async function invoke_agent(name, button) {
+async function invoke_agent(name, button, prompt) {
   if ($content.value) {
-    const prepend = "+@" + name + ", ";
-    return await send(null, prepend, button);
+    let message = `+@${name}, `;
+    if (prompt)
+      message += `${prompt} `;
+    return await send(null, message, button);
   } else {
-    const prompt = "-@" + name;
+    let message = prompt ? `+@${name}, ${prompt}` : `-@${name}`;
     try {
-      return await send_text(prompt);
+      return await send_text(message);
     } catch (err) {
       console.error(err.message);
       error(button);
     }
   }
 }
-
 
 // could use alt to toggle nsfw or 2ndary artist perhaps
 
@@ -3913,9 +3914,9 @@ async function get_options() {
   const show = data?.agents?.all?.show ?? true;
 
   // recall button is complex
-  const recap = data?.agents?.all?.recap ?? true;
-  const recent = (data?.agents?.all?.recall ?? true) && (data?.agents?.all?.recall_recent ?? true);
-  const relevant = (data?.agents?.all?.recall ?? true) && (data?.agents?.all?.recall_relevant ?? true);
+  const recap = data?.agents?.all?.recap ?? false;
+  const recent = (data?.agents?.all?.recall ?? false) && (data?.agents?.all?.recall_recent ?? false);
+  const relevant = (data?.agents?.all?.recall ?? false) && (data?.agents?.all?.recall_relevant ?? false);
 
   let recall;
   if (recap && recent && relevant) recall = 3;
@@ -3923,7 +3924,7 @@ async function get_options() {
   else if (recap) recall = 1;
   else recall = 0;
 
-  const memorize = (data?.agents?.all?.memorize ?? true) ? 1 : 0;
+  const memorize = (data?.agents?.all?.memorize ?? false) ? 1 : 0;
 
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
