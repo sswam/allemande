@@ -1,2 +1,2 @@
 type: openrouter
-model: glm
+model: glm  # :baseten/fp8

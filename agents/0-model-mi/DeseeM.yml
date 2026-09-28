@@ -1,4 +1,5 @@
 type: deepseek
 model: deepseek-v4-flash
-thinking_level: null
+config:
+  thinking_level: null
 # high / max

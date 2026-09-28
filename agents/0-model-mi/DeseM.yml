@@ -1,2 +1,4 @@
 type: openrouter
 model: deepseek-v3
+config:
+  thinking_level: null
