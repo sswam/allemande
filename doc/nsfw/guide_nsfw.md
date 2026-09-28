@@ -217,8 +217,8 @@ Please do not use languages models other than those listed here for NSFW content
 | Mistral+   | Venice Role Play      | Venni  | $0.50 | $2     | Venice Role Play Uncensored.                                                                            |
 | MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
 | MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
-| Z.AI       | GLM 4.6               | Glimi  | $0.50 | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
-| Aion       | DeepSeek 3 Uncensored | Aion   | $0.88 | $1.75  | Based on DeepSeek 3.2, a strong uncensored model for chat, writing and role play.                       |
+| Z.AI       | GLM 5.3 Flash         | Glimi  | $0.15 | $0.50  | Z.AI: GLM 5.3 Flash, the first native multimodal model in the GLM-5 series.                             |
+| Aion       | Aion 3.5 Mini         | Aion   | $0.88 | $1.75  | A strong uncensored model for chat, writing and role play.                                              |
 
 Input and output costs are measured in US dollars per million tokens.
 
