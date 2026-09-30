@@ -52,8 +52,8 @@ You can read our detailed [Terms of Service](/terms).
 ## Learning about the Adult Features
 
 - For a simple NSFW chat experience, talk with Lori. She can direct your messages to many other agents as if by magic!
-- Read the [NSFW Quick Intro](/nsfw/intro)
-- Read this [Guide to Adult Features](/nsfw/guide) if you have time, or to see the lists of characters.
+- Read the [NSFW Quick Intro](/intro_nsfw)
+- Read this [Guide to Adult Features](/guide_nsfw) if you have time, or to see the lists of characters.
 - In the main NSFW room, AIs have some basic info about the app. Talk to Assi, our tech support AI. She is the NSFW version of Aidi.
 - Ask Yenta to introduce you to other characters, agents and even tools.
 - Xilu is expert at NSFW image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt.

@@ -146,9 +146,13 @@ To create a room or file, just type its pathname in the room field at the top of
 
 You can clear a private chat room using the <i class="bi-trash3"></i> clear button.
 
-Rooms can be organized into numbered "pages". When you finish a chat, press the <i class="bi-archive"></i> archive button. This will move the chat to a numbered page, for example the room `joe/chat` might move to `joe/chat-0` or `joe/chat-1` and so on. You can browse these old pages using the <i class="bi-arrow-left-right"></i> pages menu at the top left.
+Chat rooms can be organized into numbered "pages". When you finish a chat, press the <i class="bi-archive"></i> **Archive** button. This will move the chat to a numbered page, for example the room `joe/chat` might move to `joe/chat-0` or `joe/chat-1` and so on. You can browse these old pages using the <i class="bi-arrow-left-right"></i> **Pages menu** at the top left.
 
-When you finish with a page and archive it, AI characters may store memories about that page; see the Memory section below for details. If you don't archive a page, they won't make any memories (this may change in future).
+The memory options are turned off by default, and some agents don't support memory. To enable full memory for a chat room, click <i class="bi bi-three-dots-vertical i20"></i> and look under **Room Options**. Click the <i class="bi-lightbulb-off"></i> **Recall** button three times until it looks like <i class="bi-sun-fill"></i> the sun. And click the <i class="bi-save"></i> **Memorize** button once, to enable saving new memories.
+
+In order for memory to work across chats, you need to <i class="bi-archive"></i> **Archive** chats when they are finished, as described above. It's a good idea to break longer chats into "pages" or "chapters" in this way. If you don't archive a page, characters won't save any memories.
+
+See the Memory section below for more details.
 
 ## Tips and Tricks
 
@@ -268,7 +272,7 @@ Advanced: You can enable vision for more images in any room. Please turn it off 
 
 Ally Chat has a sophisticated voice chat system, where different characters can speak with different voices, and users can choose to pass-through their recorded voice or choose an AI voice for their messages.
 
-One caveat, this is not a live speech system like you may have used with major providers. There are delays with both speech to text and text to speech. Please adjust your expectations accordingly!
+This is not a live speech system like you may have used with major providers. There are delays with both speech to text and text to speech. Please adjust your expectations accordingly!
 
 The speech models we are using support hundreds of languages, but so far the developer has been focusing on English and a little Spanish. If you want support for your language, please contact us!
 
@@ -315,33 +319,37 @@ voice: yourname/myvoice
 
 ## Memory
 
-Ally Chat supports memory for some characters, so that they can roughly recall the current chat, a few of their recent chats, and other relevant chats. A chat will only be memorized when it is archived. Memories are always saved in the same folder as the chat, which is good for privacy and has other uses. Memories won't leak from private chat to public chat, for example.
+Ally Chat supports memory for most characters, so that they can recall the whole current chat, a few of their recent chats, and other relevant chats. A chat will only be memorized when it is archived. Memories are always saved in the same folder as the chat, which is good for privacy and has other uses. Memories won't leak from private chat to public chat, for example.
 
-If you don't want characters to recall previous chats, set the Recall option to <i class="bi-lightbulb"></i> for recall of the current chat only. If you don't want them to save new memories when you archive a chat (for a sort of incognito mode), turn off the Memorize option.
+Memory options are turned off by default. This makes things quicker and more economical. Regardless of the room options, some more expensive agents do not support memory.
+
+To enable memory for a chat room, click <i class="bi bi-three-dots-vertical i20"></i> and click the **Recall** button under **Room Options** to cycle through memory recall modes: <i class="bi-lightbulb-off"></i> none (default), <i class="bi-lightbulb"></i> recap of this chat, <i class="bi-lightbulb-fill"></i> also recent chats, or <i class="bi-sun-fill"></i> also relevant older chats. You should also enable the <i class="bi-save"></i> **Memorize** option to have memories saved when a chat is archived.
+
+In order for memory to work across chats, you need to archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then press <i class="bi bi-archive"></i> **Archive** under **Room Tools**. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> **Pages menu**.
+
+If you don't want characters to recall previous chats, turn off the **Recall** option, or set it to <i class="bi-lightbulb"></i> for recall of the current chat only. If you don't want them to save new memories when you archive a chat (for a sort of incognito mode), make sure the <i class="bi-save"></i> **Memorize** option is turned off.
 
 Read on for technical details of how this works, and options to control it!
 
 All agents can see a certain number of previous messages in the current chat, this is called the context. Most agents have a context of 30 messages. You can adjust the context on the fly, in room options. Please keep it reasonably small most of the time, for efficiency.
 
-If the Recall button in Room Options is turned off <i class="bi-lightbulb-off"></i>, agents will ONLY see this limited context, and no other memories.
+If the **Recall** button in Room Options is turned off <i class="bi-lightbulb-off"></i>, agents will ONLY see this limited context, and no other memories.
 
-We have three other memory recall settings, and each builds on the previous. You can cycle through them by pressing the Recall button. Note that each level can slow down the chat a little.
+We have three other memory recall settings, and each builds on the previous. You can cycle through them by pressing the **Recall** button. Note that each level can slow down the chat a little.
 
-1. <i class="bi-lightbulb"></i> Recap: Agents can see a recap summary of the current chat, up to at least the start of their context window. So they should remember at least an overview of what has been happening in the entire chat.
+1. <i class="bi-lightbulb"></i> **Recap**: Agents can see a recap summary of the current chat, up to at least the start of their context window. So they should remember at least an overview of what has been happening in the entire chat.
 
-2. <i class="bi-lightbulb-fill"></i> Recent: In addition to the recap, agents can see summaries of several recent chats that they were in (normally 3 recent chats). So they will remember the flow of a narrative that spans several chats.
+2. <i class="bi-lightbulb-fill"></i> **Recent**: In addition to the recap, agents can see summaries of several recent chats that they were in (normally 3 recent chats). So they will remember the flow of a narrative that spans several chats.
 
-3. <i class="bi-sun-fill"></i> Relevant: In addition to the recap and recent chats, agents can see summaries of other relevant chats that they were in. The measure of relevance is based on a few recent messages in the current chat (normally the last 2 messages).
+3. <i class="bi-sun-fill"></i> **Relevant**: In addition to the recap and recent chats, agents can see summaries of other relevant chats that they were in. The measure of relevance is based on a few recent messages in the current chat (normally the last 2 messages).
 
-There is also a Memorize option in Room Options. If this is enabled, each character in a chat will make a summary of the chat and save it as a memory, when the room is archived - if memory is enabled for that character. If you don't want to archive a room, you can also activate this by typing `-@summaries` as a chat message at the end of the room.
+There is also a <i class="bi-save"></i> **Memorize** option in **Room Options**. If this is enabled, each character in a chat will make a summary of the chat and save it as a memory, when the room is archived - if memory is enabled for that character. If you don't want to archive a room, you can also activate this by typing `-@summaries` as a chat message at the end of the room.
 
 After archiving a room, there will be a short delay before the new memories are available. So, wait perhaps 30 seconds before continuing with the same characters if you want proper continuity. If you want to continue a role-play or chat directly, you might have to hint to the characters that you're still in the same scene somehow, otherwise they tend to assume that it's "another day" or another scene.
 
-All of the memory options are turned on by default, however memory must also be enabled for the agent in question. Memory is currently enabled for less expensive characters, but not for the most expensive agents.
+Note that our memory systems are based on summaries and imperfect recall systems, so they will not be comprehensive or fully detailed. At present, memory in Ally Chat is better suited to chat and role-play rather than serious work. Characters certainly won't remember long stretches of text from previous chats verbatim.
 
-Note that our memory systems are currently based on summaries and imperfect recall systems, so they will not be comprehensive or fully detailed. At present, memory in Ally Chat is better suited to chat and role-play rather than serious work. Characters certainly won't remember long stretches of text from previous chats verbatim.
-
-We don't yet have features to erase or edit a character's memories. If you want to do that, please contact Sam.
+We don't yet have features to edit or erase a character's memories. If you want to do that, please contact Sam.
 
 ## How to use Tool Agents
 

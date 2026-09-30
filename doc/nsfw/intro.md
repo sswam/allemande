@@ -28,7 +28,7 @@ Click the <i class="bi-question-lg"></i> help button at the top right, and talk 
 
 **NOTE**: In normal chat rooms, most AIs don't know anything about the app! Use the help system, or you can ask @Aidi or @Assi (NSFW) in any room.
 
-Read this [Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, and tools.
+Read this [Quick Intro](/intro_nsfw), the [User Guide](/guide), and the [NSFW Guide](/guide_nsfw), for full details on the app, models, characters, and tools.
 
 A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
@@ -56,11 +56,15 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 
 ## Memory
 
-Most characters can remember past chats. In order for this to work, you need to <i class="bi bi-archive"></i> archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then look under Room Tools. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> pages menu. See the full guide for more details on the memory system.
+Most characters support memory of past chats, but memory options are turned off by default. This makes things quicker more economical.
+
+To enable full memory for a chat room, click <i class="bi bi-three-dots-vertical i20"></i> and look under **Room Options**. Click the <i class="bi-lightbulb-off"></i> **Recall** button three times until it looks like <i class="bi-sun-fill"></i> the sun. And click the <i class="bi-save"></i> **Memorize** button once, to enable it.
+
+In order for memory to work across chats, you need to archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then press <i class="bi bi-archive"></i> **Archive** under **Room Tools**. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> pages menu.
 
 ## Usage
 
-As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is accounted at 0.5c per 60 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
+As a free user, you can use up to $3 / month in AI chat, which can be plenty depending on which models you use. Image gen is counted at 0.5c per 60 seconds of GPU time. Please check your usage from time to time with the <i class="bi bi-currency-dollar"></i> usage button. Press the same button again to close the usage view.
 
 ## A Few of our Characters and Tools
 
@@ -151,7 +155,7 @@ Xilu:	<think>
 	@Boni, solo, [person "Cleo" "black lace lingerie" "seductive"], (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, [use photo], rating explicit, (uncensored:2) NEGATIVE (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 [P3]
 	```
 
-Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo, Cleo, (adult 20 years old:1.6), 1girl, blue eyes, skinny, Swiss, straight hair, long hair, parted hair, light blonde hair, seductive, black lace lingerie,, (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, raw, realistic, photo \(medium\), rating explicit, (uncensored:2) NEGATIVE score_6, score_5, score_4, (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 (anime, cartoon, 3d:2)](solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg)
+Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo, Cleo, (adult 20 years old:1.6), 1girl, blue eyes, skinny, Swiss, straight hair, long hair, parted hair, light blonde hair, seductive, black lace lingerie,, (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, raw, realistic, photo \(medium\), rating explicit, (uncensored:2) NEGATIVE score_6, score_5, score_4, (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 (anime, cartoon, 3d:2)](/solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg)
 
 Remember: AIs aren't perfect - feel free to remove the message and poke to retry, if a response seems unusual!
 

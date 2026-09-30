@@ -12,7 +12,7 @@ We believe in privacy and free speech, and oppose censorship.
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
-On mobile, please "install to home page" for a better app experience: Open the site in your browser (Chrome for Android, Safari for iOS), tap the menu/share icon (three dots or square with arrow), select "Add to Home Screen", and tap "Add" to place it on your device's home screen.
+On mobile, please install Ally Chat for a better app experience: Open the site in your browser (Chrome for Android, Safari for iOS), tap the menu/share icon (three dots or square with arrow), and select "Add to Home Screen".
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
@@ -54,7 +54,11 @@ Type -@Loni at the start of a line, to poke Loni to respond, this can be useful 
 
 ## Memory
 
-Most characters can remember past chats. In order for this to work, you need to <i class="bi bi-archive"></i> archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then look under Room Tools. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> pages menu. See the full guide for more details on the memory system.
+Most characters support memory of past chats, but memory options are turned off by default. This makes things quicker more economical.
+
+To enable full memory for a chat room, click <i class="bi bi-three-dots-vertical i20"></i> and look under **Room Options**. Click the <i class="bi-lightbulb-off"></i> **Recall** button three times until it looks like <i class="bi-sun-fill"></i> the sun. And click the <i class="bi-save"></i> **Memorize** button once, to enable it.
+
+In order for memory to work across chats, you need to archive chats when they are finished: click <i class="bi bi-three-dots-vertical i20"></i> then press <i class="bi bi-archive"></i> **Archive** under **Room Tools**. It's a good idea to break longer chats into "pages" or "chapters", archiving each when it's finished. You can navigate to previous pages using the <i class="bi bi-arrow-left-right"></i> pages menu.
 
 ## Usage
 
