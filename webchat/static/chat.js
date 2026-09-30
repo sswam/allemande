@@ -4892,6 +4892,12 @@ async function usage() {
     return records;
   }
 
+  function strip_model_providers(records) {
+    for (const record of records) {
+      record.model = record.model.replace(/:.*/, "");
+    }
+  }
+
   function filterMonth(ym, records) {
     return records.filter(function(r) { return r.timestamp.slice(0, 7) === ym; });
   }
@@ -5045,6 +5051,7 @@ async function usage() {
       } else {
         const text = await r.text();
         records = filterMonth(month, parseUsageLog(text || ""));
+        strip_model_providers(records);
       }
 
       const summary = buildSummary(date, records);
