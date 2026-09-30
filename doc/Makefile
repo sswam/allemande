@@ -13,7 +13,7 @@ HELP_MODEL_NSFW := flashi
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb summaries.md models.tsv # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/intro_nsfw.bb ../rooms/guide_nsfw.bb ../rooms/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb summaries.md models.tsv # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
@@ -82,15 +82,15 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	cp -a $< $@
 	chmod a-w $@
 
-../rooms/nsfw/intro.bb: nsfw/intro.md
-	rm -f $@ ../rooms/nsfw/intro.html
+../rooms/intro_nsfw.bb: nsfw/intro.md
+	rm -f $@ ../rooms/intro_nsfw.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
-../rooms/nsfw/guide.bb: nsfw/guide_nsfw.md
-	rm -f $@ ../rooms/nsfw/guide.html
+../rooms/guide_nsfw.bb: nsfw/guide_nsfw.md
+	rm -f $@ ../rooms/guide_nsfw.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
-../rooms/nsfw/${IMAGE_NSFW}: nsfw/${IMAGE_NSFW}
+../rooms/${IMAGE_NSFW}: nsfw/${IMAGE_NSFW}
 	rm -f $@
 	cp -a $< $@
 	chmod a-w $@
@@ -99,14 +99,14 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@ ../rooms/terms.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@; sleep 5; cp -af ../rooms/terms.html ../site/terms.html) &
 
-../rooms/lora.bb: ../agents/4-special/Pixi.yml ../agents/4-special/Illu.yml
+../rooms/lora.bb: ../agents/4-special/Pixo.yml ../agents/4-special/Illo.yml
 	rm -f $@ ../rooms/lora.html
 	(sleep 0.5; lecho '| <lora:name:weight> | required trigger words | info |' '|--|--|--|' ;\
 		cat $^ | grep '^    | <lora:' | grep -v '<lora:name:weight>' | sed 's/ *//') >$@ ;\
 		chmod a-w $@ ;\
 		sudo cp -a $@ /home/nobodally/lora.bb
 
-../rooms/nsfw/lora.bb: ../agents/nsfw/Xilu.yml
+../rooms/nsfw/lora.bb: ../agents/nsfw/Xilo.yml
 	rm -f $@ ../rooms/nsfw/lora.html
 	(sleep 0.5; lecho '| <lora:name:weight> | required trigger words | info |' '|--|--|--|' ;\
 		cat $^ | grep '^    | <lora:' | grep -v '<lora:name:weight>' | sed 's/ *//') >$@ ;\
