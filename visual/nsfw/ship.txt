@@ -1,0 +1,6 @@
+[choose]
+{use shipmf1}
+{use shipmf2}
+{use shipmm}
+{use shipff}
+[/choose]
