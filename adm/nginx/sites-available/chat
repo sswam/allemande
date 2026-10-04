@@ -1,3 +1,8 @@
+map $request_uri $users_path_username {
+	~^/users/([^/]+)  $1;
+	default           "";
+}
+
 server {
 	server_name chat.$ALLEMANDE_DOMAIN chat-local.$ALLEMANDE_DOMAIN;
 
@@ -77,6 +82,30 @@ server {
 # 		}
 
 		rewrite ^(.*)\.(\d+)\.(css|js|png|jpg|ttf)$ $1.$3 break;
+
+		try_files $uri $uri/ =404;
+	}
+
+	location /_auth_users {
+		internal;
+
+		if ($http_jwt_sub = $users_path_username) {
+			return 204;
+		}
+		return 403;
+	}
+
+	location /users/ {
+		if ($is_banned) {
+			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
+		}
+		auth_jwt_enabled on;
+		auth_jwt_extract_request_claims sub;
+
+		add_header Access-Control-Allow-Origin https://rooms.$ALLEMANDE_DOMAIN always;
+		add_header Access-Control-Allow-Credentials true;
+
+		auth_request /_auth_users;
 
 		try_files $uri $uri/ =404;
 	}

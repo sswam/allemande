@@ -72,8 +72,6 @@ server {
 
 	location /_auth {
 		internal;
-		auth_jwt_enabled on;
-		auth_jwt_extract_request_claims sub;
 
 		if ($allow = 1) {
 			return 204;
