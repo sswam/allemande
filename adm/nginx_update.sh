@@ -13,7 +13,7 @@ umask 0077
 
 ALLEMANDE_DOMAIN_ESC=${ALLEMANDE_DOMAIN//./\\.}
 
-find . -type f \( -name ".*" -o -print \) |
+find . -type f \( -name "*.*" -o -print \) |
 while read file; do
 	rm -f "/etc/nginx/$file"
 	(
