@@ -268,6 +268,7 @@ async def build_recap_file(agent, c, recap_text, start, end):
         config["agents"][name]["stop_regexs"] = summary_stop_regexs
         config["agents"][name]["forward"] = False
         config["agents"][name]["memory"] = False
+        config["agents"][name]["think"] = False
 
         # TODO this won't see room missions yet
 

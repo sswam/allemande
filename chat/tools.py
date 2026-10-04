@@ -217,6 +217,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
             config["agents"][name]["stop_regexs"] = summary_stop_regexs
             config["agents"][name]["forward"] = False
             config["agents"][name]["memory"] = False
+            config["agents"][name]["think"] = False
 
             # TODO this won't see room missions yet
 

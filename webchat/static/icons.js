@@ -117,6 +117,7 @@ export const icons = {
   usage: '<i class="bi bi-currency-dollar i20"></i>',
 
   opt_show: '<i class="bi bi-image i20"></i>',
+  opt_think: '<i class="bi bi-lightning i20"></i>',
 
   opt_recall: '<i class="bi bi-lightbulb-off i20"></i>',
   opt_recall_1: '<i class="bi bi-lightbulb i20"></i>',

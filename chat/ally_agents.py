@@ -570,10 +570,14 @@ class Agent:
             if name == "+":
                 continue
             agent = self.agents.get(name)
-            if agent:
-                over.append(agent)
-            else:
+            if not agent:
                 logger.debug("Over agent %s not found for %s", name, self.name)
+                continue
+            cls = agent.get("class")
+            # enable skipping e.g. `class: think` mix-ins, with `think: False`
+            if cls and not self.get(cls, False, with_over=False):
+                continue
+            over.append(agent)
 
         return over
 
