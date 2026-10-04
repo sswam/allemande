@@ -9,7 +9,7 @@ find /var/spool/allemande/ -name '\.*' -prune -o -type d -path '*/history/*' -na
 
 # var log
 cd /var/log && sudo find -type f \( -name '*.[0-9]' -o -name '*.gz' \) | xa sudo rm -f
-cd /var/log && truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log
+cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log
 cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log crowdsec_api.log
 cd /var/log/apache2 && sudo truncate -s 0 *
 
