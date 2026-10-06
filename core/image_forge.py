@@ -503,6 +503,11 @@ def estimate_job_weight(job: ImageJob) -> float:
     if config.get("preset") == "anima" and steps <= 12:
         job_weight *= 0.5
 
+    # multiply by 2 if using Krea 2 Identity Edit!
+    if "<lora:krea2_identity_edit" in job.prompt:
+        log("*** using krea2_identity_edit")
+        job_weight *= 2
+
     # multiply by 2 if using a refiner!
     if config.get("refiner"):
         job_weight *= 2

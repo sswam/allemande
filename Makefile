@@ -148,7 +148,7 @@ images:
 	while true; do make mount && $(PYTHON) core/image_forge.py -v; sleep 1; done
 
 forge:
-	cd ~/webui; while true; do timeout 1h nice ionice ./webui-run.sh --skip-install; done
+	cd ~/webui; while true; do timeout 1h nice ionice ./webui-run.sh; done
 
 backup:
 	cd $(ALLEMANDE_HOME) && \

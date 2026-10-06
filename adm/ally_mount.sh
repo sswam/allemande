@@ -81,7 +81,7 @@ safe-mount() {
 		-o ConnectTimeout=${CONNECT_TIMEOUT} \
 		-o ServerAliveInterval=${SERVER_ALIVE_INTERVAL} \
 		-o ServerAliveCountMax=${SERVER_ALIVE_COUNT_MAX} \
-		"$ssh_path" "$mount_point"
+		"$ssh_path"/ "$mount_point"
 
 	# Verify mount worked
 	if ! mountpoint -q "$mount_point"; then
