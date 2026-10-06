@@ -123,6 +123,7 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Ellyn** (Llama 3.3 70B): a stronger, human-like model
 - **Gema** (Gemma 4 26B A4B, Google): Google's open source mixture of experts language model  [recommended]
 - **Gem** (Gemma 4 31B): Google's open source dense language model
+- **Gemx**, **Gemy** (Gemma 4 31B Uncensored): Uncensored versions of Gemma 4 26B
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
 - **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
@@ -203,6 +204,8 @@ Please do not use languages models other than those listed here for NSFW content
 | Google     | Gemma 3 27B           | Gemma  | $0.08 | $0.16  | Google's open source Gemma language model, version 3.                                                   |
 | Google     | Gemma 4 26B A4B       | Gema   | $0.13 | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                              |
 | Google     | Gemma 4 31B           | Gem    | $0.14 | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                |
+| Google+    | Gemma 4 Uncensored    | Gemx   | $0.16 | $0.50  | An uncensored version of Gemma 4 26B.                                                                   |
+| Google+    | Gemma 4 Uncensored 2  | Gemy   | $0.19 | $0.88  | Another uncensored version of Gemma 4 26B, more expensive.                                              |
 | Google     | Gemini 2.5 Flash Lite | Lite   | $0.10 | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                         |
 | Google     | Gemini 2.5 Flash      | Flashi | $0.30 | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                       |
 | Google     | Gemini 2.5 Pro        | Gemmi  | $1.25 | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |

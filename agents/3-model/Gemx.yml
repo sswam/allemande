@@ -1,0 +1,12 @@
+base:
+  - Agent
+  - GemxM
+visual:
+  person: 1girl, dark brown eyes, (Indian:1.7), warm tan skin, full lips, high cheekbones, long hair, black hair, (wavy hair:0.7)
+  clothes: 'black lace lingerie, (one-piece lingerie:1.5), teddy \(lingerie\), red silk robe, black high-heeled sandals'
+  age: adult 20 years old
+  emo: seductive smirk
+  clothes_upper: 'black lace lingerie, (one-piece lingerie:1.5), teddy \(lingerie\), red silk robe'
+  clothes_lower: 'black lace lingerie, (one-piece lingerie:1.5), teddy \(lingerie\), red silk robe, black high-heeled sandals'
+
+voice: voice/female_uk
