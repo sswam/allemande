@@ -10,3 +10,7 @@ system_bottom_pos: 5
 filter_out:
   - truncate_repeated_characters
 vision_model: "openrouter:gemma4:coreweave/fp4"
+# vision_model: "venice:gemma4"
+over:
+  - Short
+# short responses are only enabled when enabled!  hopefully
