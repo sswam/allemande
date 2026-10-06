@@ -11,6 +11,7 @@ import asyncio
 from collections import defaultdict
 import io
 import stat
+import shutil
 
 from watchfiles import Change
 
@@ -37,7 +38,7 @@ file_locks = defaultdict(asyncio.Lock)
 semaphore = asyncio.Semaphore(PARALLEL_MAX)
 
 
-async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.1):
+async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, opts, delay: float = 0.1):
     """convert a bb file to html"""
     logger.info("bb2html: processing bb file: %s size changed from %s to %s", bb_file, old_size, new_size)
     async with file_locks[bb_file]:
@@ -79,6 +80,9 @@ async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_s
                     html.write(html_message)
                     await asyncio.sleep(0)  # asyncio yield
 
+        if opts.stats:
+            shutil.copystat(bb_file, html_file)
+
         row = [html_file]
         return row
 
@@ -101,10 +105,10 @@ def make_done_callback(tasks: set, out: io.TextIOBase = sys.stdout):
     return callback
 
 
-async def limited_file_changed(bb_file, html_file, old_size, new_size):
+async def limited_file_changed(bb_file, html_file, old_size, new_size, opts):
     """Handle file changes with a semaphore to limit concurrency"""
     async with semaphore:
-        return await file_changed(bb_file, html_file, old_size, new_size)
+        return await file_changed(bb_file, html_file, old_size, new_size, opts)
 
 
 async def process_change(line, opts, tasks, out):
@@ -151,7 +155,7 @@ async def process_change(line, opts, tasks, out):
         return
 
     # Create and store new task
-    task = asyncio.create_task(limited_file_changed(bb_file, html_file, old_size, new_size))
+    task = asyncio.create_task(limited_file_changed(bb_file, html_file, old_size, new_size, opts))
     tasks.add(task)
     task.add_done_callback(make_done_callback(tasks, out))
 
@@ -185,10 +189,11 @@ def get_opts():
     parser.add_argument("-x", "--extension", nargs="*", default=("bb",), help="the file extensions to process")
     parser.add_argument("-F", "--no-follow", dest="follow", action="store_false", help="do not follow the file, good for stdin")
     parser.add_argument("-b", "--rebuild", action="store_true", help="rebuild html files even if they exist, implies -F")
+    parser.add_argument("-s", "--stats", action="store_true", help="copy mtime, atime and other stats from bb file to html file, implies -b and -F")
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
-    if opts.rebuild:
-        opts.follow = False
+    if opts.rebuild or opts.stats:
+        opts.follow = opts.rebuild = False
     return opts
 
 
