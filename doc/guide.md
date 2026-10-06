@@ -84,9 +84,7 @@ You can read our detailed [Terms of Service](/terms).
 
 ## Learning about Ally Chat
 
-- Read the [Quick Intro](/intro). It is not repeated here.
-- Read this [User Guide](/guide) if you have time, or to see the lists of characters.
-- This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
+- Read the Intro. It is not repeated here.
 - IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
 - A red dot at the top-right means you are disconnected or offline. Reload the page.
 - For a simple chat experience, talk with Loni. She can direct your messages to many other agents as if by magic!
@@ -446,6 +444,8 @@ digraph Google {
     "Gemma" [label=<<b>Gemma</b><br/><font point-size="10">Gemma 3</font><br/><font point-size="8">128K context 128K output</font><br/><font point-size="8">Open Source</font>>]
     "Gema" [label=<<b>Gema</b><br/><font point-size="10">Gemma 4 26B A4B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Mixture of Experts</font>>]
     "Gem" [label=<<b>Gem</b><br/><font point-size="10">Gemma 4 31B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Strongest Gemma</font>>]
+    "Gemx" [label=<<b>Gemx</b><br/><font point-size="10">Gemma 4 26B Uncensored</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Uncensored Gemma 4</font>>]
+    "Gemy" [label=<<b>Gemy</b><br/><font point-size="10">Gemma 4 26B Uncensored 2</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Uncensored Gemma 4</font>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.5 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
@@ -914,8 +914,6 @@ These models support NSFW chat, but are not focused on it.
 
 The Google, OpenAI, and Anthropic models support image vision, also Grok and Gok from xAI. Only the Google and xAI models allow NSFW image vision.
 
-Note: Claude won't approach NSFW, don't use him for that!
-
 #### NSFW capable
 
 type: llm_llama
@@ -965,7 +963,9 @@ type: visual
 | Anthropic     | Claude 4.7 Opus       | Claudo | $5.00  | $25.00 | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemma 3 27B           | Gemma  | $0.08  | $0.16  | Google's open source Gemma language model, version 3.                                                            |
 | Google        | Gemma 4 26B A4B       | Gema   | $0.13  | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
-| Google        | Gemma 4 31B           | Gem    | $0.14  | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                         |
+| Google        | Gemma 4 31B           | Gem    | $0.12  | $0.36  | Google's open source Gemma language model, version 4 - full dense model.                                         |
+| Google+       | Gemma 4 Uncensored    | Gemx   | $0.16  | $0.50  | An uncensored version of Gemma 4 26B.                                                                            |
+| Google+       | Gemma 4 Uncensored 2  | Gemy   | $0.19  | $0.88  | Another uncensored version of Gemma 4 26B, more expensive.                                                       |
 | Google        | Gemini 2.5 Flash Lite | Lite   | $0.10  | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.5 Flash      | Flashi | $0.30  | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi  | $1.25  | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
@@ -1207,8 +1207,8 @@ This is a large screen which takes up the bottom half of the display, and includ
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
-| <i class="bi-pencil"></i> | `Alt+E` | Edit | Edit the room |
-| <i class="bi-archive"></i> | `Alt+A` | Archive | Archive this room |
+| <i class="bi-pencil"></i> | `Shift+Alt+E` | Edit | Edit the room |
+| <i class="bi-archive"></i> | `Shift+Alt+A` | Archive | Archive this room |
 | <i class="bi-trash3"></i> | `Alt+X` | Clear | Clear this room (only for private rooms) |
 |  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
