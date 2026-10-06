@@ -29,7 +29,7 @@ webchat-message() {
 	if [ -n "$root" ]; then
 		root="$root"
 	else
-		root="$ALLEMANDE_HOME/rooms"
+		root="$ALLEMANDE_ROOMS"
 	fi
 	if [ -n "$file" ]; then
 		target_file="$file"
