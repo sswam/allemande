@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 # room-archive: archive a chat room file
 # Usage: room-archive [room_name]
@@ -7,14 +7,14 @@
 
 # Set the room name, defaulting to "Ally Chat" if not provided
 room=${1:-Ally Chat}
-# Remove the ALLEMANDE_HOME/rooms/ prefix if present
-room=${room#"$ALLEMANDE_HOME"/rooms/}
+# Remove the ALLEMANDE_ROOMS/ prefix if present
+room=${room#"$ALLEMANDE_ROOMS"/}
 
 # Remove .bb extension if present
 room=${room%.bb}
 
 # Set the source file paths
-from="$ALLEMANDE_HOME/rooms/$room.bb"
+from="$ALLEMANDE_ROOMS/$room.bb"
 dirname="$(dirname "$from")"
 basename="$(basename "$from")"
 to=""
@@ -58,6 +58,11 @@ if [ -e "$to" ]; then
 
 	# Move .tts folder if present
 	if [ -e "${from%.bb}.tts" ]; then
-		mv -T "${from%.bb}.tts" "${to%.bb}.tts"
+		if [ -e "${to%.bb}.tts" ]; then
+			mv "${from%.bb}.tts"/* "${to%.bb}.tts/" || true
+			rmdir "${from%.bb}.tts"
+		else
+			mv -T "${from%.bb}.tts" "${to%.bb}.tts"
+		fi
 	fi
 fi
