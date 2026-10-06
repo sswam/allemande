@@ -250,9 +250,9 @@ async def ally_chat_cli_async(  # pylint: disable=too-many-arguments, too-many-p
 
         try:
             temp_file.write_text(room_content)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)  # both were 0.1, but it failed sometimes :(
             temp_file.rename(room_file)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
             room_file.touch()
         except Exception:
             # Clean up on error
