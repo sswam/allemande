@@ -1,4 +1,7 @@
 base:
   - Agent
   - DeseriM
+over:
+  - +
+  - Thunk
 system_bottom: Please reply with a single message, as $NAME; do not role-play as other people!
