@@ -3913,6 +3913,7 @@ async function get_options() {
   const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
   const show = data?.agents?.all?.show ?? true;
   const think = data?.agents?.all?.think ?? false;
+  const short = data?.agents?.all?.short ?? false;
 
   // recall button is complex
   const recap = data?.agents?.all?.recap ?? false;
@@ -3938,6 +3939,7 @@ async function get_options() {
   $id("opt_writer").value = writer;
   active_set("opt_show", show);
   active_set("opt_think", think);
+  active_set("opt_short", short);
   active_set("opt_recall", recall);
   active_set("opt_memorize", memorize);
 
@@ -4127,6 +4129,20 @@ async function opt_think(ev) {
       agents: {
         all: {
           think: Boolean(think),
+        }
+      }
+    }
+  });
+}
+
+async function opt_short(ev) {
+  const short = active_toggle("opt_short")
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          short: Boolean(short),
         }
       }
     }
@@ -5373,6 +5389,7 @@ export async function init() {
   $on($id("opt_writer"), "change", opt_writer);
   $on($id("opt_show"), "click", opt_show);
   $on($id("opt_think"), "click", opt_think);
+  $on($id("opt_short"), "click", opt_short);
   $on($id("opt_recall"), "click", opt_recall);
   $on($id("opt_memorize"), "click", opt_memorize);
   $on($id("opt_cancel"), "click", () => set_controls());
