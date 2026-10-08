@@ -27,6 +27,7 @@ export const icons = {
   nav_home: '<i class="bi bi-house i20"></i>',
   nav_allychat: '<i class="bi bi-people i20"></i>',
   nav_nsfw: '<i class="bi bi-explicit i20"></i>',
+  zip: '<i class="bi bi-file-zip i20"></i>',
   logout: '<i class="bi bi-door-closed"></i>',
   x: '<i class="bi bi-x i20"></i>',
   x_large: '<i class="bi bi-x-lg i20"></i>',

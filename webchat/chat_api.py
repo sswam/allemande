@@ -9,11 +9,14 @@ import logging
 import asyncio
 from typing import Any
 from pathlib import Path
+import zipfile
+import tempfile
 
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, FileResponse
 from starlette.exceptions import HTTPException
+from starlette.background import BackgroundTask
 from pywebpush import webpush
 import uvicorn
 from deepmerge import always_merger
@@ -326,6 +329,54 @@ async def message(request):
     content = message.content
 
     return JSONResponse({"user": user, "content": content})
+
+
+zip_in_progress: set[str] = set()
+
+@app.route("/x/zip", methods=["GET"])
+async def zip(request):
+    """Download a zip of all the user's private chat content."""
+    user = get_user(request)
+
+    if user in zip_in_progress:
+        raise HTTPException(status_code=429, detail="Zip already in progress for this user")
+
+    PATH_ROOMS = Path(os.environ["ALLEMANDE_ROOMS"])
+    user_dir = PATH_ROOMS / user
+
+    if not user_dir.exists():
+        raise HTTPException(status_code=404, detail="User not found")
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
+    tmp_path = tmp.name
+
+    zip_in_progress.add(user)
+    try:
+        tmp.close()
+
+        ZIP_DONT = {"png", "jpg", "jpeg", "gif", "mp4", "mp3", "zip", "7z", "rar", "webp", "webm", "mov"}
+
+        # Create the zip file
+        with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            for file in user_dir.rglob("*"):
+                if file.is_file():
+                    compress = zipfile.ZIP_STORED if file.suffix.lstrip(".").lower() in ZIP_DONT else zipfile.ZIP_DEFLATED
+                    zf.write(file, file.relative_to(user_dir), compress_type=compress)
+                await asyncio.sleep(0)
+    except Exception:
+        logger.warning("Error writing zip file for %s", user, exc_info=True)
+        os.unlink(tmp_path)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    finally:
+        zip_in_progress.discard(user)
+
+    # Return the zip file, ensuring cleanup after the response
+    return FileResponse(
+        path=tmp_path,
+        media_type="application/zip",
+        filename=f"{user}.zip",
+        background=BackgroundTask(os.unlink, tmp_path),
+    )
 
 
 @app.route("/x/subscribe", methods=["POST"])

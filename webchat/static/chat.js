@@ -341,8 +341,8 @@ function setup_dev_early() {
   early = config.EARLY.includes(user);
   if (dev)
     $body.classList.add("dev");
-  else
-    DEBUG = false;
+  // else
+  //   DEBUG = false;
   if (early)
     $body.classList.add("early");
   set_debug(DEBUG);
@@ -5231,6 +5231,19 @@ function edit_last_message() {
     edit_message(lastMessageId);  // async
 }
 
+// download zip file ---------------------------------------------------------
+
+async function download_zip_confirm(ev) {
+  ev.preventDefault();
+  const a = ev.target.closest("a")
+  console.log("download_zip_confirm href:", a.href);
+
+  const confirmed = await Prompts.confirm("Download a zip of all your private files?");
+
+  if (confirmed)
+    window.location.href = a.href;
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -5450,6 +5463,9 @@ export async function init() {
   $on($id("ea_ref_image_file"), "change", ea_ref_image_file_changed);
   $on($id("ea_ref_image"), "change", ea_ref_image_changed);
   $on($id("ea_type"), "change", ea_type_changed);
+
+  // confirm zip download
+  $on($id("zip"), "click", download_zip_confirm);
 
   // edit message
   $on($id("edit_message_cancel"), "click", edit_message_cancel);
