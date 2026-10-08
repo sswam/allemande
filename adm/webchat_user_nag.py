@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TextIO
 import os
+import shutil
 
 import records
 
@@ -144,29 +145,29 @@ def process_single_record(
 
     # Check current state
     exists = user_nag_file.exists()
-    is_symlink = user_nag_file.is_symlink()
+    # is_symlink = user_nag_file.is_symlink()
 
-    # If it exists and is NOT a symlink, it's a custom nag - leave it alone
-    if exists and not is_symlink:
-        content = user_nag_file.read_text().rstrip()
-        print(rec["name"], "", support or "", content, sep="\t")
-        return
+    # # If it exists and is NOT a symlink, it's a custom nag - leave it alone
+    # if exists and not is_symlink:
+    #     content = user_nag_file.read_text().rstrip()
+    #     print(rec["name"], "", support or "", content, sep="\t")
+    #     return
 
-    # Check if symlink is already correct
-    if is_symlink:
-        try:
-            current_target = user_nag_file.readlink()
-            if current_target == target_nag_file:
-                # Symlink is already correct
-                return
-        except OSError:
-            # Broken symlink, will replace
-            pass
+    # # Check if symlink is already correct
+    # if is_symlink:
+    #     try:
+    #         current_target = user_nag_file.readlink()
+    #         if current_target == target_nag_file:
+    #             # Symlink is already correct
+    #             return
+    #     except OSError:
+    #         # Broken symlink, will replace
+    #         pass
 
-    # Update/create the symlink
+    # Update/create the nag file
     if not no_act:
         user_nag_file.unlink(missing_ok=True)
-        user_nag_file.symlink_to(target_nag_file)
+        shutil.copy(target_nag_file, user_nag_file)
 
     print(rec["name"], nag_file, support or "", sep="\t")
 
