@@ -212,6 +212,12 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         logger.info("limiting steps to %d", max_steps)
         config["steps"] = max_steps
 
+    # scale up for models that need a bigger canvas (Qwen 2.1 Image)
+    res_scale = config.get("res_scale")
+    if res_scale:
+        config["width"] *= res_scale
+        config["height"] *= res_scale
+
     return config
 
 
@@ -672,6 +678,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
         need_update_macros = True
 
     # Process settings
+    res_scale = config.get("res_scale")
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint", "denoising_strength"]:
         if setting not in sets:
             continue
@@ -683,6 +690,8 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
             config[setting] = value
         else:
             config[setting] = float(value)
+        if res_scale and setting in ["width", "height"]:
+            config[setting] /= res_scale   # hack: because limit_dimensions_and_hq will scale it up again later
 
     # Process regional prompter
     rp = macros.get("rp", {})
