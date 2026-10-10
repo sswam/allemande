@@ -352,8 +352,11 @@ def handle_hidden_directions(message, history, history_messages, file, args, las
         return False
 
     # remove narrator's name from direction
-    message["content"] = re.sub(r"^\+@.*?, ", "", message["content"])
-    history[-1] = bb_lib.message_to_text(message)
+    message2 = {
+        "user": None,
+        "content": re.sub(r"^\+@.*?, ", "", message["content"]),
+    }
+    history[-1] = bb_lib.message_to_text(message2)
 
     undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
     chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
