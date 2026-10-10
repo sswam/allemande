@@ -963,7 +963,7 @@ type: visual
 | Anthropic     | Claude 4.7 Opus       | Claudo | $5.00  | $25.00 | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemma 3 27B           | Gemma  | $0.08  | $0.16  | Google's open source Gemma language model, version 3.                                                            |
 | Google        | Gemma 4 26B A4B       | Gema   | $0.13  | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
-| Google        | Gemma 4 31B           | Gem    | $0.12  | $0.36  | Google's open source Gemma language model, version 4 - full dense model.                                         |
+| Google        | Gemma 4 31B           | Gem    | $0.14  | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                         |
 | Google+       | Gemma 4 Uncensored    | Gemx   | $0.16  | $0.50  | An uncensored version of Gemma 4 26B.                                                                            |
 | Google+       | Gemma 4 Uncensored 2  | Gemy   | $0.19  | $0.88  | Another uncensored version of Gemma 4 26B, more expensive.                                                       |
 | Google        | Gemini 2.5 Flash Lite | Lite   | $0.10  | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                                  |
@@ -1005,16 +1005,17 @@ Input and output costs are measured in US dollars per million tokens.
 
 #### Image Models (SFW)
 
-| Creator          | Model                | Name  | Description                                                                                                              |
-|------------------|----------------------|-------|--------------------------------------------------------------------------------------------------------------------------|
-| RunDiffusion     | Juggernaut XL v9     | Jily  | The most popular model based on SDXL, for high-quality realistic and artistic images                                     |
-| LEOSAM           | HelloWorld XL        | Hily  | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                                   |
-| Autismix anon    | AutismMix Confetti   | Poni  | Mix of pony with "some stuff", a popular model for anime-style art, NSFW tendencies                                      |
-| Cyberdelia       | CyberRealistic Pony  | Coni  | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies          |
-| Krea AI          | Krea 2 Turbo         | Krea2 | The fastest medium quality Krea 2 model, a strong modern model                                                           |
-| conradlocke      | Krea 2 Identity Edit | Krie  | Instruction-based, identity-preserving image editing for Krea 2                                                          |
-| FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K   | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
-| CircleStone Labs | Anima Turbo          | Anima | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
+| Creator          | Model                | Name   | Description                                                                                                              |
+|------------------|----------------------|--------|--------------------------------------------------------------------------------------------------------------------------|
+| RunDiffusion     | Juggernaut XL v9     | Jily   | The most popular model based on SDXL, for high-quality realistic and artistic images                                     |
+| LEOSAM           | HelloWorld XL        | Hily   | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                                   |
+| Autismix anon    | AutismMix Confetti   | Poni   | Mix of pony with "some stuff", a popular model for anime-style art, NSFW tendencies                                      |
+| Cyberdelia       | CyberRealistic Pony  | Coni   | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies          |
+| Krea AI          | Krea 2 Turbo         | Krea2  | The fastest medium quality Krea 2 model, a strong modern model                                                           |
+| conradlocke      | Krea 2 Identity Edit | Krie   | Instruction-based, identity-preserving image editing for Krea 2                                                          |
+| FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K    | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
+| CircleStone Labs | Anima Turbo          | Anima  | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
+| Alibaba Cloud    | Qwen Image 2.1       | Qwin21 | a unified text-to-image generation and image editing model, with little if any censorship                                |
 
 * Note that most models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity. Anima should be prompted with "safe".
 
@@ -1022,6 +1023,7 @@ There are a few variant art model agents with extra features:
 
 - Krea - Krea2, but translates Pony-style prompts to work better
 - Klein - F2K, but translates Pony-style prompts to work better
+- Qwin - Qwin21, but translates Pony-style prompts to work better
 
 #### Censorship
 

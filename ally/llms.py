@@ -435,8 +435,8 @@ MODELS = {
         # "id": "google-gemma-4-31b-it",
         "vision": True,
         "description": "Gemma 4 31B",
-        "cost_in": 0.12,
-        "cost_out": 0.36,
+        "cost_in": 0.14,
+        "cost_out": 0.40,
     },
     "gemma-4-uncensored": {
         "aliases": ["gemma4u", "gemx"],
