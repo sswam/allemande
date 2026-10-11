@@ -66,8 +66,8 @@ def find_by_slug(slug, item_type="post", status=None, many=False, underscore_to_
 	}
 	if status:
 		params['status'] = status
-	reponse = requests.get(url, auth=auth, params=params)
-	items = reponse.json()
+	response = requests.get(url, auth=auth, params=params)
+	items = response.json()
 	return items_check_number(items, "slug", slug, many=many)
 
 

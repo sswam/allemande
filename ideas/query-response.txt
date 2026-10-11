@@ -126,7 +126,7 @@ We need an event queue (or mutex) to make sure things happen in some order.
 			- but I kind of like the instant-message behavior rather than streaming response; it could be a user option
 			- if we do AI voice chat at some point we will want to stream the response so that it can start talking promptly
 			- we would have lots of small writes to the chat files; not a problem with buffer-cache, and utterly insignificant compared to AI processing of course!  there would be more packats / data going to the clients too, which is potentially more of a problem, but still minor; again, it could be a user-level option
-		- with speech recognition from users, we could stream the user's speech (as audio and/or text) to the server immediately, similar to AI reponse streaming
+		- with speech recognition from users, we could stream the user's speech (as audio and/or text) to the server immediately, similar to AI response streaming
 			- we'd probably stream audio to the server, and do speech recognition on the server using whisper or something like the mike tool  (rename to mik)
 
 I should try using AI to organize this chaotic mess of thoughts.
