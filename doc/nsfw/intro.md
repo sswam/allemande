@@ -28,7 +28,7 @@ Click the <i class="bi-question-lg"></i> help button at the top right, and talk 
 
 **NOTE**: In normal chat rooms, most AIs don't know anything about the app! Use the help system, or you can ask @Aidi or @Assi (NSFW) in any room.
 
-Read this [Quick Intro](/intro_nsfw), the [User Guide](/guide), and the [NSFW Guide](/guide_nsfw), for full details on the app, models, characters, and tools.
+Read this Quick Intro, then the User Guide, and the NSFW Guide, for full details on the app, models, characters, and tools.
 
 A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
