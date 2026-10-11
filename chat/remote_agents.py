@@ -113,8 +113,6 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
 
     context_messages = list(bb_lib.lines_to_messages(iter(context2)))
 
-    remote_messages = []
-
     # TODO images in system messages?
     message_count_with_images, image_count = await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", None))
 
@@ -146,6 +144,8 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     # TODO Can't include from system messages, what user permission to use?
 
     # convert context_messages to remote_messages, with only user and assistant roles
+
+    remote_messages = []
 
     for msg in context_messages:
         logger.debug("msg1: %r", msg)

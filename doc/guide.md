@@ -522,12 +522,10 @@ digraph DeepSeek {
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek V4 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek V4 Pro</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Strong, Creative</font>>]
-    "Aion" [label=<<b>Aion</b><br/><font point-size="10">Uncensored DeepSeek 3.2</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Uncensored, Role Play</font>>]
 
     "DeepSeek" -> "Dese"
     "DeepSeek" -> "Desee"
     "DeepSeek" -> "Deseri"
-    "DeepSeek" -> "Aion"
 }
 ```
 
@@ -591,8 +589,12 @@ digraph ZAI {
 
     "Z.AI" [label=<<b>Z.AI</b>>]
     "GLM" [label=<<b>Glimi</b><br/><font point-size="10">GLM 5.3 Flash</font><br/><font point-size="8">205K context</font><br/><font point-size="8">Reasoning, coding</font>>]
+    "Aion" [label=<<b>Aion</b><br/><font point-size="10">Aion 3.5 Mini</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Uncensored, Role Play</font>>]
+    "Aionn" [label=<<b>Aionn</b><br/><font point-size="10">Aion 3.5</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Uncensored, Role Play</font>>]
 
     "Z.AI" -> "GLM"
+    "Z.AI" -> "Aion"
+    "Z.AI" -> "Aionn"
 }
 ```
 
@@ -720,7 +722,8 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
 - **Venni** (Venice Role Play Uncensored): Uncensored role play
-- **Aion** (Uncensored DeepSeek 3.2): A strong uncensored model for chat, writing, and role play
+- **Aion** (Aion 3.5 Mini - Uncensored GLM): A strong uncensored model for chat, writing, and role play
+- **Aionn** (Aion 3.5 - Uncensored GLM): A strong uncensored model for chat, writing, and role play
 
 These characters are not prompted, or only minimally: they serve for direct access to the base models.
 
@@ -1000,6 +1003,7 @@ type: visual
 | MoonshotAI    | Kimi K2.5             | Kimmi  | $0.45  | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
 | Z.AI          | GLM 5.3 Flash         | Glimi  | $0.15  | $0.50  | Z.AI: GLM 5.3 Flash, the first native multimodal model in the GLM-5 series.                                      |
 | Aion          | Aion 3.5 Mini         | Aion   | $0.88  | $1.75  | A strong uncensored model for chat, writing and role play.                                                       |
+| Aion          | Aion 3.5              | Aionn  | $3.75  | $7.50  | A strong uncensored model for chat, writing and role play.                                                       |
 
 Input and output costs are measured in US dollars per million tokens.
 
@@ -1033,7 +1037,7 @@ Claude: Can talk about adult concerns including sexuality, but will not engage w
 OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with most NSFW topics.
 Llama 3: Can engage with any NSFW topic, practically uncensored, but may be reluctant by default.
-Venice Uncensored, Aion: Fully uncensored, or as close as it gets. The Aio may work better than Aion, it gives shorter reponses.
+Venice Uncensored, Gemx, Gemy, Aion: Fully uncensored, or as close as it gets. The Aio may work better than Aion, it gives shorter responses.
 Krea2 / Krea: Avoids nudity (without a plugin called a LoRA)
 F2K / Klein: Avoids nudity (without a LoRA)
 
@@ -1175,7 +1179,7 @@ This is a large screen which takes up the bottom half of the display, and includ
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
 | <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |
-| <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
+| <i class="bi-clock-history"></i> | `Alt+H` | History | View change history (deleted and edited messages) |
 | <i class="bi-arrows-fullscreen"></i> |  | Full-screen | Make chat area full-screen (off, whole window, full-screen) |
 
 ### <i class="bi-headset"></i> Voice Options
@@ -1212,7 +1216,7 @@ This is a large screen which takes up the bottom half of the display, and includ
 | <i class="bi-pencil"></i> | `Shift+Alt+E` | Edit | Edit the room |
 | <i class="bi-archive"></i> | `Shift+Alt+A` | Archive | Archive this room |
 | <i class="bi-trash3"></i> | `Alt+X` | Clear | Clear this room (only for private rooms) |
-|  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
+|  | `Shift+Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
 ## Editor Controls
 
