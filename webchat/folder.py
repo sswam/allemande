@@ -285,7 +285,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                 {
                     "name": item.name,
                     "type": "file",
-                    "type_sort": 10 + MEDIA_FILE_EXTS.index(ext),
+                    "type_sort": 10 + SYSTEM_TEXT_FILE_EXTS.index("yml"),  # show near the .yml file
                     "link": f"{info.rooms_base_url}/{pathname}{item.name}",
                 }
             )

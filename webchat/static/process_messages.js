@@ -508,7 +508,7 @@ function decorateCodeBlock(codeBlock) {
 
   // Add click handler for ~~copy button~~ code block
   //  copyButton.addEventListener("click", async () => {
-  codeBlock.addEventListener("click", async (ev) => {
+  async function code_block_click(ev) {
     let text = codeBlock.textContent.trim();
     if (parentIsPre) {
       text = text.replace(/\n*$/, "\n");
@@ -518,14 +518,17 @@ function decorateCodeBlock(codeBlock) {
     }
     if (inIframe) {
       // send text to parent window
-      const type = ev.altKey ? "drop" : "copy";
+      const type = ev.altKey||ev.type == "dblclick" ? "drop" : "copy";
       window.parent.postMessage({ type, text }, ALLYCHAT_CHAT_URL);
     } else {
       // copy text to clipboard
       await navigator.clipboard.writeText(text);
     }
     room.flash(controls, "active");
-  });
+  }
+
+  codeBlock.addEventListener("click", code_block_click);
+  codeBlock.addEventListener("dblclick", code_block_click);
 
   // Add controls to wrapper
   parent.appendChild(controls);

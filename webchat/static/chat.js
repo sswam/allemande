@@ -1711,7 +1711,8 @@ function setup_main_ui_shortcuts() {
     ['shift+alt+e', () => edit(), 'Edit file', ADMIN],
 //    ['alt+e', () => edit_my_last_message(), 'Edit your last message'], // couldn't get this working yet!
     ['alt+e', () => edit_last_message(), 'Edit last message'],
-    ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
+    ['shift+alt+h', rerender_html, 'Re-render HTML', ADMIN],
+    ['alt+h', view_history, 'show history of deleted messages', ADMIN],
 
     ['alt+v', artist, 'Invoke the illustrator'],
     ['alt+n', writer, 'Invoke the narrator'],
@@ -3083,14 +3084,16 @@ function edit_agent_set_ref_image(name) {
   $id("ea_ref_image").value = name;
   let visual = $id("ea_visual_person").value;
   visual = visual.replace(/\s*REF=".*?"/, "");
+  const ref_image_art_models = ["Krie", "Xrie", "Klein", "Xlein", "Qwin"];
   if (path) {
     visual += ` REF="${path}"`;
-    // also set ea_art_model to Krie or Xrie
-    if (!["Krie", "Xrie"].includes($id("ea_art_model").value))
-      $id("ea_art_model").value = user_nsfw ? "Xrie" : "Krie";
+    // also set ea_art_model
+    if (!ref_image_art_models.includes($id("ea_art_model").value))
+      // $id("ea_art_model").value = user_nsfw ? "Xrie" : "Krie";
+      $id("ea_art_model").value = ref_image_art_models[0];
   } else {
-    // also clear ea_art_model if it's Krie or Xrie
-    if (["Krie", "Xrie"].includes($id("ea_art_model").value))
+    // also clear ea_art_model if it's a ref image one
+    if (ref_image_art_models.includes($id("ea_art_model").value))
       $id("ea_art_model").value = "";
   }
   $id("ea_visual_person").value = visual;
@@ -3946,6 +3949,7 @@ async function get_options() {
   opt_recall_update_button(recall);
   opt_artist_changed();
   opt_writer_changed();
+  opt_images_apply();
 
   return data;
 }
@@ -4000,6 +4004,12 @@ async function opt_lines(ev) {
 async function opt_images(ev) {
   let images = ev.target.value.trim();
   images = images === "" ? null : +images;
+  if (images !== null) {
+    if (!await Prompts.confirm("Don't leave vision turned on too long, it'll be slow and costly! Continue?")) {
+      images = null;
+      ev.target.value = "";
+    }
+  }
   await set_options({
     room: room,
     options: {
@@ -4010,6 +4020,14 @@ async function opt_images(ev) {
       }
     }
   });
+  opt_images_apply();
+}
+
+function opt_images_apply() {
+  let images = $id("opt_images").value.trim();
+  images = images === "" ? null : +images;
+  $id("opt_images").classList.toggle("error", images !== null);
+  $id("opt").classList.toggle("error", images !== null);
 }
 
 async function opt_temp(ev) {
@@ -4403,7 +4421,7 @@ function setup_embed_ui() {
     ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
     ['alt+x', clear_chat, 'Clear messages', ADMIN],
     ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
-    ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
+    ['shift+alt+h', rerender_html, 'Re-render HTML', ADMIN],
   ]);
   return;
 }

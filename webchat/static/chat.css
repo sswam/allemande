@@ -341,11 +341,11 @@ body.light .active--4 { background-color: #70e0e0 !important; color: black !impo
 body.light .active--5 { background-color: #78f0f0 !important; color: black !important; }
 
 body.dark #inputrow input[placeholder]:not(:placeholder-shown) {
-	background-color: #606030 !important; color: white !important;
+	background-color: #606030; color: white;
 }
 
 body.light #inputrow input[placeholder]:not(:placeholder-shown) {
-	background-color: #b0b058 !important; color: black !important;
+	background-color: #b0b058; color: black;
 }
 
 .error {
