@@ -18,12 +18,13 @@ recall_strip: false
 memorize: false  # implies summary
 # summary: true
 summary_start: "**START**"
-summary_prompt: "summarize the above comprehensively please, in plenty of detail, beginning where it says **START**, including all the other people (and their names), but not including your self-talk or any pictures or @mentions. Make the summary long enough so you don't miss much, include everything that you'd remember. Just give the summary only with no prelude, from your point of view. Don't include anything you didn't know about or witness yourself! End the summary with the word STOP on a line by itself. Please write the summary now, $AGENT."  # defaults to settings.SUMMARY_PROMPT_DEFAULT
+summary_prompt: "summarize the above in detail please, beginning where it says **START**, including all the other people (and their names), but not including full image prompts or images. Make the summary long enough so you don't miss much, but concise not flowery. Include everything that you'd remember, and any details you said about yourself or learned about other people. Just give the summary only with no prelude, from your point of view. Don't include anything you didn't know about or witness yourself! End the summary with the word STOP on a line by itself. Please write the summary now, $AGENT."  # defaults to settings.SUMMARY_PROMPT_DEFAULT
 # summary_prompt: "summarize what you'd like to remember from the above please, in full detail, beginning where it says **START**, including all the other people (and their names), but not including your self-talk or any pictures or @mentions. Just give the summary only with no prelude, in one paragraph of first person prose, from your point of view. Don't include anything you didn't know about or witness yourself! End the summary with the word STOP on a line by itself. Please write the summary now, $AGENT."  # defaults to settings.SUMMARY_PROMPT_DEFAULT
 summary_lines: 50
 summary_stop_regexs:
   - \bSTOP\b
-summary_role: null  # means no agent
+# summary_role: null  # means no agent
+summary_role: "System"
 
 recap: true
 recap_prompt: null  # defaults to summary_prompt

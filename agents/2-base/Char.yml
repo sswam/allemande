@@ -8,4 +8,10 @@ over:
   - ShowMI
   - AntiCliche
   - AntiEmDash
+  - Willfull
+  - Initiative
   - Think
+filter_in:
+  - clean_up_mentions
+#  - remove_images
+#  - remove_code
