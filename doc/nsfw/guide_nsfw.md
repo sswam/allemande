@@ -222,6 +222,7 @@ Please do not use languages models other than those listed here for NSFW content
 | MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
 | Z.AI       | GLM 5.3 Flash         | Glimi  | $0.15 | $0.50  | Z.AI: GLM 5.3 Flash, the first native multimodal model in the GLM-5 series.                             |
 | Aion       | Aion 3.5 Mini         | Aion   | $0.88 | $1.75  | A strong uncensored model for chat, writing and role play.                                              |
+| Aion       | Aion 3.5              | Aionn  | $3.75 | $7.50  | A strong uncensored model for chat, writing and role play.                                              |
 
 Input and output costs are measured in US dollars per million tokens.
 

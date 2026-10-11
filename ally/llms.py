@@ -533,6 +533,13 @@ MODELS = {
         "cost_in": 0.88,
         "cost_out": 1.75,
     },
+    "aionn": {
+        "vendor": "venice",
+        "id": "aion-labs-aion-3-5",
+        "description": "Aion 3.5 is a strong uncensored model for chat, writing and role play.",
+        "cost_in": 3.75,
+        "cost_out": 7.50,
+    },
     "kimi": {
         "aliases": ["kimi-k2"],
         "vendor": "openrouter",

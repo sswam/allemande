@@ -141,7 +141,8 @@
 				<option value="Flashi" label="$$ - Gemini 2.5 Flash">
 				<option value="Clia" label="$$ - Claude Haiku">
 				<option value="Deseri" label="$$ - DeepSeek 4 Pro">
-				<option value="Aion" label="$$$ - Aion - DeepSeek 3.2 Uncensored Roleplay">
+				<option value="Aion" label="$$ - Aion 3.5 Mini - Uncensored Roleplay">
+				<option value="Aionn" label="$$$ - Aion 3.5 - Uncensored Roleplay">
 				<option value="Gemmi" label="$$$ - Gemini 2.5 Pro">
 				<option value="Claude" label="$$$ - Claude Sonnet">
 				<!--<option value="Claudo" label="$$$$ - Claude 4.7 Opus">-->
@@ -217,12 +218,13 @@
 			<input list="art_model_options" id="ea_art_model" title="preferred art model" placeholder="art model" class="grow">
 			<datalist id="art_model_options">
 				<option value=" " label="any art model">
+				<option value="Qwin" label="Qwen 2.1 Image: powerful modern model, editing">
+				<option value="Krea" label="Krea 2: powerful modern model">
 				<option value="Jily" label="Juggernaut XL: realistic">
-				<option value="Krea" label="Krea 2: powerful modern model, SFW">
-				<option value="Krie" label="Krea 2 Identity Edit: use for reference image, editing">
 				<option value="Coni" label="CyberRealistic Pony: realistic, good for NSFW">
 				<option value="Anima" label="Anima Turbo: fast, artistic not realistic, good for NSFW">
 				<option value="Klein" label="Flux 2 Klein: modern model, SFW, editing">
+				<option value="Krie" label="Krea 2 Identity Edit: use for reference image, editing">
 				<option value="Xlein" label="Flux 2 Klein + NSFW: modern model, limited NSFW, editing" class="nsfw">
 				<option value="Xrea" label="Krea 2 + NSFW: powerful modern model, limited NSFW" class="nsfw">
 				<option value="Xrie" label="Krea 2 IE + NSFW: use for reference image, editing" class="nsfw">
@@ -359,7 +361,7 @@
 				<input id="opt_name" placeholder="name" title="change your name in the chat">
 				<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output">
 				<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
-				<input id="opt_images" placeholder="vision" class="dev" title="number of recent images AI can see">
+				<input id="opt_images" placeholder="vision" title="number of recent images AI can see">
 				<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high">
 				<input id="opt_mission" placeholder="mission" title="mission files to use, - for none" class="hidden">
 	<!--			<input id="opt_over" placeholder="over" title="overlay files, - for none, Foo to add, -Foo to remove" class="advanced">
