@@ -83,6 +83,7 @@ async def generate_tts_file_2(path: Path, starred: bool=False):
     content = re.sub(r"(^|\s)@(\w)", r"\1\2", content)  # strip @ signs from @mentions
     if not starred:
         content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - may need work
+        # content = re.sub(r"\*.*?\s.*?\*", "", content)  # remove *italics / actions* - min 2 words - may need work
 
     # experimental:  add a fullstop at the end of each line if it ends with a word character
     content = re.sub(r"(\w|\*)$", r"\1.", content, flags=re.MULTILINE)
