@@ -1,5 +1,7 @@
 // Handle notification permissions -------------------------------------------
 
+let icons;
+
 async function notify_clicked() {
 	const permission = await Notification.requestPermission();
 	if (permission !== 'granted') {
@@ -35,13 +37,28 @@ function notify_check_support() {
 	return 'serviceWorker' in navigator && 'PushManager' in window;
 }
 
-function notify_main() {
+function notify_show_status(room) {
+	const status = 0;   // TODO!  off / me / all
+	const status_text = ["off", "me", "all"][status];
+	const extra_text = ["", " - when mentioned", " - on any message"][status];
+	const icon = "notify_" + status_text;
+	const text = "notify: " + status_text + extra_text;
+	const $notify = $id('notify');
+	$notify.innerHTML = icons[icon];
+	setTitle($notify, text);
+}
+
+// TODO will need a list of all watched pages somewhere, text file sounds good, to edit
+
+function notify_main(_icons) {
+	icons = _icons;
 	if (!notify_check_support()) {
 		console.error('This browser does not support push notifications');
 		$id('notify').classList.add('hidden');
 		return;
 	}
 	$on($id('notify'), 'click', notify_clicked);
+	notify_show_status(null);  // FIXME
 }
 
 // TODO check if permission already granted / subscription already exists

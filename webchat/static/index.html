@@ -29,6 +29,7 @@
 	<!--<div class="row gap hidden option-simple-invisible" id="top">-->
 	<div class="row gap hidden standard advanced" id="top">
 		<a class="button private standard advanced" href="" id="privacy" title=""></a>
+		<button class="dev option" id="notify">notify</button>
 		<div class="top_left_controls row gap" id="top_left_main">
 			<!--<a class="button nsfw nav_nsfw hidden simple standard advanced" href="" title="go to the main NSFW room">nsfw</a>-->
 			<a class="button" href="" id="nav" title="navigation">nav</a>
@@ -75,7 +76,6 @@
 			<button id="filter" title="filter media" class="option dev">filter</button>
 			<button id="scroll_end_2" title="end of room: end" class="standard advanced">bot</button>
 			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
-			<button class="hidden" id="notify">notify</button>
 			<a class="button standard advanced option hidden" href="" id="user" title="cycle your main rooms">…</a>
 			<button id="usage" title="usage" class="standard advanced">usage</button>
 			<a class="button" href="" id="help" title="get help to use Ally Chat">help</a>
@@ -120,6 +120,8 @@
 				<option value="Char" label="a character for chat and role-play">
 				<option value="Agent" label="a safe, productive assistant">
 				<option value="Base" label="a plain LLM or agent with no extras">
+				<option value="MetaAI" label="dispatch to other agents like Loni does">
+				<option value="MetaNaughtyAI" label="dispatch to other agents including NSFW like Lori does" class="nsfw">
 				<option value="Visual" label="no LLM, visual-only, e.g. to draw a user">
 				<option value="super" label="inherit from a character with the same name">
 			</datalist>

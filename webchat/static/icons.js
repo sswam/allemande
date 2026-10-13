@@ -138,4 +138,8 @@ export const icons = {
   edit_message_cancel: '<i class="bi bi-x i20"></i>',
 
   view_extra: '<i class="bi bi-plus-lg i20"></i>',
+
+  notify_off: '<i class="bi bi-bell-slash i20"></i>',
+  notify_me: '<i class="bi bi-bell i20"></i>',
+  notify_all: '<i class="bi bi-bell-fill i20"></i>',
 };

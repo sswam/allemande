@@ -1011,6 +1011,8 @@ export async function set_room(room_new, no_history) {
     return;
   }
 
+  $messages_iframe.setAttribute("scrolling", "no");
+
   if (editing_message !== null) {
     edit_message_cancel();
   }
@@ -1100,8 +1102,6 @@ export async function set_room(room_new, no_history) {
   } else if (type == "file" || type == "access" || type == "agent" || type == "options") {
     // start editing the file
     await edit(room_new);
-  } else if (type == "media") {
-    // media, e.g. PDF, just view  XXX FIXME
   }
 
   if (view === "view_edit" || view === "view_edit_agent") {
@@ -1116,7 +1116,7 @@ export async function set_room(room_new, no_history) {
     let param_append = "";
     if (type == "dir" && folder_reload) {
       folder_reload = false;
-      const now = Date.now();  /* XXX this is not ideal */
+      const now = Date.now();
       param_append = "&_=" + now;
     }
 
@@ -1124,6 +1124,10 @@ export async function set_room(room_new, no_history) {
 
     // console.log("set_room, calling check_for_updates");
     check_for_updates();
+  } else if (type == "media") {
+    // media, e.g. PDF, just view
+    messages_iframe_set_src(room_url());
+    $messages_iframe.removeAttribute("scrolling");
   }
 }
 
@@ -5493,7 +5497,7 @@ export async function init() {
 
   $on($content, "click", hide_placeholder);
 
-  notify_main();
+  notify_main(icons);
   record_main();
 
   focus_content_on_pc();
