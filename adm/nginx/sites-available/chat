@@ -107,6 +107,8 @@ server {
 
 		auth_request /_auth_users;
 
+		rewrite ^(.*)\.(\d+)\.(css|js|png|jpg|ttf)$ $1.$3 break;
+
 		try_files $uri $uri/ =404;
 	}
 

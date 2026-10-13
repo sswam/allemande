@@ -160,13 +160,14 @@ async def clear(request):
     form = await request.form()
     room = form["room"]
     op = form["op"]
+    file = form.get("file", False)
     user = get_user(request)
     logger.info("%s CLEAR  %s", user, room)
 
     if op not in ["clear", "archive", "rotate", "clean", "render"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
-    room = Room(name=room)
+    room = Room(name=room, file=file)
 
     try:
         await room.clear(user, op)

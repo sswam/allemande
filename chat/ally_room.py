@@ -54,7 +54,7 @@ class Access(enum.Enum):  # pylint: disable=too-few-public-methods
 class Room:
     """A chat room object."""
 
-    def __init__(self, name: str | None = None, path: Path | str | None = None):
+    def __init__(self, name: str | None = None, path: Path | str | None = None, file: bool = False):
         """Create a room object."""
         if path:
             assert name is None
@@ -62,7 +62,8 @@ class Room:
             self.name = path_to_name(self.path.with_suffix(""))
         else:
             self.name = name
-            self.path = name_to_path(name + EXTENSION)
+            ext = "" if file else EXTENSION
+            self.path = name_to_path(name + ext)
         self.parent = self.path.parent
 
         # TODO can a disallowed user create directories in this way?

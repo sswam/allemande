@@ -387,7 +387,7 @@ async function send(ev, prepend, button) {
 
   button = button || "send";
 
-  if (await get_file_type($room.value) === "dir") {
+  if (await get_file_type($room.value) !== "room") {
     flash($id(button), "error");
     return;
   }
@@ -1128,6 +1128,7 @@ export async function set_room(room_new, no_history) {
     // media, e.g. PDF, just view
     messages_iframe_set_src(room_url());
     $messages_iframe.removeAttribute("scrolling");
+    set_controls("input_media");
   }
 }
 
@@ -1180,7 +1181,7 @@ function setup_help_links() {
 }
 */
 
-// move or copy a room or file -----------------------------------------------------
+// move, copy or delete a room or file ---------------------------------------
 
 function move_mode(mode) {
   if (typeof mode === "object")
@@ -1196,6 +1197,42 @@ function move_mode(mode) {
 
 function copy_mode() {
   return move_mode("copy");
+}
+
+async function media_delete() {
+  if ((view === "view_edit" || view === "view_edit_agent"))
+    return await edit_clear();
+  if (!await Prompts.confirm("Delete this file?")) return false;
+
+  const formData = new FormData();
+  formData.append("room", room);
+  formData.append("op", "clear");
+  formData.append("file", 1);
+
+  const my_error = async (error_message) => {
+    console.error(error_message);
+    await error(`media_delete`);
+  };
+
+  const response = await fetch("/x/clear", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    return await my_error(`${op} failed`);
+  }
+
+  const data = await response.json();
+
+  if (data.error) {
+    return await my_error(data.error);
+  }
+
+  if (history.length > 1)
+    history.back();
+  else
+    nav_up();
 }
 
 async function move(source, dest, mode) {
@@ -1367,8 +1404,9 @@ function load_theme() {
 
 async function load_user_files() {
   const user_dir = "/users/" + user;
-  const [_, userScript, nag_response] = await Promise.all([
-    $style("user_styles", user_dir + "/styles.css"),
+//  const [_, userScript, nag_response] = await Promise.all([
+//    $style("user_styles", user_dir + "/styles.css"),
+  const [userScript, nag_response] = await Promise.all([
     $import("user_script", user_dir + "/script.js"),
     fetch(user_dir + "/nag.html?" + Date.now()), // prevent caching
   ]);
@@ -4309,6 +4347,7 @@ async function setup_icons() {
   icons["mod_retry"] = icons["undo"];
   icons["edit_reset"] = icons["undo"];
   icons["edit_clear"] = icons["mod_clear"];
+  icons["media_delete"] = icons["mod_clear"];
   icons["mod_edit"] = icons["edit"];
 //  icons["room_ops_move"] = icons["select_move"];
   icons["access_denied"] = icons["x_large"];
@@ -5491,6 +5530,9 @@ export async function init() {
 
   // edit message
   $on($id("edit_message_cancel"), "click", edit_message_cancel);
+
+  // media delete
+  $on($id("media_delete"), "click", media_delete);
 
   if (isMobile)
     setup_view_option_swipe();
