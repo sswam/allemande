@@ -176,7 +176,8 @@ These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: 
 - **Xrea**: Fast strong image generation using Krea 2 Turbo (incl. NSFW)
 - **Xrie**: Identity-preserving image editing using Krea 2 Identity Edit (incl. NSFW Lora)
 - **Xlein**: Fast image generation and editing using FLUX.2 Klein 9B (incl. NSFW Lora)
-- **Anima**: Anime and non-photorealistic art, the strongest model for NSFW
+- **Anima**: Anime and non-photorealistic art, a very strong model for NSFW
+- **Kroma**: Anime and realistic image generation using Kroma v0.3.1 OPD, a very strong model for NSFW
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -248,6 +249,8 @@ Input and output costs are measured in US dollars per million tokens.
 | Tauron           | Eros Ultima Hybrid   | Yoni   | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                                    |
 | klaabu           | Illustrious Realism  | Irus   | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni                                                                 |
 | Alibaba Cloud    | Qwen Image 2.1       | Qwin21 | a unified text-to-image generation and image editing model, with little if any censorship                                |
+| Lodestones       | Kroma v0.3.1 OPD     | Kroma  | a finetune of Krea 2 with booru training, for anime and photorealistic art, NSFW tendencies                              |
+| Lodestones       | Kroma v0.3.1 OPD IE  | Krome  | Kroma with Krea 2 Identity Edit                                                                                          |
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the "nsfw" LoRA, or try the Lusy model.
 

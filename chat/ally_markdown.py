@@ -209,7 +209,8 @@ def find_and_fix_inline_math(part: str) -> tuple[str, bool]:
         elif groups[6]:
             d1, math, d2 = r"\[", groups[7], r"\]"
         elif groups[8]:
-            d1, math, d2 = r"\(", groups[9], r"\)"
+            break   # This interferes with syntax in image prompts!
+            # d1, math, d2 = r"\(", groups[9], r"\)"
         elif groups[10]:
             d1, math, d2 = "$``", groups[11], "``$"
         elif groups[12]:

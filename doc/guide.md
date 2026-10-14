@@ -638,11 +638,15 @@ digraph ArtModels {
     "Krie" [label=<<b>Krie</b><br/><font point-size="10">Krea 2 Identity Edit</font>>]
     "F2K" [label=<<b>F2K</b><br/><font point-size="10">Flux 2 Klein</font>>]
     "Anima" [label=<<b>Anima</b><br/><font point-size="10">Anima</font>>]
+    "Kroma" [label=<<b>Kroma</b><br/><font point-size="10">Kroma v0.3.1 OPD</font>>]
+    "Krome" [label=<<b>Krome</b><br/><font point-size="10">Kroma v0.3.1 OPD + Identity Edit</font>>]
 
     "ArtModels" -> "Krea2"
     "ArtModels" -> "Krie"
     "ArtModels" -> "F2K"
     "ArtModels" -> "Anima"
+    "ArtModels" -> "Kroma"
+    "ArtModels" -> "Krome"
 }
 ```
 
@@ -771,6 +775,7 @@ The following art models can give great SFW results, but may draw NSFW images if
 - **Anima**: Anime and non-photorealistic image generation using Anima Turbo
 - **Coni**: Realistic image generation using CyberRealistic Pony
 - **Poni**: Anime-style image generation using AutismMix Confetti
+- **Kroma**: Anime and realistic image generation using Kroma v0.3.1 OPD
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -1020,6 +1025,8 @@ Input and output costs are measured in US dollars per million tokens.
 | FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K    | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
 | CircleStone Labs | Anima Turbo          | Anima  | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
 | Alibaba Cloud    | Qwen Image 2.1       | Qwin21 | a unified text-to-image generation and image editing model, with little if any censorship                                |
+| Lodestones       | Kroma v0.3.1 OPD     | Kroma  | a finetune of Krea 2 with booru training, for anime and photorealistic art, NSFW tendencies                              |
+| Lodestones       | Kroma v0.3.1 OPD IE  | Krome  | Kroma with Krea 2 Identity Edit                                                                                          |
 
 * Note that most models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity. Anima should be prompted with "safe".
 

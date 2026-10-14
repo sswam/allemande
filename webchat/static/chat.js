@@ -3126,7 +3126,7 @@ function edit_agent_set_ref_image(name) {
   $id("ea_ref_image").value = name;
   let visual = $id("ea_visual_person").value;
   visual = visual.replace(/\s*REF=".*?"/, "");
-  const ref_image_art_models = ["Krie", "Xrie", "Klein", "Xlein", "Qwin"];
+  const ref_image_art_models = ["Krie", "Xrie", "Klein", "Xlein", "Qwin", "Krome"];
   if (path) {
     visual += ` REF="${path}"`;
     // also set ea_art_model
