@@ -1,8 +1,0 @@
-# Kroma v0.3.1 OPD: anime and realistic image generation, with editing and reference images
-base: Kroma
-image_prompt_template: "%s <lora:krea2_identity_edit_v1_2:1>"
-config:
-  denoise: 1.0
-  resize: black
-allow_ref_image: true
-tags: chroma, edit, krea, booru, long
