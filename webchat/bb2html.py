@@ -126,6 +126,8 @@ async def process_change(line, opts, tasks, out):
         old_size = None
         new_size = os.path.getsize(bb_file)
 
+    bb_file = os.path.realpath(bb_file)
+
     logger.debug("bb2html: detected change: %r %r %r %r", bb_file, change_type, old_size, new_size)
 
     if not bb_file.endswith(opts.exts):
@@ -193,7 +195,8 @@ def get_opts():
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
     if opts.rebuild or opts.stats:
-        opts.follow = opts.rebuild = False
+        opts.follow = False
+        opts.rebuild = True
     return opts
 
 
