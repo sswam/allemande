@@ -119,11 +119,13 @@ async def process_request(portals: Path, port: Path, req: str, model: OmniVoice,
         logger.addHandler(log_handler)
 
         config = yaml.safe_load(load(portals, d, "config.yaml")) or {}
-        if stop_forge:
-            os.system("forge-kill -s=STOP")
-        gen(config, d, model)
-        if stop_forge:
-            os.system("forge-kill -s=CONT")
+        try:
+            if stop_forge:
+                os.system("forge-kill -s=STOP")
+            gen(config, d, model)
+        finally:
+            if stop_forge:
+                os.system("forge-kill -s=CONT")
         os.rename(d, port / "done" / req)
         logger.info("%s:%s - done", port, req)
     except Exception as e:  # pylint: disable=broad-except
