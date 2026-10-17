@@ -355,7 +355,7 @@ async def zip(request):
     try:
         tmp.close()
 
-        ZIP_DONT = {"png", "jpg", "jpeg", "gif", "mp4", "mp3", "zip", "7z", "rar", "webp", "webm", "mov"}
+        ZIP_DONT = {"png", "jpg", "jpeg", "gif", "mp4", "mp3", "zip", "7z", "rar", "webp", "avif", "webm", "mov"}
 
         # Create the zip file
         with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zf:

@@ -2559,7 +2559,7 @@ const EDITABLE_EXTENSIONS = [
 
 const DISALLOWED_EXTENSIONS = [
   // images
-  "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "tiff", "tif", "psd", "xcf", "eps", "ai", "indd", "eps", "svg", "svgz", "wmf", "emf",
+  "jpg", "jpeg", "png", "gif", "bmp", "webp", "avif", "svg", "ico", "tiff", "tif", "psd", "xcf", "eps", "ai", "indd", "eps", "svg", "svgz", "wmf", "emf",
   // audio
   "mp3", "wav", "ogg", "flac",
   // video

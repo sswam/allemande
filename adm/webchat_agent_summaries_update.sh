@@ -27,14 +27,14 @@ webchat-agent-summaries-update() {
 		fi
 
 		prev=""
-		model="gema"
+		model="gem"
 		if [ -s "$summary_file" ]; then
 			prev="
 Compare the agent file carefully to the previous summary below, and update the summary only if needed (else copy exactly), maintaining the same format:
 
 $(< "$summary_file")
 "
-			model="gema"
+			model="gem"
 		fi
 
 		printf "%s: " "$name"

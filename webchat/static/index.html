@@ -222,16 +222,17 @@
 				<option value=" " label="any art model">
 				<option value="Krea" label="Krea 2: powerful modern model">
 				<option value="Jily" label="Juggernaut XL: realistic">
-				<option value="Coni" label="CyberRealistic Pony: realistic, good for NSFW">
-				<option value="Anima" label="Anima Turbo: fast, artistic not realistic, good for NSFW">
-				<option value="Qwin" label="Qwen 2.1 Image: powerful modern model, editing">
-				<option value="Kroma" label="Kroma v0.3.1 OPD: artistic and realistic, good for NSFW">
+				<option value="Moss" label="MOSS Image: artistic, realistic, uncensored">
+				<option value="Coni" label="CyberRealistic Pony: realistic, good for NSFW" class="nsfw">
+				<option value="Anima" label="Anima: fast, artistic not realistic, good for NSFW" class="nsfw">
+				<option value="Kroma" label="Kroma v0.3.1: artistic and realistic, good for NSFW" class="nsfw">
 				<option value="Klein" label="Flux 2 Klein: modern model, SFW, editing">
+				<option value="Qwin" label="Qwen 2.1 Image: powerful modern model, editing">
 				<option value="Krie" label="Krea 2 Identity Edit: use for reference image, editing">
 				<option value="Xlein" label="Flux 2 Klein + NSFW: modern model, limited NSFW, editing" class="nsfw">
 				<option value="Xrea" label="Krea 2 + NSFW: powerful modern model, limited NSFW" class="nsfw">
 				<option value="Xrie" label="Krea 2 IE + NSFW: use for reference image, editing" class="nsfw">
-				<option value="Krome" label="Kroma v0.3.1 OPD with Identity Edit: use for reference image, editing" class="hidden">
+				<option value="Krome" label="Kroma v0.3.1 with Identity Edit: use for reference image, editing" class="nsfw hidden">
 				<option value="Lusy" label="Lustify V6 OLT: NSFW model" class="nsfw">
 				<option value="Bigi" label="Big Love XL: NSFW model" class="nsfw">
 				<option value="Boni" label="Babes: NSFW model" class="nsfw">
@@ -240,7 +241,7 @@
 				<option value="Coci" label="CocksXL: Trans-female and male NSFW model" class="nsfw">
 			</datalist>
 			<input id="ea_ref_image" name="ea_ref_image" title="reference image" placeholder="ref. image" class="grow" type="search"/>
-			<input id="ea_ref_image_file" name="ea_ref_image_file" type="file" accept="image/jpeg, image/png, image/webp" class="inputfile hide" tabindex="-1"/>
+			<input id="ea_ref_image_file" name="ea_ref_image_file" type="file" accept="image/jpeg, image/png, image/webp, image/avif" class="inputfile hide" tabindex="-1"/>
 			<button id="ea_ref_image_upload" title="upload reference image"><i class="bi bi-upload i20"></i></button>
 		</div>
 	</div>

@@ -640,6 +640,7 @@ digraph ArtModels {
     "Anima" [label=<<b>Anima</b><br/><font point-size="10">Anima</font>>]
     "Kroma" [label=<<b>Kroma</b><br/><font point-size="10">Kroma v0.3.1 OPD</font>>]
     "Krome" [label=<<b>Krome</b><br/><font point-size="10">Kroma v0.3.1 OPD + Identity Edit</font>>]
+    "Moss" [label=<<b>Moss</b><br/><font point-size="10">MOSS Image SFT</font>>]
 
     "ArtModels" -> "Krea2"
     "ArtModels" -> "Krie"
@@ -647,6 +648,7 @@ digraph ArtModels {
     "ArtModels" -> "Anima"
     "ArtModels" -> "Kroma"
     "ArtModels" -> "Krome"
+    "ArtModels" -> "Moss"
 }
 ```
 
@@ -776,6 +778,7 @@ The following art models can give great SFW results, but may draw NSFW images if
 - **Coni**: Realistic image generation using CyberRealistic Pony
 - **Poni**: Anime-style image generation using AutismMix Confetti
 - **Kroma**: Anime and realistic image generation using Kroma v0.3.1 OPD
+- **Moss**: Anime and realistic image generation using MOSS Image SFT
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -1027,6 +1030,7 @@ Input and output costs are measured in US dollars per million tokens.
 | Alibaba Cloud    | Qwen Image 2.1       | Qwin21 | a unified text-to-image generation and image editing model, with little if any censorship                                |
 | Lodestones       | Kroma v0.3.1 OPD     | Kroma  | a finetune of Krea 2 with booru training, for anime and photorealistic art, NSFW tendencies                              |
 | Lodestones       | Kroma v0.3.1 OPD IE  | Krome  | Kroma with Krea 2 Identity Edit                                                                                          |
+| OpenMOSS         | MOSS Image SFT Turbo | Moss   | The MOSS Image model, fine tuned with selected images, and using a Turbo LoRA for speed                                  |
 
 * Note that most models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity. Anima should be prompted with "safe".
 
