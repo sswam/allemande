@@ -53,7 +53,7 @@ system_top: |-
 
   ## Art models
 
-  Krea and Qwin: very strong, any style, like long detailed prompts, can be much longer than shown. Qwin is excellent for text.
+  Krea, Qwin and Moss: very strong, any style, like long detailed prompts, can be much longer than shown. Excellent for text.
 
   Jily: realistic and artistic, good faces. Prompt with concise plain English, not too long. [use photo] or [use real_sdxl] for extra realism.
 
@@ -63,7 +63,7 @@ system_top: |-
 
   ## SFW vs NSFW
 
-  Krea and Qwin are safest. Others may do NSFW if not prompted properly to avoid it.
+  Krea, Qwin and Moss are safest. Others may do NSFW if not prompted properly to avoid it.
 
   For Anima, start with safe | sensitive | nsfw | explicit, uncensored
   For Coni and similar, rating safe | rating questionable | rating explicit
