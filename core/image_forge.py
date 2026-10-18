@@ -11,7 +11,7 @@ import math
 import fcntl
 import random
 from dataclasses import dataclass
-from typing import Any
+from typing import Callable, TypeVar, Any
 import time
 import bisect
 
@@ -36,6 +36,7 @@ portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME pro
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
 MAX_PIXELS = 1280 * 1280
+# MAX_PIXELS = 2048 * 2048 * 1.2  # allow Qwen 2.1 Image large size
 # MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 MAX_HIRES_PIXELS = (1024 * 2.8125) ** 2
 
@@ -166,6 +167,8 @@ def limit_dimensions_and_hq(config: dict) -> dict:
     width = config.get("width", 768)
     height = config.get("height", 768)
 
+    logger.info("limit_dimensions_and_hq, initial width, height %s, %s", width, height)
+
     # don't allow zero or negative dimensions
     width = max(width, 1)
     height = max(height, 1)
@@ -198,7 +201,7 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         hires = round(hires - 0.005, 2)
 
     # update config and log
-    if width != config.get("width", 1024) or height != config.get("height", 1024):
+    if width != config.get("width") or height != config.get("height"):
         logger.info("limiting dimensions to %dx%d", width, height)
         config["width"] = width
         config["height"] = height
@@ -215,8 +218,10 @@ def limit_dimensions_and_hq(config: dict) -> dict:
     # scale up for models that need a bigger canvas (Qwen 2.1 Image)
     res_scale = config.get("res_scale")
     if res_scale:
-        config["width"] *= res_scale
-        config["height"] *= res_scale
+        config["width"] = (config["width"] + 32) // 64 * 64
+        config["height"] = (config["height"] + 32) // 64 * 64
+        logger.info("res_scale %s", res_scale)
+        logger.info("  width, height %s, %s", config["width"], config["height"])
 
     return config
 
@@ -443,12 +448,20 @@ async def generate_image(config, input_images, output_filename, seed, prompt, ne
     )
 
 
+T = TypeVar('T')
+
+async def run_in_thread(func: Callable[..., T], *args, **kwargs) -> T:
+    """Generic wrapper to run a blocking function in a thread pool."""
+    return await asyncio.to_thread(func, *args, **kwargs)
+
+
 async def complete_batch(job: ImageJob):
     portal = job.portal
     fmt = job.config.get("format", "jpg")
     req = job.d.name
+
     if fmt == "jpg":
-        metadata = convert_images_to_jpeg(portal, req, job.d)
+        metadata = await run_in_thread(convert_images_to_jpeg, portal, req, job.d)
     else:
         metadata = extract_metadata(portal, req, job.d)
 
@@ -506,8 +519,9 @@ def estimate_job_weight(job: ImageJob) -> float:
         job_weight *= 1.5
 
     # multiply by 0.5 if it's a fast model
-    if config.get("preset") == "anima" and steps <= 12:
-        job_weight *= 0.5
+    # jump the queue if it's a fast model
+    if config.get("preset") == "anima" and steps <= 12 and not config.get("refiner"):
+        job_weight = 0
 
     # multiply by 2 if using Krea 2 Identity Edit!
     if "<lora:krea2_identity_edit" in job.prompt:
@@ -657,6 +671,14 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
     sets = macros.get("sets", {})
     need_update_macros = False
     regional_kwargs = {}
+
+    # hack: because limit_dimensions_and_hq will scale it up again later (for Qwen 2.1 Image, needs a bigger canvas)
+    res_scale = config.get("res_scale")
+    if res_scale:
+        for setting in ["width", "height"]:
+            if setting not in sets:
+                continue
+            sets[setting] /= res_scale
 
     # Process shortcuts
     for macro_key in macros:
