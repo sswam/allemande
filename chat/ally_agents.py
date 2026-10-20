@@ -448,13 +448,16 @@ class Agent:
                 "TIMESTAMP": timestamp,
                 "ROOM": room or '[unknown]',
                 "PRIVATE_PUBLIC": private_public,
-                "AGENTS_FOLDER": agents_folder,
                 "PERIOD": period_desc or "",
                 "PREGNANT": pregnant_desc or "",
                 "PERIOD_VISUAL": period_visual,
                 "PREGNANT_VISUAL": pregnant_visual,
                 "ART_MODEL_PROMPT": art_model_prompt,
             })
+
+            value = replace_variables(value, {
+                "AGENTS_FOLDER": agents_folder,
+            }, preserve_code_blocks=False)
 
         if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", [], with_over=with_over):
             # seed = self.get("unp_seed")
