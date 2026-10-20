@@ -238,6 +238,7 @@ Input and output costs are measured in US dollars per million tokens.
 | Cyberdelia       | CyberRealistic Pony  | Coni   | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic Pony model              |
 | Krea AI          | Krea 2 Turbo         | Krea2  | The fastest medium quality Krea 2 model, a strong modern model                                                           |
 | conradlocke      | Krea 2 Identity Edit | Krie   | Instruction-based, identity-preserving image editing for Krea 2                                                          |
+| conradlocke      | Krea 2 General Edit  | Krge   | Instruction-based image editing for Krea 2                                                                               |
 | FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K    | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
 | CircleStone Labs | Anima Turbo          | Anima  | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
 | coyotte          | Lustify V6 OLT       | Lusy   | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                              |
@@ -267,8 +268,9 @@ There are a few variant art model agents with extra features:
 - Krea - Krea2, but translates Pony-style prompts to work better
 - Klein - F2K, but translates Pony-style prompts to work better
 - Qwin - Qwin21, but translates Pony-style prompts to work better
-- Xrea - Krea, but includes a LoRA for NSFW
-- Xlein - Klein, but includes a LoRA for NSFW
-- Xrie - Krie, but includes a LoRA for NSFW
+- Xrea - Krea, with a NSFW LoRA
+- Xlein - Klein, with a NSFW LoRA
+- Xrie - Krie, with a NSFW LoRA
+- Xrge - Krge, with a NSFW LoRA
 - Nude - Xlein, prompted to nudify an image (best for realism)
 - Anude - Anima, prompted to nudify an image (best for art)

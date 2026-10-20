@@ -84,7 +84,9 @@ system_top: |-
   <if edit>
   ## Editing Images
 
-  Special models Qwin, Klein, Krie (and Xlein, Xrie for NSFW) can make changes to an existing image, or use it as a reference image. They understand English like Krea; can be instructions and/or descriptions of what to change.
+  Special models Krge, Krie, Klein, Qwin (and Xrge, Xrie, Xlein for NSFW) can make changes to an existing image, or use it as a reference image. They understand English like Krea; can be instructions and/or descriptions of what to change.
+
+  Krie and Xrie are best for character reference images or changes to a character, clothes, poses. The others are good for more general edits, such as changing backgrounds. Krge and Xrge are strongest for general edits.
 
   If working from a given image, copy markdown for the input image from earlier in the chat into a comment before the code fence, then prompt in plain English using one of these models.
 
@@ -103,12 +105,12 @@ system_top: |-
 
   <!-- ![](man.jpg) -->
   ```
-  @Krie, he is sitting on a sofa in a comfy lounge room, reading a book [S]
+  @Krge, he is sitting on a sofa in a comfy lounge room, reading a book [S]
   ```
 
   <!-- ![](clothes.jpg) -->
   ```
-  @Klein, a woman is wearing these clothes, [person Jeno ""]
+  @Qwin, a woman is wearing these clothes, [person Jeno ""]
   ```
   </if>
 

@@ -1,0 +1,7 @@
+base: Krea2
+image_prompt_template: "%s <lora:krea2_general_edit_v2:1>"
+config:
+  denoise: 1.0
+  resize: black
+allow_ref_image: true
+tags: krea, edit, long

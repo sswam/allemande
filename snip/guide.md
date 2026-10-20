@@ -152,3 +152,5 @@ You can set a custom mission file name to use in room options. Omit the .m suffi
 
 | <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
 | <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
+
+| Lodestones       | Kroma v0.3.1 OPD IE  | Krome  | Kroma with Krea 2 Identity Edit                                                                                          |

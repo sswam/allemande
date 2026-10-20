@@ -636,6 +636,7 @@ digraph ArtModels {
     "ArtModels" [label=<<b>Art Models</b>>]
     "Krea2" [label=<<b>Krea2</b><br/><font point-size="10">Krea 2</font>>]
     "Krie" [label=<<b>Krie</b><br/><font point-size="10">Krea 2 Identity Edit</font>>]
+    "Krge" [label=<<b>Krge</b><br/><font point-size="10">Krea 2 General Edit</font>>]
     "F2K" [label=<<b>F2K</b><br/><font point-size="10">Flux 2 Klein</font>>]
     "Anima" [label=<<b>Anima</b><br/><font point-size="10">Anima</font>>]
     "Kroma" [label=<<b>Kroma</b><br/><font point-size="10">Kroma v0.3.1 OPD</font>>]
@@ -644,6 +645,7 @@ digraph ArtModels {
 
     "ArtModels" -> "Krea2"
     "ArtModels" -> "Krie"
+    "ArtModels" -> "Krge"
     "ArtModels" -> "F2K"
     "ArtModels" -> "Anima"
     "ArtModels" -> "Kroma"
@@ -770,6 +772,7 @@ Using the AI art models directly can be a bit technical. For best results, new u
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 - **Krea**: Fast strong image generation using Krea 2 Turbo
 - **Krie**: Identity-preserving image editing using Krea 2 Identity Edit
+- **Krge**: Image editing using Krea 2 General Edit
 - **Klein**: Fast image generation and editing using FLUX.2 Klein 9B
 
 The following art models can give great SFW results, but may draw NSFW images if you're not careful:
@@ -1025,11 +1028,11 @@ Input and output costs are measured in US dollars per million tokens.
 | Cyberdelia       | CyberRealistic Pony  | Coni   | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies          |
 | Krea AI          | Krea 2 Turbo         | Krea2  | The fastest medium quality Krea 2 model, a strong modern model                                                           |
 | conradlocke      | Krea 2 Identity Edit | Krie   | Instruction-based, identity-preserving image editing for Krea 2                                                          |
+| conradlocke      | Krea 2 General Edit  | Krge   | Instruction-based image editing for Krea 2                                                                               |
 | FLUX.2 Klein 9B  | FLUX.2 Klein 9B      | F2K    | a fast, compact AI image generation and editing model, with advanced compositional capabilities                          |
 | CircleStone Labs | Anima Turbo          | Anima  | Anima is a lightweight 2-billion-parameter text-to-image AI model, for anime and non-photorealistic art, NSFW tendencies |
 | Alibaba Cloud    | Qwen Image 2.1       | Qwin21 | a unified text-to-image generation and image editing model, with little if any censorship                                |
 | Lodestones       | Kroma v0.3.1 OPD     | Kroma  | a finetune of Krea 2 with booru training, for anime and photorealistic art, NSFW tendencies                              |
-| Lodestones       | Kroma v0.3.1 OPD IE  | Krome  | Kroma with Krea 2 Identity Edit                                                                                          |
 | OpenMOSS         | MOSS Image SFT Turbo | Moss   | The MOSS Image model, fine tuned with selected images, and using a Turbo LoRA for speed                                  |
 
 * Note that most models can produce nudity, and the Poni and Coni models should be prompted with "rating safe" to avoid nudity. Anima should be prompted with "safe".
