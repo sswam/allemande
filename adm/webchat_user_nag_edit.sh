@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$ALLEMANDE_USERS"
 for user; do
-	vi -O "$ALLEMANDE_USERS/$user/nag.html" "$ALLEMANDE_USERS/$user/nag.html.old" "$ALLEMANDE_USERS/$user/info.rec" ~/nag.html
+	vi -O "$user/nag.html" "$user/nag.html.old" "$user/info.rec" ~/nag.html
 done
