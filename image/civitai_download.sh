@@ -8,7 +8,17 @@ for URL; do
 	if [[ $URL != "https://"* ]]; then
 		URL="https://civitai.com$URL"
 	fi
-	file=$(curl -s -w "%{filename_effective}\n" -O "$(curl -s -H "Authorization: Bearer $CIVITAI_API_KEY" "$URL")")
+	file=$(
+		retry=10
+		until curl -s -C - --fail -w "%{filename_effective}\n" -O "$(curl -s -H "Authorization: Bearer $CIVITAI_API_KEY" "$URL")"; do
+			echo >&2 "Connection dropped. Retrying and resuming..."
+			sleep 3
+			retry=$((retry-1))
+			if [ "$retry" -le 0 ]; then
+				break
+			fi
+		done
+	)
 
 	# echo "$file"
 
