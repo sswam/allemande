@@ -35,8 +35,8 @@ portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME pro
 
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
-MAX_PIXELS = 1280 * 1280
-# MAX_PIXELS = 2048 * 2048 * 1.2  # allow Qwen 2.1 Image large size
+# MAX_PIXELS = 1280 * 1280
+MAX_PIXELS = 1024 * 1024 * 1.2  # allow larger image sizes for modern models
 # MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 MAX_HIRES_PIXELS = (1024 * 2.8125) ** 2
 
@@ -218,8 +218,8 @@ def limit_dimensions_and_hq(config: dict) -> dict:
     # scale up for models that need a bigger canvas (Qwen 2.1 Image)
     res_scale = config.get("res_scale")
     if res_scale:
-        config["width"] = (config["width"] + 32) // 64 * 64
-        config["height"] = (config["height"] + 32) // 64 * 64
+        config["width"] = (config["width"]*res_scale + 32) // 64 * 64
+        config["height"] = (config["height"]*res_scale + 32) // 64 * 64
         logger.info("res_scale %s", res_scale)
         logger.info("  width, height %s, %s", config["width"], config["height"])
 
@@ -532,6 +532,10 @@ def estimate_job_weight(job: ImageJob) -> float:
     if config.get("refiner"):
         job_weight *= 2
 
+    # multiply by 2 if using an input image!
+    if job.input_images:
+        job_weight *= 2
+
     log("Estimated job weight: %.2f", job_weight)
 
     return job_weight
@@ -700,7 +704,6 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
         need_update_macros = True
 
     # Process settings
-    res_scale = config.get("res_scale")
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint", "denoising_strength"]:
         if setting not in sets:
             continue
@@ -712,8 +715,6 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
             config[setting] = value
         else:
             config[setting] = float(value)
-        if res_scale and setting in ["width", "height"]:
-            config[setting] /= res_scale   # hack: because limit_dimensions_and_hq will scale it up again later
 
     # Process regional prompter
     rp = macros.get("rp", {})
