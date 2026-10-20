@@ -2179,13 +2179,26 @@ function content_paste(event) {
   for (const item of items) {
     if (item.kind === 'file') {
       const file = item.getAsFile();
-      if (file)
-        files.push(file);
+      if (file) {
+        // Extract extension from mime type or original name
+        const ext = file.name.includes('.')
+          ? file.name.split('.').pop()
+          : file.type.split('/').pop();
+
+        const newName = `${file.name.replace(/\.[^/.]+$/, '')}_${Math.floor(Date.now() / 1000)}.${ext}`;
+
+        const renamedFile = new File([file], newName, {
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+
+        files.push(renamedFile);
+      }
     }
   }
   if (files.length > 0) {
     event.preventDefault();
-    upload_files(files, false)
+    upload_files(files, false);
   }
 }
 
