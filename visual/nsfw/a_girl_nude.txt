@@ -1,2 +1,0 @@
-[use choose_a_girl]
-[use character_nude]
