@@ -1752,3 +1752,12 @@ body:not(.reacts) #msg_comment,
 body:not(.reacts) .message_reacts {
 	display: none;
 }
+
+ref > div.image, ref img {
+	max-height: 4rem !important;
+	max-width: 4rem !important;
+}
+ref > div.image, ref img {
+	max-height: 4rem !important;
+	max-width: 4rem !important;
+}

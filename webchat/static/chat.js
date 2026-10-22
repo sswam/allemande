@@ -2163,9 +2163,12 @@ function drop_from_iframe(text, x, y) {
   // also copy to clipboard
   navigator.clipboard.writeText(text);
 
-  // ensure 2 newlines gap 
+  // ensure 2 newlines gap, or 1 space gap after element > or )
   const t = $content.value;
-  if (t) {
+  if (t && t.match(/[>)] *$/)) {
+    const count = t.match(/ *$/)[0].length;
+    text = " ".repeat(Math.max(0, 1 - count)) + text;
+  } else if (t) {
     const count = t.match(/\n*$/)[0].length;
     text = "\n".repeat(Math.max(0, 2 - count)) + text;
   }

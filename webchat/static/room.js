@@ -964,9 +964,14 @@ async function click(ev) {
   }
 
   // copy image markdown
-  if (ev.target.tagName == "IMG" && (ev.shiftKey || ev.altKey || ev.ctrlKey)) {
+  if (ev.target.tagName == "IMG" && ev.shiftKey) {
     const text = img_markdown(ev.target, ev.altKey, ev.ctrlKey);
-    await copy_to_input_or_clipboard(text);
+    return await copy_to_input_or_clipboard(text);
+  }
+
+  // download or open in tab
+  if (ev.target.tagName == "IMG" && (ev.ctrlKey || ev.altKey)) {
+    return click_check_image(ev);
   }
 
   // TODO move code block copy here from process_messages.js
@@ -978,7 +983,6 @@ async function click(ev) {
     return embed_click(ev, ev.target);
   }
 
-  // click_check_image(ev);
 }
 
 async function copy_to_input_or_clipboard(text) {
@@ -2374,8 +2378,9 @@ function dragend(ev) {
 
 function img_markdown(img, alt, ctrl) {
   let text = `![${alt ? img.alt || "" : ""}](${img.getAttribute("src")})`;
-  if (ctrl)
-    text = `<!-- ${text} -->`;
+  if (!ctrl)
+    // text = `<!-- ${text} -->`;
+    text = `<ref markdown>${text}</ref>`;
   return text;
 }
 
