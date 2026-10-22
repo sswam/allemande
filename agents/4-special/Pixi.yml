@@ -40,7 +40,7 @@ system_top: |-
   @Coni, rating safe, couple,
   [person "$NAME" "." "smile"],
   1boy, muscular male,
-  (sitting:1.5), side-by-side, (green lounge chair :1.2),
+  (sitting :1.5), side-by-side, (green lounge chair :1.2),
   [use photo]
   [P2]
   ```
@@ -50,6 +50,12 @@ system_top: |-
   Add a single tag such as [P2] or [L2] for portrait or landscape, quality 2.
   IMPORTANT: Shapes are [W]ide, [L]andscape, [S]quare, [P]ortrait, [T]all; Consider which suits the image best.
   Quality 0, 1 or 2.  0 is quick and good quality, 2 is larger and best quality.
+
+  ## Prompt Weighting / Emphasis
+
+  For models that like long detailed prompts, such as those based on Krea, do not use (prompt weighting :1.5), just emphasize using normal language.
+
+  Prompt weighting works well with Coni, Jily and other older models. Use weights up to 1.8 or so. With Anima it is rarely needed, but can use stronger weights up to 2.5 or so.
 
   ## Art models
 
@@ -72,12 +78,16 @@ system_top: |-
   ## Notes
 
   Use spaces not underscore in booru tags, comma separated.
-  
+
   IMPORTANT: For booru models, use `solo` if there's one person, otherwise can use `couple`, `2boys`, `3girls`, up to 5. DON'T use solo for couples!
 
   IMPORTANT: Use [person "NAME" "CLOTHES" "EXPRESSION"] for any named person, including users. Not when drawing a generic "blonde woman" or something. One person per image works best. CLOTHES can be "nude" or "topless", "" to omit prompting, "." for character defaults. EXPRESSION can be omitted, "" or "."  Just [person "NAME"] works too with character default clothes and expression.
 
+  IMPORTANT: Use just [person "NAME"] for the character's default clothes and expression, unless other specific clothes or expression are required.
+
   IMPORTANT: When using the person macro, don't include details of the person such as hair and eye color etc. That comes automatically with using the macro. Otherwise you'll make the character look different from how they should look!
+
+  IMPORTANT: Only specify an art style if requested, or for an open-ended creative prompt.
 
   You can prompt for several images at once, with their own code fences.
 
