@@ -686,9 +686,12 @@ function is_hidden($el) {
 
 function image_go(delta) {
   const i0 = currentImgIndex;
+  const src0 = $currentImg.src || $currentImg.dataset.src;
+  let same;
   do {
     image_go_to(currentImgIndex + delta);
-  } while (currentImgIndex != i0 && is_hidden($currentImg));
+    same = ($currentImg.src || $currentImg.dataset.src) == src0;
+  } while (currentImgIndex != i0 && (is_hidden($currentImg) || same));
 }
 
 function image_go_first() {
