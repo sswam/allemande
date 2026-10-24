@@ -88,21 +88,21 @@ def notify_file_path(room_path):
     return str(path.parent / ("." + path.name + ".notify"))
 
 
-def notify_get(user_id: str, room: str) -> tuple[str | None, str | None]:
+def notify_get(user_id: str, room: str) -> tuple[str, str]:
     """
     Check .{room}.notify, .notify and parent .notify files
     Returns:
-    (specific, inherited): The setting for this specific room (may be None),
-        and the inherited setting from a parent (may be None)
+    (specific, inherited): The setting for this specific room (may be "none"),
+        and the inherited setting from a parent (may be "none")
     """
     room_path = ally_path(room)
-    specific = None
-    inherited = None
+    specific = "none"
+    inherited = "none"
 
     # Check the specific room first
     notify_file = notify_file_path(room_path)
     data = cache.load(notify_file, fmt="yaml") or {}
-    specific = data.get(user_id)
+    specific = data.get(user_id, "none")
 
     # Walk up the parent directories for inherited setting
     while True:
@@ -111,14 +111,14 @@ def notify_get(user_id: str, room: str) -> tuple[str | None, str | None]:
             break
         notify_file = notify_file_path(room_path)
         data = cache.load(notify_file, fmt="yaml") or {}
-        inherited = data.get(user_id)
-        if inherited is not None:
+        inherited = data.get(user_id, "none")
+        if inherited != "none":
             break
 
     return specific, inherited
 
 
-def notify_set(user_id: str, room: str, setting: str|None) -> str:
+def notify_set(user_id: str, room: str, setting: str) -> str:
     """
     Save specific notification setting in .{room}.notify or .notify for a folder.
     Lock around this if any chance of concurrency. Shouldn't be.
@@ -127,25 +127,31 @@ def notify_set(user_id: str, room: str, setting: str|None) -> str:
     notify_file = notify_file_path(room_path)
 
     data = cache.load(notify_file, fmt="yaml") or {}
-    if setting is not None:
+    if setting != "none":
         data[user_id] = setting
     else:
         data.pop(user_id, None)
 
     # Also save in users list of all watches, by room
 
-    user_watches = PATH_USERS_DIR / user_id / "notify.json"
+    user_watches = PATH_USERS_DIR / user_id / "notify.yml"
     l = len(str(PATH_ROOMS)) + 1
     room1 = room_path[l:]
 
     data2 = cache.load(user_watches) or {}
-    if setting is not None:
+    if setting != "none":
         data2[room1] = setting
     else:
         data2.pop(room1, None)
 
-    cache.save(notify_file, data, fmt="yaml")
-    cache.save(user_watches, data2)
+    if data:
+        cache.save(notify_file, data, fmt="yaml")
+    else:
+        cache.remove(notify_file)
+    if data2:
+        cache.save(user_watches, data2)
+    else:
+        cache.remove(user_watches)
 
 
 def ally_notify():

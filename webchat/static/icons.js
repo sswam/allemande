@@ -139,6 +139,7 @@ export const icons = {
 
   view_extra: '<i class="bi bi-plus-lg i20"></i>',
 
+  notify: '<i class="bi bi-bell i20"></i>',
   notify_none: '<i class="bi bi-bell i20"></i>',
   notify_me: '<i class="bi bi-bell i20"></i>',
   notify_all: '<i class="bi bi-bell-fill i20"></i>',

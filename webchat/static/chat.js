@@ -318,6 +318,7 @@ let early = false;
 let controls = "input_main";
 let top_controls = "top_main";
 let view = "messages";
+let notify_status = [null, null];
 
 let room_ready = false;
 let theme;
@@ -1072,15 +1073,16 @@ export async function set_room(room_new, no_history) {
     return;
   }
 
-  if (type == "room") {
-    try {
-      await get_options();  // can throw if access denied
-    } catch (err) {
-      console.error("get_options failed", err);
-      await setup_all_link_buttons();
-      return;
-    }
+  const get_options_notify_only = type != "room";
+  try {
+    await get_options(get_options_notify_only);  // can throw if access denied
+  } catch (err) {
+    console.error("get_options failed", err);
+    await setup_all_link_buttons();
+    return;
   }
+
+  notify_show_status();
 
   // who();
 
@@ -3946,10 +3948,12 @@ function show_theme_name() {
 
 // options -------------------------------------------------------------------
 
-async function get_options() {
+async function get_options(notify_only) {
   // TODO include this with x/stream response?
+  notify_only = notify_only ? "1" : "0";
   const query = new URLSearchParams({
     room,
+    notify_only,
   });
   const response = await fetch("/x/options?" + query, { cache: "no-cache" });
   if (!response.ok) {
@@ -3958,6 +3962,11 @@ async function get_options() {
   }
   const data = await response.json();
   // console.log("get_options", data);
+
+  notify_status = data["notify_status"];
+
+  if (notify_only)
+    return;
 
   if (data.redirect) {
     set_room(data.redirect, true);
@@ -5322,6 +5331,125 @@ async function download_zip_confirm(ev) {
     window.location.href = a.href;
 }
 
+// notifications -------------------------------------------------------------
+
+const notify_options = ["none", "me", "all", "off"];
+
+function notify_show_status() {
+  // a bit complex as we want to distinguish specific vs inherited setting
+  const [specific, inherited] = notify_status;
+  const effective = specific == "none" ? inherited : specific;
+	const effective_ix = notify_options.indexOf(effective);
+	const specific_ix = notify_options.indexOf(specific);
+	let extra_text = ["", " - when mentioned", " - on any message", " - blocked"][effective_ix];
+  if (specific == "none" && inherited != "none")
+    extra_text += " - inherited";
+	const icon = "notify_" + effective;
+	const text = "notify: " + effective + extra_text;
+	const $notify = $id('notify');
+	$notify.innerHTML = icons[icon];
+	setTitle($notify, text);
+	active_set("notify", effective_ix == 0 ? 0 : specific_ix == 0 ? -1 : 1);
+}
+
+async function notify_clicked(ev) {
+  const sub = await notify_ensure_subscribed();
+  if (!sub) {
+    await error("notify");
+    return;
+  }
+
+  const [specific, inherited] = notify_status;
+	let specific_ix = notify_options.indexOf(specific || "none");
+  const delta = ev && ev.shiftKey ? -1 : 1;
+  specific_ix = (specific_ix + delta + notify_options.length) % notify_options.length;
+  const status = notify_options[specific_ix];
+
+  const response = await fetch('/x/watch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({room, status}),
+  });
+  if (!response.ok) {
+    console.error("Notify watch request failed");
+    await error("notify");
+    return;
+  }
+
+  notify_status[0] = status;
+
+  notify_show_status();
+}
+
+async function notify_ensure_subscribed() {
+	const reg = await navigator.serviceWorker.ready;
+  let sub = reg.pushManager.getSubscription();
+
+  if (sub)
+    return sub;
+
+	const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+		console.error('Permission to display notifications was denied');
+    return null;
+  }
+
+	sub = await reg.pushManager.subscribe({
+		userVisibleOnly: true,
+		applicationServerKey: config.ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY,
+	});
+
+  const response = await fetch('/x/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({subscription: sub}),
+  });
+  if (!response.ok) {
+    console.error("Notify subscribe request failed");
+  }
+
+  return sub;
+}
+
+// not in use yet
+async function notify_unsubscribe() {
+	const reg = await navigator.serviceWorker.ready;
+  let sub = reg.pushManager.getSubscription();
+  await sub.unsubscribe();
+  const response = await fetch('/x/unsubscribe', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({endpoint: sub.endpoint}),
+  });
+  if (!response.ok) {
+    console.error("Notify unsubscribe request failed");
+  }
+}
+
+function notify_check_support() {
+	return 'serviceWorker' in navigator && 'PushManager' in window;
+}
+
+// TODO will need a list of all watched pages somewhere, text file sounds good, to edit
+
+function notify_main() {
+	if (!notify_check_support()) {
+		console.error('This browser does not support push notifications');
+		$id('notify').classList.add('hidden');
+		return;
+	}
+	$on($id('notify'), 'click', notify_clicked);
+}
+
+// TODO check if permission already granted / subscription already exists
+// TODO if already subscribed, we need to just pass the room name
+// TODO enable to unsubscribe from a room
+// TODO enable to cancel subscription entirely
+// TODO possibly a UI to manage subscriptions
+// TODO possibly a UI to manage notification settings
+
+// TODO what happens if I create a subscription, then it gets lost during debugging?
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -5366,7 +5494,7 @@ export async function init() {
   load_theme();
   setup_dev_early();
   setup_view_options();
-  notify_main(icons);
+  notify_main();
   await on_hash_change();
   setup_embed_vs_main_ui();
 

@@ -24,7 +24,7 @@ import geoip2.errors
 
 import chat
 import ally_room
-from ally_room import Room
+from ally_room import Room, Access
 import util
 import settings
 from ally_service import get_user
@@ -234,9 +234,17 @@ async def options_get(request):
     # TODO validation: length, type, no unknown keys
     user = get_user(request)
     # get room from query param
+    notify_only = bool(int(request.query_params["notify_only"]))
     room = Room(name=request.query_params["room"])
     try:
-        options = room.get_options(user)
+        if notify_only:
+            access = ally_room.check_access(user, room.name).value
+            if not access & Access.READ.value:
+                raise PermissionError(f"You are not allowed to get notify status for: {room}")
+            options = {}
+        else:
+            options = room.get_options(user)
+        options["notify_status"] = ally_notify.notify_get(user, room.name)
     except PermissionError as e:
         logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
@@ -421,23 +429,33 @@ async def geoip(request: Request):
         raise HTTPException(status_code=500, detail="GeoIP lookup failed")
 
 
-# ----- new notifications code ----
-
-
 @app.route("/x/subscribe", methods=["POST"])
 async def subscribe(request):
     data = await request.json()
-    user_id = get_user(request)
+    user = get_user(request)
     sub = data["subscription"]
-    ally_notify.subscribe(user_id, sub)
+    ally_notify.subscribe(user, sub)
     return JSONResponse({"status": "success"})
 
 
 @app.route("/x/unsubscribe", methods=["POST"])
 async def unsubscribe(request):
     data = await request.json()
-    user_id = get_user(request)
-    ally_notify.unsubscribe(user_id, data["endpoint"])
+    user = get_user(request)
+    ally_notify.unsubscribe(user, data["endpoint"])
+    return JSONResponse({"status": "success"})
+
+
+@app.route("/x/watch", methods=["POST"])
+async def watch(request):
+    data = await request.json()
+    user = get_user(request)
+    room = data["room"]
+    status = data["status"]
+    access = ally_room.check_access(user, room).value
+    if not access & Access.READ.value:
+        raise PermissionError(f"You are not allowed to watch: {room}")
+    ally_notify.notify_set(user, room, status)
     return JSONResponse({"status": "success"})
 
 
