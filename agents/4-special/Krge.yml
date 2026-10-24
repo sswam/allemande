@@ -1,4 +1,4 @@
-base: Krie2
+base: Krge2
 image_prompt_template: "%s <lora:krea2_general_edit_v2:1> <lora:kunc:1>"
 image_prompt_group_nouns: True
 image_prompt_map:
