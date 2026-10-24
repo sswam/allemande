@@ -1,3 +1,4 @@
 type: anthropic
 model: claude-sonnet-5-5
 thinking: "between_tools"
+# Note: blocks explicit thinking in response
