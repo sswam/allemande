@@ -118,7 +118,7 @@ exceptions_to_retry = [
     "APIError",
     "ServerError",
     r"ClientError.*?429 RESOURCE_EXHAUSTED",
-    r"list index out of range",
+#    r"list index out of range",
     r"connection has been closed",
     "Unexpected Blank Response",
 ]
@@ -600,6 +600,8 @@ async def achat_claude(opts: Options, messages):
         messages = messages[1:]
 
     # logger.info("achat_claude: messages: %s", json.dumps(messages, indent=2))
+
+    options["thinking"] = opts.thinking_level
 
     response = await claude.chat_claude(messages, _async=True, **options)
 

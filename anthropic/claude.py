@@ -51,12 +51,13 @@ def count(text, model=MODEL_DEFAULT) -> int:
 
 def response_completion(response):
     """Extract the completion from a response"""
-    completion = response.content[0].text
-    logger.debug(
-        "Response: %s", json.dumps({"model": response.model, "stop_reason": response.stop_reason, "completion": completion})
+    completion = "\n\n".join(
+        block.text for block in response.content if block.type == "text"
     )
     if completion.startswith(" "):
         completion = completion[1:]
+    if not completion:
+        completion = response.stop_reason
     return completion
 
 
@@ -89,6 +90,7 @@ def chat_claude(
     _async: bool = False,
     system: str | None = None,
     stop_sequences: list[str] | None = None,
+    thinking: str | None = None,
 ):
     """Chat with claude"""
     # TODO clean up this code, if indeed all models are 100K now; test with claude-1 also I guess
@@ -140,6 +142,11 @@ def chat_claude(
     kwargs = {}
     if system is not None:
         kwargs["system"] = system
+    if thinking in ["disabled", "between_tools"]:
+        kwargs["thinking"] = { "type": thinking }
+    elif thinking:
+        kwargs["thinking"] = { "type": "adaptive" }
+        kwargs["output_config"] = { "effort": thinking }
     response = fn(
         messages=messages,
         # 		stop_sequences=[HUMAN_PROMPT],
