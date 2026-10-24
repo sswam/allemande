@@ -1,0 +1,3 @@
+type: anthropic
+model: claude-sonnet-5-5
+thinking: "between_tools"
