@@ -37,15 +37,15 @@ function notify_check_support() {
 	return 'serviceWorker' in navigator && 'PushManager' in window;
 }
 
-function notify_show_status(room) {
-	const status = 0;   // TODO!  off / me / all
-	const status_text = ["off", "me", "all"][status];
-	const extra_text = ["", " - when mentioned", " - on any message"][status];
+function notify_show_status(status) {
+	const status_text = ["none", "me", "all", "off"][status];
+	const extra_text = ["", " - when mentioned", " - on any message", " - blocked"][status];
 	const icon = "notify_" + status_text;
 	const text = "notify: " + status_text + extra_text;
 	const $notify = $id('notify');
 	$notify.innerHTML = icons[icon];
 	setTitle($notify, text);
+	active_set("notify", status != 0);
 }
 
 // TODO will need a list of all watched pages somewhere, text file sounds good, to edit
@@ -58,7 +58,7 @@ function notify_main(_icons) {
 		return;
 	}
 	$on($id('notify'), 'click', notify_clicked);
-	notify_show_status(null);  // FIXME
+	// notify_show_status(null);  // FIXME
 }
 
 // TODO check if permission already granted / subscription already exists

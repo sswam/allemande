@@ -12,7 +12,7 @@ import html
 
 from starlette.exceptions import HTTPException
 
-from settings import ROOM_MAX_DEPTH, ROOM_PATH_MAX_LENGTH
+from settings import ROOM_MAX_DEPTH, ROOM_PATH_MAX_LENGTH, PATH_ROOMS
 
 
 logging.basicConfig(level=logging.INFO)
@@ -173,6 +173,17 @@ def safe_join(base_dir: Path | str, *paths: str | Path) -> Path:
         raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
 
     return full_path
+
+
+def ally_path(path: str) -> str:
+    """ convert a relative path to absolute under PATH_ROOMS """
+    is_dir = path.endswith("/")
+    if path.startswith("/"):
+        path = path[1:]
+    abs_path = str(safe_join(PATH_ROOMS, path))
+    if is_dir:
+        abs_path += "/"
+    return abs_path
 
 
 def sanitize_filename(filename):

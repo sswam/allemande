@@ -3947,6 +3947,7 @@ function show_theme_name() {
 // options -------------------------------------------------------------------
 
 async function get_options() {
+  // TODO include this with x/stream response?
   const query = new URLSearchParams({
     room,
   });
@@ -5365,6 +5366,7 @@ export async function init() {
   load_theme();
   setup_dev_early();
   setup_view_options();
+  notify_main(icons);
   await on_hash_change();
   setup_embed_vs_main_ui();
 
@@ -5555,7 +5557,6 @@ export async function init() {
 
   $on($content, "click", hide_placeholder);
 
-  notify_main(icons);
   record_main();
 
   focus_content_on_pc();

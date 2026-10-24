@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Push Notification Demo</title>
+</head>
+<script src="util.js"></script>
+<script>
+(async () => {
+  config = await $import("config");
+})();
+</script>
+<script src="sw_register.js"></script>
+<script>register_service_worker();</script>
+<body>
+<button id="btn">Enable notifications</button>
+<p id="status"></p>
+
+<script>
+const status = document.getElementById('status');
+const btn = document.getElementById('btn');
+
+async function getSubscription() {
+    const reg = await navigator.serviceWorker.ready;
+    return reg.pushManager.getSubscription();
+}
+
+async function updateButton() {
+    const sub = await getSubscription();
+    const perm = Notification.permission;
+    btn.textContent = sub ? 'Disable notifications' : 'Enable notifications';
+    status.textContent = `Permission: ${perm} | Subscribed: ${!!sub}`;
+}
+
+async function toggleNotifications() {
+    let sub = await getSubscription();
+
+    if (sub) {
+        await sub.unsubscribe();
+        await fetch('/x/unsubscribe', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({endpoint: sub.endpoint}),
+        });
+    } else {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            status.textContent = 'Permission denied';
+            return;
+        }
+        const reg = await navigator.serviceWorker.ready;
+        sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: config.ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY,
+        });
+        await fetch('/x/subscribe', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({subscription: sub}),
+        });
+    }
+    await updateButton();
+}
+
+if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+    status.textContent = 'Push not supported in this browser';
+    btn.disabled = true;
+} else {
+    btn.addEventListener('click', toggleNotifications);
+    updateButton();
+}
+</script>
+</body>
+</html>

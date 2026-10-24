@@ -70,7 +70,7 @@ class FileCache:
         self._last_check_time[path] = current_time
 
         if not os.path.exists(path):
-            logger.error("File not found: %s", path)
+            # logger.error("File not found: %s", path)
             return None
 
         if fmt is None:

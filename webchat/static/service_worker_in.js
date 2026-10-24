@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "1.0.868";
+const VERSION = "1.0.883";
 
 const DEBUG = false;
 
@@ -203,25 +203,45 @@ async function sw_push(event) {
   event.waitUntil(self.registration.showNotification("Allemande AI", options));
 }
 
-// Notification click event - handle user interaction
+// // Notification click event - handle user interaction
+// async function sw_notificationclick(event) {
+//   event.notification.close();
+//   //	const urlToOpen = event.notification.data.url || "/";
+//   const urlToOpen = `/#${event.notification.data.room}`;
+//
+//   const windowClients = await self.clients.matchAll({
+//     type: "window",
+//     includeUncontrolled: true,
+//   });
+//
+//   for (const client of windowClients) {
+//     if (client.url === urlToOpen && "focus" in client) {
+//       await client.focus();
+//       return;
+//     }
+//   }
+//
+//   event.waitUntil(self.clients.openWindow(urlToOpen));
+// }
+
 async function sw_notificationclick(event) {
-  event.notification.close();
-  //	const urlToOpen = event.notification.data.url || "/";
-  const urlToOpen = `/#${event.notification.data.room}`;
+    event.notification.close();
+    const urlToOpen = `/#${event.notification.data.room}`;
 
-  const windowClients = await self.clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  for (const client of windowClients) {
-    if (client.url === urlToOpen && "focus" in client) {
-      await client.focus();
-      return;
-    }
-  }
-
-  event.waitUntil(self.clients.openWindow(urlToOpen));
+    event.waitUntil((async () => {
+        const windowClients = await self.clients.matchAll({
+            type: "window",
+            includeUncontrolled: true,
+        });
+        for (const client of windowClients) {
+            const clientUrl = new URL(client.url);
+            if (clientUrl.pathname + clientUrl.hash === urlToOpen && "focus" in client) {
+                await client.focus();
+                return;
+            }
+        }
+        await self.clients.openWindow(urlToOpen);
+    })());
 }
 
 // Check for updates

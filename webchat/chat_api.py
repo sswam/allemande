@@ -17,7 +17,6 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, FileResponse
 from starlette.exceptions import HTTPException
 from starlette.background import BackgroundTask
-from pywebpush import webpush
 import uvicorn
 from deepmerge import always_merger
 import geoip2.database
@@ -29,9 +28,9 @@ from ally_room import Room
 import util
 import settings
 from ally_service import get_user
+import ally_notify
 
 
-VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
 ALLEMANDE_DOMAIN = os.environ["ALLEMANDE_DOMAIN"]
 GEOIP_DB_PATH = os.environ.get("ALLYCHAT_GEOIP_DB_PATH", "/var/lib/GeoIP/GeoLite2-City.mmdb")
 
@@ -380,56 +379,6 @@ async def zip(request):
     )
 
 
-@app.route("/x/subscribe", methods=["POST"])
-async def subscribe(request):
-    """Subscribe to push notifications."""
-    data = await request.json()
-    user_id = request.user.id
-    logger.info("%s subscribe  %s", user_id, "")
-
-    # Store subscription in user settings file
-    # TODO where?  maybe in among the rooms
-    # It will be in a file used for other private settings too,
-    # and likely YAML format not JSON.
-    user_path = f"/var/allemande/users/{user_id}"
-    os.makedirs(user_path, exist_ok=True)
-
-    with open(f"{user_path}/push_subscription.json", "w", encoding="utf-8") as f:
-        json.dump(data["subscription"], f)
-
-    return JSONResponse({"status": "success"})
-
-
-async def send_push(user_id, message):
-    """Send a push notification to a user."""
-    # TODO fix the path, and extract the subscription from the user settings file
-    logger.info("%s send_push  %s", user_id, "")
-    # Load user's subscription
-    with open(f"/var/allemande/users/{user_id}/push_subscription.json", encoding="utf-8") as f:
-        subscription = json.load(f)
-
-    vapid_claims = {
-        "sub": f"mailto:admin@{ALLEMANDE_DOMAIN}",
-        "exp": int(time.time()) + 12 * 3600,  # 12 hours from now
-    }
-
-    # Send encrypted push notification
-    # Using webpush library for encryption handling
-    webpush(
-        subscription_info=subscription,
-        data=message,
-        vapid_private_key=VAPID_PRIVATE_KEY,
-        vapid_claims=vapid_claims,
-    )
-
-
-# TODO implement the actual notifications when:
-# - a message is posted to a watched room
-# - user is invoked in a message, in any room to which they have access
-#     - note that not every mention invokes a user
-# - avoid sending notifications if the user is active in the room, somehow
-#     - or delay them until we are sure the user didn't see the message
-
 @app.route("/x/geoip", methods=["GET"])
 async def geoip(request: Request):
     """Look up GeoIP info for an IP address."""
@@ -470,6 +419,34 @@ async def geoip(request: Request):
     except Exception as e:  # pylint: disable=broad-except
         logger.error("GeoIP lookup failed: %s", e)
         raise HTTPException(status_code=500, detail="GeoIP lookup failed")
+
+
+# ----- new notifications code ----
+
+
+@app.route("/x/subscribe", methods=["POST"])
+async def subscribe(request):
+    data = await request.json()
+    user_id = get_user(request)
+    sub = data["subscription"]
+    ally_notify.subscribe(user_id, sub)
+    return JSONResponse({"status": "success"})
+
+
+@app.route("/x/unsubscribe", methods=["POST"])
+async def unsubscribe(request):
+    data = await request.json()
+    user_id = get_user(request)
+    ally_notify.unsubscribe(user_id, data["endpoint"])
+    return JSONResponse({"status": "success"})
+
+
+# TODO implement the actual notifications when:
+# - a message is posted to a watched room
+# - user is invoked in a message, in any room to which they have access
+#     - note that not every mention invokes a user
+# - avoid sending notifications if the user is active in the room, somehow
+#     - or delay them until we are sure the user didn't see the message
 
 
 if __name__ == "__main__":
