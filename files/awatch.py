@@ -88,7 +88,7 @@ class Debounce:  # pylint: disable=too-few-public-methods
         """Execute the operation after waiting for the delay"""
         try:
             await asyncio.sleep(self.delay)
-            logger.info("Executing debounced function")
+            # logger.debug("Executing debounced function")
             await self.func(*self.args, **self.kwargs)
         finally:
             self.pending_task = None
@@ -178,6 +178,7 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         """Watch the files and directories"""
 
         if self.opts.initial_state or self.opts.initial_scan:
+            logger.info("-- initial scan --")
             for path in self.paths:
                 async for row in self.handle_change(Change.added, path, initial=True):
                     if self.opts.initial_state:
@@ -185,6 +186,8 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
                         await self.changed_run_process(path)
             if self.opts.initial_state:
                 yield self.flush
+
+        logger.info("-- starting watch --")
 
         watcher = awatch(*self.paths, watch_filter=self.watch_filter, recursive=self.opts.recursive)
 
@@ -247,15 +250,22 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             async for row in self.handle_change_2(change_type, path, initial):
                 yield row
         except (OSError, PermissionError, FileNotFoundError) as e:
-            logger.error("Error handling change: %s", str(e))
+            logger.error("Error handling change: %s", str(e), exc_info=True)
 
     async def handle_change_2(self, change_type, path, initial=False):
         """Handle a change to a file or directory"""
-        logger.debug("change_type: %r, path: %r", change_type, path)
+        # logger.debug("change_type: %r, path: %r", change_type, path)
 
         if re.search(r"[\n\t]", path):
             logger.warning("path contains newline or tab, skipping: %r", path)
             return
+
+        is_trace = False
+        # is_trace = "/rooms/sam/" in str(path)
+        # is_trace = str(path) == "/home/sam/rooms/sam/chat.bb"
+
+        if is_trace:
+            logger.warning("trace path: %s", str(path))
 
         if not self.watch_filter(change_type, path):
             return
@@ -274,6 +284,9 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         size = self.file_sizes.pop(path, None)
         size_new = None
 
+        if is_trace:
+            logger.warning("trace path old size: %s = %s", str(path), size)
+
         if change_type != Change.deleted:
             is_file = p.exists() and not is_dir
             if is_file and self.opts.follow:
@@ -291,6 +304,9 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             row = [path, int(change_type), size, size_new]
             if size_new is not None:
                 self.file_sizes[path] = size_new
+            if is_trace:
+                logger.warning("trace path size_new: %s = %s", str(path), size_new)
+                logger.warning("trace path row: %s", row)
             yield row
 
     async def added_directory(self, path):
@@ -300,14 +316,17 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             row = [path + os.path.sep, int(Change.added), None, None]
             yield row
         p = Path(path)
-        for e in sorted(p.iterdir(), key=lambda x: x.stat().st_ctime):
-            logger.debug("e: %r", e)
+        for e in sorted(
+            (x for x in p.iterdir() if x.exists()),
+            key=lambda x: x.stat().st_ctime
+        ):
+            # logger.debug("e: %r", e)
             async for row in self.handle_change(Change.added, str(e)):
                 yield row
 
     async def deleted_directory(self, path):
         """Handle entries under a directory that was deleted"""
-        logger.debug("deleted_directory path: %r", path)
+        # logger.debug("deleted_directory path: %r", path)
         path_slash = path + os.path.sep
         for e in list(self.file_sizes):
             if e.startswith(path_slash):
@@ -391,7 +410,7 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     async for row in w.run():
         if row == Watcher.flush:
             out.flush()
-            logger.info("flushed")
+            # logger.debug("flushed")
         elif opts.output_format == opts.stderr_format:
             output_str = output(row, opts.output_format, opts)
             print(output_str, file=out, end="")
