@@ -3965,7 +3965,7 @@ async function get_options(notify_only) {
 
   notify_status = data["notify_status"];
 
-  if (notify_only)
+  if (notify_only == "1")
     return;
 
   if (data.redirect) {
