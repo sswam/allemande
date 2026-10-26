@@ -1,5 +1,5 @@
+#!/bin/bash -e
 # possible ways to clean up disk space
-# DON'T just run this, some commands are examples, be careful with it!
 
 # ~/.logs
 cd ~/.logs && truncate -s 0 *
@@ -12,6 +12,8 @@ cd /var/log && sudo find -type f \( -name '*.[0-9]' -o -name '*.gz' \) | xa sudo
 cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log
 cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log crowdsec_api.log
 cd /var/log/apache2 && sudo truncate -s 0 *
+
+exit
 
 # old and new linux kernel packages
 dpkg -l 'linux-image*' | grep '^ii'
