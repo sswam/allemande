@@ -18,6 +18,8 @@
 
 !mission.m.*
 
+ally_chat_cli
+
 .*
 
 !.gitignore
