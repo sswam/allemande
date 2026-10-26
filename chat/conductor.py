@@ -655,6 +655,8 @@ def who_should_respond(
 
     logger.debug("who_should_respond 22")
 
+    # TODO allow to use local aliases for users
+
     # Final filtering to canonical agent names
     agents_to_respond = filter_access(invoked, room, access_check_cache, agents)
 
