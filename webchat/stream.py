@@ -25,14 +25,14 @@ import atail
 import akeepalive
 import ally_room
 from ally_room import Access
-from util import sanitize_pathname, safe_join
+from util import sanitize_pathname, safe_join, ally_path
 import folder
 from ally_service import get_user, add_mtime_to_resource_pathnames
 import settings
+from settings import PATH_USERS, PATH_USERS_DIR, PATH_ROOMS
 import ally_tts
 
 from ally import cache
-PATH_USERS = Path(os.environ["ALLEMANDE_USERS"]) / "users"
 
 
 os.chdir(os.environ["ROOMS"])
@@ -46,6 +46,7 @@ VERSION = "0.1.2"
 FOLLOW_KEEPALIVE = 5
 HTML_KEEPALIVE = '<script class="event">online()</script>\n'
 REWIND_STRING = '<script class="event">clear()</script>\n'
+NOTIFY_STRING = '<script class="event">notify()</script>\n'
 LOCK_FILE = ".lock"
 
 
@@ -53,9 +54,24 @@ BASE_DIR = Path(".").resolve()
 TEMPLATES_DIR = os.environ.get("TEMPLATES")
 
 
+class StreamState:
+    user: str
+    active: bool
+    def __init__(self, user):
+        self.user = user
+        self.active = True
+
+
+stream_id = 0
+stream_states = {}
+
+
 templates: Jinja2Templates|None = None
 lock_present = False
 active_streams: dict[str, set[asyncio.Task]] = {}
+
+room_presence: dict[str, list[str]] = {}
+user_presence: dict[str, list[str]] = {}
 
 
 def setup_templates():
@@ -191,33 +207,108 @@ app = Starlette(
 )
 
 
-async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n", snapshot=False):
+async def _watch_notifications_file(
+    notifications_file: Path,
+    notify_string: str,
+    queue: asyncio.Queue,
+):
+    """Watch a file for any changes (creation, removal, modification) and put notify_string into the queue."""
+    watcher = aionotify.Watcher()
+    watcher.watch(
+        str(notifications_file.parent),
+        aionotify.Flags.CREATE | aionotify.Flags.DELETE | aionotify.Flags.MODIFY | aionotify.Flags.MOVED_FROM | aionotify.Flags.MOVED_TO,
+    )
+    try:
+        await watcher.setup(asyncio.get_event_loop())
+        while True:
+            event = await watcher.get_event()
+            if event.name == notifications_file.name:
+                await queue.put(notify_string)
+    except asyncio.CancelledError:
+        pass
+    finally:
+        watcher.close()
+
+
+async def follow(
+    stream_id,
+    file,
+    room_path,
+    user,
+    header="",
+    keepalive=FOLLOW_KEEPALIVE,
+    keepalive_string="\n",
+    rewind_string="\x0c\n",
+    snapshot=False,
+    notifications_file: Path | None = None,
+    notify_string: str | None = None,
+):
     """Follow a file and yield new lines as they are added."""
+    path = Path(file)
+    ext = path.suffix
 
     # TODO read watch.log, then we won't have to create directories
-    parent = Path(file).parent
+    parent = path.parent
     parent.mkdir(parents=True, exist_ok=True)
 
     if header:
         yield header
 
     follow_flag = not snapshot
+    if snapshot:
+        notifications_file = None
+
+    # Track the stream task for potential cancellation
+    current_task = asyncio.current_task()
+    if current_task is not None:
+        if path not in active_streams:
+            active_streams[path] = set()
+        active_streams[path].add(current_task)
+
+    state = StreamState(user)
+    stream_states[stream_id] = state
+
+    if ext == ".html" and follow_flag:
+        presence_add(user, room_path)
 
     async with atail.AsyncTail(
         filename=file, wait_for_create=True, all_lines=True, follow=follow_flag, rewind=follow_flag, rewind_string=rewind_string, restart=follow_flag
     ) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
+            notifications_task = None
+            if notifications_file is not None and notify_string is not None:
+                notifications_task = asyncio.ensure_future(
+                    _watch_notifications_file(notifications_file, notify_string, queue1)
+                )
+
             try:
                 while True:
                     line = await queue2.get()  # pyrefly: ignore
-                    # if "clear()" in line:
-                    #     logger.info("line: %s", line)
                     queue2.task_done()  # pyrefly: ignore
                     if line is None:
                         break
                     yield line
             except asyncio.CancelledError:
                 pass
+            finally:
+                if notifications_task is not None:
+                    notifications_task.cancel()
+                    try:
+                        await notifications_task
+                    except asyncio.CancelledError:
+                        pass
+
+                if ext == ".html" and follow_flag and state.active:
+                    presence_rm(user, room_path)
+
+                # Clean up task tracking
+                current_task = asyncio.current_task()
+                if current_task is not None and path in active_streams:
+                    active_streams[path].discard(current_task)
+                    if not active_streams[path]:
+                        del active_streams[path]
+
+                stream_states.pop(stream_id)
 
 
 def try_loading_extra_header(path, header):
@@ -251,10 +342,82 @@ def try_loading_extra_header(path, header):
     return header
 
 
+def list_to_lines(lst):
+    return "\n".join(lst) + ("\n" if lst else "")
+
+
+def user_presence_file_path(user: str):
+    return settings.PATH_USERS_DIR / user / "presence.txt"
+
+
+def room_presence_file_path(room: str):
+    room_path = ally_path(room)
+    if room_path.endswith("/"):
+        return Path(room_path + ".presence")
+    path = Path(room_path)
+    return path.parent / ("." + path.name + ".presence")
+
+
+def user_presence_save(user):
+    user_presence_file = user_presence_file_path(user)
+    user_presence_file.write_text(list_to_lines(user_presence[user]))
+
+
+def room_presence_save(room):
+    room_presence_file = room_presence_file_path(room)
+    room_presence_file.write_text(list_to_lines(room_presence[room]))
+
+
+def presence_add(user, room):
+    if room not in room_presence:
+        room_presence[room] = []
+    room_presence[room].append(user)
+    if user not in user_presence:
+        user_presence[user] = []
+    user_presence[user].append(room)
+    user_presence_save(user)
+    room_presence_save(room)
+    logger.info("presence %s: %r", room, room_presence[room])
+
+
+def presence_rm(user, room):
+    if room in room_presence and user in room_presence[room]:
+        room_presence[room].remove(user)
+        room_presence_save(room)
+        logger.info("presence %s: %r", room, room_presence[room])
+    if user in user_presence and room in user_presence[user]:
+        user_presence[user].remove(room)
+        user_presence_save(user)
+
+
+@app.route("/x/active", methods=["POST"])
+async def active(request):
+    """Signal that a window is hidden or visible"""
+    user = get_user(request)
+    data = await request.json()
+    room = data.get("room")
+    stream_id = data.get("stream_id")
+    active = data.get("active")
+    state = stream_states.get(stream_id)
+    if not state or state.user != user:
+        return JSONResponse({"status": "failed"})
+    if active and not state.active:
+        state.active = True
+        presence_add(user, room)
+    elif not active and state.active:
+        state.active = False
+        presence_rm(user, room)
+    return JSONResponse({"status": "success"})
+
+
 @app.route("/stream/", methods=["GET"])
 @app.route("/stream/{path:path}", methods=["GET"])
 async def stream(request, path=""):
     """Stream a file to the browser, like tail -f"""
+    global stream_id
+    stream_id += 1
+    my_stream_id = stream_id
+
     snapshot = request.query_params.get("snapshot")
 
     user = get_user(request)
@@ -304,7 +467,7 @@ async def stream(request, path=""):
 
     room_path = re.sub(r"\.html$", "", pathname)
 
-    context = {"user": user, "login_base_url": info.login_base_url, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path}
+    context = {"user": user, "login_base_url": info.login_base_url, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path, "stream_id": my_stream_id}
 
     # folder listings
     if path.is_dir():
@@ -328,6 +491,7 @@ async def stream(request, path=""):
     header = ""
     keepalive_string = "\n"
     rewind_string = "\x0c\n"  # ^L / form feed / clear screen
+    notify_string = "\n"
 
     ext = path.suffix
 
@@ -339,26 +503,26 @@ async def stream(request, path=""):
         header = add_mtime_to_resource_pathnames(header, info.chat_base_url)
         keepalive_string = HTML_KEEPALIVE
         rewind_string = REWIND_STRING
+        notify_string = NOTIFY_STRING
 
     logger.debug("tail: %s", path)
 
-    # Track the stream task for potential cancellation
-    current_task = asyncio.current_task()
-    if current_task is not None:
-        if pathname not in active_streams:
-            active_streams[pathname] = set()
-        active_streams[pathname].add(current_task)
+    # notifications file
+    notifications_file = settings.PATH_USERS_DIR / user / "notifications.txt"
 
-    try:
-        follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string, snapshot=snapshot)
-        return StreamingResponse(follower, media_type=media_type)
-    finally:
-        # Clean up task tracking
-        current_task = asyncio.current_task()
-        if current_task is not None and pathname in active_streams:
-            active_streams[pathname].discard(current_task)
-            if not active_streams[pathname]:
-                del active_streams[pathname]
+    follower = follow(
+        my_stream_id,
+        str(path),
+        room_path,
+        user,
+        header=header,
+        keepalive_string=keepalive_string,
+        rewind_string=rewind_string,
+        snapshot=snapshot,
+        notifications_file=notifications_file,
+        notify_string=notify_string,
+    )
+    return StreamingResponse(follower, media_type=media_type)
 
 
 if __name__ == "__main__":

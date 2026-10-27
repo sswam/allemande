@@ -21,33 +21,33 @@ logger = logging.getLogger(__name__)
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
 
 
-def subs_path(user_id):
-    return PATH_USERS_DIR / user_id / "push_subscriptions.json"
+def subs_path(user):
+    return PATH_USERS_DIR / user / "push_subscriptions.json"
 
 
-def load_subs(user_id):
+def load_subs(user):
     try:
-        with open(subs_path(user_id), encoding="utf-8") as f:
+        with open(subs_path(user), encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         return {}
 
 
-def save_subs(user_id, subs):
-    with open(subs_path(user_id), "w", encoding="utf-8") as f:
+def save_subs(user, subs):
+    with open(subs_path(user), "w", encoding="utf-8") as f:
         json.dump(subs, f, indent=2)
 
 
-def subscribe(user_id, sub):
-    subs = load_subs(user_id)
+def subscribe(user, sub):
+    subs = load_subs(user)
     subs[sub["endpoint"]] = sub
-    save_subs(user_id, subs)
+    save_subs(user, subs)
 
 
-def unsubscribe(user_id, endpoint):
-    subs = load_subs(user_id)
+def unsubscribe(user, endpoint):
+    subs = load_subs(user)
     subs.pop(endpoint, None)
-    save_subs(user_id, subs)
+    save_subs(user, subs)
 
 
 def send_one(subscription, message):
@@ -61,23 +61,23 @@ def send_one(subscription, message):
     )
 
 
-async def send_push(user_id, message):
-    subs = load_subs(user_id)
+async def send_push(user, message):
+    subs = load_subs(user)
     if not subs:
-        logger.warning("No subscriptions found for %s.", user_id)
+        logger.warning("No subscriptions found for %s.", user)
     dead = []
     for endpoint, sub in subs.items():
         try:
             # XXX we might make a lot of threads, could be better to run one thread for sending notifications to all users
             await asyncio.to_thread(send_one, sub, message)
         except WebPushException as e:
-            logger.error("Push failed for %s: %s", user_id, e)
+            logger.error("Push failed for %s: %s", user, e)
             if e.response is not None and e.response.status_code in (404, 410):
                 dead.append(endpoint)
     if dead:
         for ep in dead:
             del subs[ep]
-        save_subs(user_id, subs)
+        save_subs(user, subs)
         logger.warning("Removed %s dead subscription(s).", len(dead))
 
 
@@ -88,7 +88,7 @@ def notify_file_path(room_path):
     return str(path.parent / ("." + path.name + ".notify"))
 
 
-def notify_get(user_id: str, room: str) -> tuple[str, str]:
+def notify_get(user: str, room: str) -> tuple[str, str]:
     """
     Check .{room}.notify, .notify and parent .notify files
     Returns:
@@ -102,7 +102,7 @@ def notify_get(user_id: str, room: str) -> tuple[str, str]:
     # Check the specific room first
     notify_file = notify_file_path(room_path)
     data = cache.load(notify_file, fmt="yaml") or {}
-    specific = data.get(user_id, "none")
+    specific = data.get(user, "none")
 
     # Walk up the parent directories for inherited setting
     while True:
@@ -111,14 +111,14 @@ def notify_get(user_id: str, room: str) -> tuple[str, str]:
             break
         notify_file = notify_file_path(room_path)
         data = cache.load(notify_file, fmt="yaml") or {}
-        inherited = data.get(user_id, "none")
+        inherited = data.get(user, "none")
         if inherited != "none":
             break
 
     return specific, inherited
 
 
-def notify_set(user_id: str, room: str, setting: str) -> str:
+def notify_set(user: str, room: str, setting: str) -> str:
     """
     Save specific notification setting in .{room}.notify or .notify for a folder.
     Lock around this if any chance of concurrency. Shouldn't be.
@@ -128,13 +128,13 @@ def notify_set(user_id: str, room: str, setting: str) -> str:
 
     data = cache.load(notify_file, fmt="yaml") or {}
     if setting != "none":
-        data[user_id] = setting
+        data[user] = setting
     else:
-        data.pop(user_id, None)
+        data.pop(user, None)
 
     # Also save in users list of all watches, by room
 
-    user_watches = PATH_USERS_DIR / user_id / "notify.yml"
+    user_watches = PATH_USERS_DIR / user / "notify.yml"
     l = len(str(PATH_ROOMS)) + 1
     room1 = room_path[l:]
 
@@ -154,14 +154,25 @@ def notify_set(user_id: str, room: str, setting: str) -> str:
         cache.remove(user_watches)
 
 
+def notification_clear(user: str, room: str|None):
+    """Clear one or all notifications in the user's list."""
+    file = PATH_USERS_DIR / user / "notifications.txt"
+    if room is None:
+        # truncate the file to size 0
+        file.write_text("")
+        return
+    lines = [l for l in file.read_text().splitlines() if l != room]
+    file.write_text("\n".join(lines) + ("\n" if lines else ""))
+
+
 def ally_notify():
     """Send a push notification to a user."""
     if len(sys.argv) != 3:
-        logger.error(f"Usage: {sys.argv[0]} <user_id> <message>")
+        logger.error(f"Usage: {sys.argv[0]} <user> <message>")
         sys.exit(1)
 
-    user_id, message = sys.argv[1], sys.argv[2]
-    asyncio.run(send_push(user_id, message))
+    user, message = sys.argv[1], sys.argv[2]
+    asyncio.run(send_push(user, message))
 
 
 if __name__ == "__main__":

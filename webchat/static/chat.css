@@ -620,6 +620,40 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 	float: right;
 }
 
+/* notifications list ----------------------------------------------------- */
+
+.notifications_list {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	min-width: min(10rem, calc(100% - 2 * var(--pad)));
+	max-width: calc(100% - 2 * var(--pad));
+	max-height: calc(100% - 2 * var(--pad));
+
+	margin: 0 var(--pad) var(--pad) var(--pad);
+	background-color: var(--input);
+	color: var(--text);
+	border-radius: 0.5rem;
+	border: 0.125rem solid var(--border);
+/*	background-color: rgba(255, 255, 255, 0.9);
+	padding: 10px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+
+	overflow-y: auto;
+}
+
+#notifications_list_content {
+	padding: 0.5rem 1rem;
+	white-space: pre-wrap;
+}
+
+#notifications_list_clear {
+	float: right;
+}
+
+
 /* printing --------------------------------------------------------------- */
 
 @media print {

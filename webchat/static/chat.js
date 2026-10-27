@@ -1408,9 +1408,10 @@ async function load_user_files() {
   const user_dir = "/users/" + user;
 //  const [_, userScript, nag_response] = await Promise.all([
 //    $style("user_styles", user_dir + "/styles.css"),
-  const [userScript, nag_response] = await Promise.all([
+  const [userScript, nag_response, notify_response] = await Promise.all([
     $import("user_script", user_dir + "/script.js"),
     fetch(user_dir + "/nag.html?" + Date.now()), // prevent caching
+    fetch(user_dir + "/notifications.txt?" + Date.now()), // prevent caching
   ]);
   let nag = nag_response.ok ? await nag_response.text() : "";
   // title case
@@ -1420,6 +1421,9 @@ async function load_user_files() {
   nag = nag.replace(/\$CONTACT\b/g, config.CONTACT);
   nag = nag.replace(/\$PATREON\b/g, config.PATREON);
   setup_system_message(nag);
+
+  const notify = notify_response.ok ? await notify_response.text() : "";
+  await setup_notifications(notify);
 
 //  modules.user_script = userScript; // XXX isn't that automatic?
 }
@@ -1887,6 +1891,10 @@ function handle_message(ev) {
   if (ev.data.type == "drop") {
     drop_from_iframe(ev.data.text, ev.data.x, ev.data.y);
     return;
+  }
+
+  if (ev.data.type == "notify") {
+    setup_notifications();
   }
 
   /*
@@ -3505,7 +3513,7 @@ async function view_options_apply() {
   active_set("voice_starred", view_options.voice_starred);
   active_set("edit_advanced", view_options.edit_advanced > 0);
 
-  active_set("help", view_options.help > 0);
+  $id("help").classList.toggle("back", view_options.help > 0);
   $id("help").href = view_options.advanced ? qa_url : help_url;
 
   // show different simple / advanced / boffin icons
@@ -4362,6 +4370,7 @@ async function setup_icons() {
   // icons["edit_close"] = icons["edit"];
   icons["help_close"] = icons["x"]; // icons["help"];
   icons["system_message_close"] = icons["x"];
+  icons["notifications_list_clear"] = icons["x"];
   for (const prefix of ["rec", "rec_preview"]) {
     icons[`${prefix}_cancel`] = icons["x_large"];
   }
@@ -4797,11 +4806,11 @@ function update_room_status(data) {
   if (data.scroll_at_end) {
     $scroll_end_2.innerHTML = icons["scroll_home"];
     setTitle($scroll_end_2, "start of room: home");
-    $scroll_end_2.classList.add("active");
+    // $scroll_end_2.classList.add("active");
   } else {
     $scroll_end_2.innerHTML = icons["scroll_end"];
     setTitle($scroll_end_2, "end of room: end");
-    $scroll_end_2.classList.remove("active");
+    // $scroll_end_2.classList.remove("active");
   }
 }
 
@@ -5441,6 +5450,62 @@ function notify_main() {
 	$on($id('notify'), 'click', notify_clicked);
 }
 
+function notifications_click(ev) {
+  let open = $id("notifications").classList.contains("back");
+  open = !open;
+  $id("notifications").classList.toggle("back", open);
+  show("notifications_list", open);
+}
+
+async function setup_notifications(notify) {
+  if (notify === undefined) {
+    const user_dir = "/users/" + user;
+    const notify_response = await fetch(user_dir + "/notifications.txt?" + Date.now());
+    notify = notify_response.ok ? await notify_response.text() : "";
+  }
+  const container = $id('notifications_list_content');
+  container.innerHTML = '';
+  if (!notify) {
+    hide("notifications_list");
+    hide("notifications");
+    $id("notifications").classList.remove("back");
+    active_reset("notifications");
+    return;
+  }
+  active_set("notifications");
+  show("notifications");
+  const lines = notify.trim().split('\n');
+  for (const room of lines) {
+    const a = document.createElement('a');
+    a.href = '#' + room;
+    a.textContent = room;
+    container.appendChild(a);
+    container.appendChild(document.createTextNode('\n'));
+  }
+}
+
+function notifications_list_click(ev) {
+  if (ev.target.tagName !== "A")
+    return;
+  const room = ev.target.innerText;
+  remove_notifications(room);
+}
+
+function notifications_list_clear_click(ev) {
+  remove_notifications();
+}
+
+async function remove_notifications(room) {
+  const response = await fetch('/x/notification_clear', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({room}),
+  });
+  if (!response.ok) {
+    console.error("Notification clear request failed");
+  }
+}
+
 // TODO check if permission already granted / subscription already exists
 // TODO if already subscribed, we need to just pass the room name
 // TODO enable to unsubscribe from a room
@@ -5679,6 +5744,11 @@ export async function init() {
 
   // media delete
   $on($id("media_delete"), "click", media_delete);
+
+  // notifications
+  $on($id("notifications"), "click", notifications_click);
+  $on($id("notifications_list_content"), "click", notifications_list_click);
+  $on($id("notifications_list_clear"), "click", notifications_list_clear_click);
 
   if (isMobile)
     setup_view_option_swipe();

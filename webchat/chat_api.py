@@ -458,6 +458,14 @@ async def watch(request):
     ally_notify.notify_set(user, room, status)
     return JSONResponse({"status": "success"})
 
+@app.route("/x/notification_clear", methods=["POST"])
+async def notify_clear(request):
+    data = await request.json()
+    user = get_user(request)
+    room = data.get("room")
+    ally_notify.notification_clear(user, room)
+    return JSONResponse({"status": "success"})
+
 
 # TODO implement the actual notifications when:
 # - a message is posted to a watched room

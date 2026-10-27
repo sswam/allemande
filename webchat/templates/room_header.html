@@ -6,7 +6,7 @@
 	const regs = await navigator.serviceWorker?.getRegistrations?.().catch(() => []);
 	await Promise.all((regs || []).map(r => r.unregister().catch(() => {})));
 })();
-var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }};
+var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }}, stream_id = {{ stream_id|tojson|safe }};
 const ALLEMANDE_LOGIN_URL="{{ login_base_url }}";
 const ALLYCHAT_CHAT_URL="{{ chat_base_url }}";
 const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
@@ -89,6 +89,7 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 	]);
 	online = modules.room.online;
 	clear = modules.room.clear;
+	notify = modules.room.notify;
 	modules.room.room_main();
 })();
 	view_options = JSON.parse(localStorage.getItem("view_options"));

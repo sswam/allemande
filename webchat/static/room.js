@@ -58,6 +58,7 @@ function get_status_element() {
 }
 
 let reloading = false;
+let is_offline = false;
 function reload() {
   if (reloading) return;
   reloading = true;
@@ -85,6 +86,7 @@ export function online() {
 
 function offline() {
   console.log("offline!");
+  is_offline = true;
   if (snapshot)
     return;
   const status = get_status_element();
@@ -2387,6 +2389,34 @@ function img_markdown(img, alt, ctrl) {
   return text;
 }
 
+// notifications -------------------------------------------------------------
+
+export function notify() {
+  clean_up_server_events();
+  window.parent.postMessage({ type: "notify" }, ALLYCHAT_CHAT_URL);
+}
+
+let view_active = true;
+
+async function visibility_change() {
+  if (is_offline)
+    return;
+  const active = document.visibilityState === "visible";
+  if (active === view_active)
+    return;
+  view_active = active;
+
+  const response = await fetch("/x/active", {
+    method: "POST",
+    contentType: "application/json",
+    body: JSON.stringify({
+      room,
+      active,
+      stream_id,
+    }),
+  });
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -2427,6 +2457,9 @@ export async function room_main() {
   $on(document, "error", load_error);
 
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
+
+  $on(document, "visibilitychange", visibility_change);
+  visibility_change();
 
   // check for ?snapshot=1 in URL, properly by parsing the query string
   const url = new URL(location.href);

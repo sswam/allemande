@@ -58,7 +58,7 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
-	location /themes {
+	location /themes/ {
 		# Allow client to list available themes
 		autoindex on;
 
@@ -135,7 +135,7 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
-	location /x {
+	location /x/ {
 		auth_jwt_enabled on;
 		auth_jwt_redirect off;
 		add_header Cache-Control "no-cache";
