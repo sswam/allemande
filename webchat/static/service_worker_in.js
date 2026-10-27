@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "1.0.963";
+const VERSION = "1.0.964";
 
 const DEBUG = false;
 
@@ -186,6 +186,14 @@ function sw_fetch(event) {
   event.respondWith(sw_fetch_from_cache_or_network(req));
 }
 
+function query_encode(query) {
+  return encodeURIComponent(query).replace(/%20/g, "+").replace(/%2F/g, "/");
+}
+
+function query_to_hash(query) {
+  return "#" + query_encode(query);
+}
+
 // Push event - handle incoming notifications
 async function sw_push(event) {
   const data = event.data.json();
@@ -195,12 +203,12 @@ async function sw_push(event) {
     badge: ALLEMANDE_LOGIN_URL + "/icon.png",
     data: {
       room: data.room,
-      url: data.url, // not needed, just use room?
+//      url: "/" + query_to_hash(data.room),
       // TODO anchor to a specific message
     },
   };
 
-  event.waitUntil(self.registration.showNotification("Allemande AI", options));
+  event.waitUntil(self.registration.showNotification("Ally Chat", options));
 }
 
 // // Notification click event - handle user interaction
@@ -226,7 +234,7 @@ async function sw_push(event) {
 
 async function sw_notificationclick(event) {
     event.notification.close();
-    const urlToOpen = `/#${event.notification.data.room}`;
+    const urlToOpen = "/" + query_to_hash(event.notification.data.room);
 
     event.waitUntil((async () => {
         const windowClients = await self.clients.matchAll({

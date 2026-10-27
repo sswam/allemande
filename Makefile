@@ -100,7 +100,7 @@ core: llm.xt images.xt forge.xt whisper.xt omnivoice.xt backup.xt cup.xt # notif
 
 voice: mike.xt speak.xt whisper.xt
 
-webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt wat.xt vup.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt wat.xt vup.xt notify.xt
 
 pro: svelte.xt
 pro-dev: svelte-dev.xt
@@ -283,8 +283,8 @@ api_doc: llm/llm.api
 %.api: %.py
 	func-py -a -I "$<" > "$@"
 
-# notify:
-# 	./webchat_notify.sh
+notify:
+	awatch -a -i -p Makefile $(WEBCHAT)/notify.py chat/ally_notify.py -s -- $(WEBCHAT)/notify.py -w $(WATCH_LOG)
 
 vup:
 	cd $(ALLEMANDE_VISUAL) && \

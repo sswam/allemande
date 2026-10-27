@@ -50,9 +50,9 @@ def unsubscribe(user, endpoint):
     save_subs(user, subs)
 
 
-def send_one(subscription, message):
+def send_one(subscription, message, room):
     """Synchronous; run via asyncio.to_thread."""
-    data = json.dumps({"body": message, "room": "", "url": ""})
+    data = json.dumps({"body": message, "room": room})  # , "url": ""})
     webpush(
         subscription_info=subscription,
         data=data,
@@ -61,7 +61,7 @@ def send_one(subscription, message):
     )
 
 
-async def send_push(user, message):
+async def send_push(user, message, room):
     subs = load_subs(user)
     if not subs:
         logger.warning("No subscriptions found for %s.", user)
@@ -69,7 +69,7 @@ async def send_push(user, message):
     for endpoint, sub in subs.items():
         try:
             # XXX we might make a lot of threads, could be better to run one thread for sending notifications to all users
-            await asyncio.to_thread(send_one, sub, message)
+            await asyncio.to_thread(send_one, sub, message, room)
         except WebPushException as e:
             logger.error("Push failed for %s: %s", user, e)
             if e.response is not None and e.response.status_code in (404, 410):
@@ -118,11 +118,40 @@ def notify_get(user: str, room: str) -> tuple[str, str]:
     return specific, inherited
 
 
+def notify_who(room: str) -> list[tuple[str, str]]:
+    """
+    Given a room, returns a list of (user, effective) tuples for all users
+    with any notification setting for this room or inherited from parents.
+    Specific settings override inherited; among inherited, closest parent wins.
+    """
+    room_path = ally_path(room)
+    accumulated = {}
+
+    # Walk from room up through parents, collecting settings
+    # We go bottom-up so closer settings take priority (first seen wins)
+    current_path = room_path
+    while True:
+        notify_file = notify_file_path(current_path)
+        data = cache.load(notify_file, fmt="yaml") or {}
+        for user_id, setting in data.items():
+            if user_id not in accumulated:
+                accumulated[user_id] = setting
+
+        current_path = str(Path(current_path).parent) + "/"
+        if not current_path.startswith(str(PATH_ROOMS)):
+            break
+
+    return [(user_id, setting) for user_id, setting in accumulated.items()]
+
+
 def notify_set(user: str, room: str, setting: str) -> str:
     """
     Save specific notification setting in .{room}.notify or .notify for a folder.
     Lock around this if any chance of concurrency. Shouldn't be.
     """
+    if setting not in ["none", "me", "all", "off"]:
+        raise ValueError("notify_set: setting must be none, me, all, or off")
+
     room_path = ally_path(room)
     notify_file = notify_file_path(room_path)
 
@@ -157,12 +186,67 @@ def notify_set(user: str, room: str, setting: str) -> str:
 def notification_clear(user: str, room: str|None):
     """Clear one or all notifications in the user's list."""
     file = PATH_USERS_DIR / user / "notifications.txt"
-    if room is None:
+    if room is None or not file.exists():
         # truncate the file to size 0
         file.write_text("")
         return
-    lines = [l for l in file.read_text().splitlines() if l != room]
-    file.write_text("\n".join(lines) + ("\n" if lines else ""))
+    rooms = notification_get(user)
+    if room not in rooms:
+        return
+    rooms = [r for r in rooms if r != room]
+    file.write_text("\n".join(rooms) + ("\n" if rooms else ""))
+
+
+def notification_get(user: str):
+    """Get a list of all notification rooms."""
+    file = PATH_USERS_DIR / user / "notifications.txt"
+    if not file.exists():
+        return []
+    return file.read_text(encoding="utf-8").splitlines()
+
+
+def notification_add(user: str, room: str):
+    """Add a notification if it's not already there."""
+    file = PATH_USERS_DIR / user / "notifications.txt"
+    rooms = notification_get(user)
+    if room in rooms:
+        return False
+    with file.open("a", encoding="utf-8") as file:
+        file.write(room + "\n")
+    return True
+
+
+async def notification_as_needed(user: str, room: str):
+    """
+    Add a notification if:
+    1. user not actively viewing that room
+    2. and not already there
+    3. send push notification if user not active in any room
+    """
+    logger.info("notify: user, room:  %s  --  %s", user, room)
+    user_presence_file = user_presence_file_path(user)
+    if user_presence_file.exists():
+        user_rooms = user_presence_file.read_text(encoding="utf-8").splitlines()
+    else:
+        user_rooms = []
+    if room in user_rooms:
+        logger.info("  already active in room")
+        return
+
+    added = notification_add(user, room)
+    if not added:
+        logger.info("  notification already exists")
+        return
+    logger.info("  added a notification")
+
+    if not user_rooms:
+        logger.info("  user not active, sending push")
+        await send_push(user, room, room)
+
+
+def user_presence_file_path(user: str):
+    return PATH_USERS_DIR / user / "presence.txt"
+
 
 
 def ally_notify():
@@ -172,7 +256,7 @@ def ally_notify():
         sys.exit(1)
 
     user, message = sys.argv[1], sys.argv[2]
-    asyncio.run(send_push(user, message))
+    asyncio.run(send_push(user, message, ""))
 
 
 if __name__ == "__main__":

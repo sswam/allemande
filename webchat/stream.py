@@ -31,7 +31,7 @@ from ally_service import get_user, add_mtime_to_resource_pathnames
 import settings
 from settings import PATH_USERS, PATH_USERS_DIR, PATH_ROOMS
 import ally_tts
-
+import ally_notify
 from ally import cache
 
 
@@ -509,6 +509,8 @@ async def stream(request, path=""):
 
     # notifications file
     notifications_file = settings.PATH_USERS_DIR / user / "notifications.txt"
+
+    ally_notify.notification_clear(user, room_path)
 
     follower = follow(
         my_stream_id,
