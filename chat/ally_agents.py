@@ -450,7 +450,7 @@ class Agent:
                 "PRIVATE_PUBLIC": private_public,
                 "PERIOD": period_desc or "",
                 "PREGNANT": pregnant_desc or "",
-                "PERIOD_VISUAL": period_visual,
+#                "PERIOD_VISUAL": period_visual,
                 "PREGNANT_VISUAL": pregnant_visual,
                 "ART_MODEL_PROMPT": art_model_prompt,
             })

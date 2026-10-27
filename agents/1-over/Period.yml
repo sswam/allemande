@@ -7,6 +7,6 @@ system_bottom: |-
 period_extra: |-
   I don't normally talk about my cycle out of the blue!
 visual:
-  person: $PREGNANT_VISUAL $PERIOD_VISUAL +
+  person: $PREGNANT_VISUAL +
 
-# $POSTPARTUM $MENOPAUSE $ADULT $CHILD $NEONATE
+# $PERIOD_VISUAL $POSTPARTUM $MENOPAUSE $ADULT $CHILD $NEONATE
