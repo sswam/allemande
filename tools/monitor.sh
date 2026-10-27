@@ -38,6 +38,7 @@ monitor() {
 	local config= c=1               # load config from file
 	local daily= y=0                # do daily checks
 	local caches= C=("/opt/allemande/rooms.extra.cache")  # cache dirs to exclude from disk space calculations
+	local files= f=()  # files, check exist and not empty
 
 	eval "$(ally)"
 
@@ -57,6 +58,7 @@ monitor() {
 	check_vm
 	check_inotify
 	check_ping
+	check_files
 	if [ "$daily" = 1 ]; then
 		check_domains
 	fi
@@ -224,6 +226,17 @@ check_ping() {
 		else
 			info "INFO: Server cannot ping %s" "$host"
 			warn "WARNING: Server cannot ping %s - possible network issues!" "$host"
+		fi
+	done
+}
+
+check_files() {
+	local file
+	for file in "${files[@]}"; do
+		if [ -s "$file" ]; then
+			info "INFO: File exists and not empty: %s" "$file"
+		else
+			warn "INFO: File is missing: %s" "$file"
 		fi
 	done
 }
