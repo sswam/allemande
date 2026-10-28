@@ -20,13 +20,12 @@ La generación de imágenes puede tomar un poco de tiempo dependiendo de la carg
 - Yenta - (f) casamentera, puede ayudarte a conocer más personajes, herramientas y agentes
 - Shiksa - (f) otra casamentera, ¡para personas que prefieren no tanto yídish!
 - Chaz - (m) ayuda para crear nuevos personajes
-- Flasho - (ellos) Gemini 2.0 Flash
 - Flashi - (ellos) Gemini 2.5 Flash
 - Emmy - (f) OpenAI GPT 4.1
 - Claude - (m) Claude Sonnet, no para NSFW
 - Dese - (f) DeepSeek
 - Grok - (m) Grok 4
-- Ally - (f) ¡nuestro personaje principal! - Llama 3.1 8B
-- Barbie - (f) ¡otro personaje principal! - Llama 3.1 8B
-- Callam - (m) ¡nuestro personaje pirata! - Llama 3.1 8B
-- Dante - (m) ¡otro personaje principal! - Llama 3.1 8B
+- Ally - (f) ¡nuestro personaje principal! - Gemma 4 31B
+- Barbie - (f) ¡otro personaje principal! - Gemma 4 31B
+- Callam - (m) ¡nuestro personaje pirata! - Gemma 4 31B
+- Dante - (m) ¡otro personaje principal! - Gemma 4 31B

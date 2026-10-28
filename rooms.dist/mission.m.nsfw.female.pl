@@ -20,13 +20,12 @@ Generowanie obrazów może chwilę potrwać w zależności od obciążenia, wię
 - Yenta – (k) swatka, może pomóc w poznaniu nowych postaci, narzędzi i agentów
 - Shiksa – (k) kolejna swatka, dla osób preferujących mniej jidysz!
 - Chaz – (m) pomoc przy tworzeniu nowych postaci
-- Flasho – (oni) Gemini 2.0 Flash
 - Flashi – (oni) Gemini 2.5 Flash
 - Emmy – (k) OpenAI GPT 4.1
 - Claude – (m) Claude Sonnet, nie dla NSFW
 - Dese – (k) DeepSeek
 - Grok – (m) Grok 4
-- Ally – (k) nasza główna postać! – Llama 3.1 8B
-- Barbie – (k) kolejna główna postać! – Llama 3.1 8B
-- Callam – (m) nasza piraciakpostać! – Llama 3.1 8B
-- Dante – (m) kolejna główna postać! – Llama 3.1 8B
+- Ally – (k) nasza główna postać! – Gemma 4 31B
+- Barbie – (k) kolejna główna postać! – Gemma 4 31B
+- Callam – (m) nasza piraciakpostać! – Gemma 4 31B
+- Dante – (m) kolejna główna postać! – Gemma 4 31B

@@ -20,13 +20,12 @@
 - Yenta - (f) จับคู่ สามารถช่วยคุณพบปะตัวละคร เครื่องมือ และ agents เพิ่มเติม
 - Shiksa - (f) จับคู่อีกคน สำหรับผู้ที่ไม่ชอบภาษายิดดิชมากเกินไป!
 - Chaz - (m) ช่วยเหลือในการสร้างตัวละครใหม่
-- Flasho - (non-binär) Gemini 2.0 Flash
 - Flashi - (non-binär) Gemini 2.5 Flash
 - Emmy - (f) OpenAI GPT 4.1
 - Claude - (m) Claude Sonnet ไม่สำหรับ NSFW
 - Dese - (f) DeepSeek
 - Grok - (m) Grok 4
-- Ally - (f) ตัวละครหลักของเรา! - Llama 3.1 8B
-- Barbie - (f) ตัวละครหลักอีกตัว! - Llama 3.1 8B
-- Callam - (m) ตัวละครโจรสลัดของเรา! - Llama 3.1 8B
-- Dante - (m) ตัวละครหลักอีกตัว! - Llama 3.1 8B
+- Ally - (f) ตัวละครหลักของเรา! - Gemma 4 31B
+- Barbie - (f) ตัวละครหลักอีกตัว! - Gemma 4 31B
+- Callam - (m) ตัวละครโจรสลัดของเรา! - Gemma 4 31B
+- Dante - (m) ตัวละครหลักอีกตัว! - Gemma 4 31B
