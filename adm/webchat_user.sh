@@ -339,14 +339,8 @@ restore-user() {
 
 	# Restore htpasswd entry if available, changing username if needed
 	if [ -s "$removed_dir/htpasswd.entry" ]; then
-		if [ "$user" != "$target_user" ]; then
-			# Change username in htpasswd entry
-			sed "s/^$user:/$target_user:/" "$removed_dir/htpasswd.entry" >> .htpasswd
-			echo >&2 "Restored htpasswd entry for $target_user (from $user)"
-		else
-			cat "$removed_dir/htpasswd.entry" >> .htpasswd
-			echo >&2 "Restored htpasswd entry from backup"
-		fi
+		sed "s/^[^:]*:/$target_user:/" "$removed_dir/htpasswd.entry" >> .htpasswd
+		echo >&2 "Restored htpasswd entry for $target_user (from $user)"
 	else
 		echo >&2 "No htpasswd entry found to restore for user $user"
 	fi
