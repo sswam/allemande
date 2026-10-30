@@ -599,6 +599,9 @@ function active_toggle(id) {
 // new chat message ----------------------------------------------------------
 
 function new_chat_message(message) {
+  // console.log("new_chat_message");
+  if (!at_end)
+    active_set("scroll_end_2");
   auto_play_back_off();
   const message_user_lc = message.user?.toLowerCase();
   if (message_user_lc != user) {
@@ -1895,6 +1898,7 @@ function handle_message(ev) {
 
   if (ev.data.type == "notify") {
     setup_notifications();
+    return;
   }
 
   /*
@@ -4801,13 +4805,20 @@ function remove_nsfw_options() {
 
 // update room status --------------------------------------------------------
 
+let at_end = true;
+
 function update_room_status(data) {
   const $scroll_end_2 = $id("scroll_end_2");
   if (data.scroll_at_end) {
+    at_end = true;
+    // console.log("update_room_status: at end");
     $scroll_end_2.innerHTML = icons["scroll_home"];
     setTitle($scroll_end_2, "start of room: home");
+    active_reset("scroll_end_2");
     // $scroll_end_2.classList.add("active");
   } else {
+    at_end = false;
+    // console.log("update_room_status: not at end");
     $scroll_end_2.innerHTML = icons["scroll_end"];
     setTitle($scroll_end_2, "end of room: end");
     // $scroll_end_2.classList.remove("active");
@@ -5457,6 +5468,8 @@ function notifications_click(ev) {
   show("notifications_list", open);
 }
 
+let notifications = [];
+
 async function setup_notifications(notify) {
   if (notify === undefined) {
     const user_dir = "/users/" + user;
@@ -5474,14 +5487,36 @@ async function setup_notifications(notify) {
   }
   active_set("notifications");
   show("notifications");
-  const lines = notify.trim().split('\n');
-  for (const room of lines) {
+  notifications = notify.trim().split('\n');
+  for (const room of notifications) {
     const a = document.createElement('a');
     a.href = '#' + room;
     a.textContent = room;
     container.appendChild(a);
     container.appendChild(document.createTextNode('\n'));
   }
+
+  if (view_active)
+    remove_current_room_from_notifications();
+}
+
+async function remove_current_room_from_notifications() {
+  if (notifications.indexOf(room) >= 0)
+    await remove_notifications(room);
+}
+
+let view_active = true;
+
+async function visibility_change() {
+  const active = document.visibilityState === "visible";
+  if (active === view_active)
+    return;
+  view_active = active;
+  // let's delay this slightly, as it's better to update the presence first to avoid double notifications
+  if (!active)
+    return;
+  await $wait(250);
+  await remove_current_room_from_notifications();
 }
 
 function notifications_list_click(ev) {
@@ -5749,6 +5784,9 @@ export async function init() {
   $on($id("notifications"), "click", notifications_click);
   $on($id("notifications_list_content"), "click", notifications_list_click);
   $on($id("notifications_list_clear"), "click", notifications_list_clear_click);
+
+  $on(document, "visibilitychange", visibility_change);
+  visibility_change();
 
   if (isMobile)
     setup_view_option_swipe();
