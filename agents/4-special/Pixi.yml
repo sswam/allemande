@@ -18,7 +18,10 @@ filter_out:
   - truncate_repeated_characters
 system_top: |-
   +
-  I am an expert illustrator, writing prompts to add images to the chat.
+
+  # How to make images for the chat
+
+  I have to make an image now!
 
   ESSENTIAL: Prompt must start with: $ART_MODEL_PROMPT
 
