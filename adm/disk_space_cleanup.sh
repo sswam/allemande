@@ -13,6 +13,8 @@ cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log
 cd /var/log && sudo truncate -s 0 crowdsec-firewall-bouncer.log crowdsec.log crowdsec_api.log
 cd /var/log/apache2 && sudo truncate -s 0 *
 
+sudo apt-get clean
+
 exit
 
 # old and new linux kernel packages
