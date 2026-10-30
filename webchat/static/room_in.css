@@ -547,7 +547,7 @@ body.images .embed:hover .alt {
 }
 
 body:not(.code_source) pre:has(code:not([class*="language-"])),
-body:not(.code_source) details.think,
+body:not(.script_source) details.think,
 body:not(.code_source) pre:has(code:not([class*="language-"])) + br {
 	display: none;
 }
