@@ -145,4 +145,5 @@ export const icons = {
   notify_all: '<i class="bi bi-bell-fill i20"></i>',
   notify_off: '<i class="bi bi-bell-slash i20"></i>',
   notifications: '<i class="bi bi-bell-fill i20"></i>',
+  notify_unsub: '<i class="bi bi-bell-slash i20"></i>',
 };

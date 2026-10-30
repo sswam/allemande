@@ -266,6 +266,31 @@ Advanced: You can enable vision for more images in any room. Please turn it off 
 5. Please clear the **images** option to be blank when you are not using AI vision. This makes responses faster, and can save money.
 6. If you set the **images** option to blank, AI vision is disabled entirely for that chat room.
 
+## Notifications
+
+Stay updated with activity in your favorite rooms - or even all public rooms.
+
+To access notification settings, you must first reveal the extra controls by pressing **Alt/Option** (or swiping the input field on mobile), then click the <i class="bi-bell"></i> **Notify** button at the top-left.
+
+**Notification Levels:**
+
+- **Off/Inherit**: Follows the rules of the parent folder. The effective notification level will show in a different colour.
+- <i class="bi-bell"></i> **Me**: Notifies you only when you are mentioned by name or via @mention.
+- <i class="bi-bell-fill"></i> **All**: Notifies you of all activity in the room.
+- <i class="bi-bell-slash"></i> **Block**: Specifically disables notifications for this room or folder, even if they are enabled in a parent folder.
+
+**How it works:**
+
+- **Web Push**: If you are away from the app, you'll receive a browser push notification.
+- **In-App**: If you are using the app but in a different room, the alert is added to your notifications list.
+- **Smart Suppression**: You won't receive a push if you are already viewing the room. However, if you are in the room but scrolled up, the <i class="bi-chevron-bar-down"></i> **End** button will be highlighted to alert you to new messages.
+
+**Managing Notifications:**
+
+- View your alerts by clicking the <i class="bi-bell-fill"></i> **Notifications** button at the top-right.
+- Click a notification to jump directly to that room (this also clears that specific alert).
+- To clear all notifications at once, click the <i class="bi-x"></i> button in the notifications list.
+
 ## Voice Chat
 
 Ally Chat has a sophisticated voice chat system, where different characters can speak with different voices, and users can choose to pass-through their recorded voice or choose an AI voice for their messages.
@@ -1080,6 +1105,7 @@ Some buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-compass"></i> |  | Nav | Navigation menu |
 | <i class="bi-arrow-left-right"></i> | | Pages | Pages menu |
 | <i class="bi-file-text"></i> |  | Room Ops \* | Rename or copy a room or file |
+| <i class="bi-bell"></i> |  | Notify \* | Watch for you to be mentioned <i class="bi bi-bell i20"></i> or all changes <i class="bi bi-bell-fill i20"></i> in this room, or under this folder; or block inherited notifications <i class="bi bi-bell-slash i20"></i> |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 
 \* only visible after pressing Alt/Option or swiping the input field on mobile.
@@ -1114,12 +1140,15 @@ Some buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
+| <i class="bi-bell-fill"></i> |  | Notifications \*\* | View notifications, a list of links to rooms |
 | <i class="bi-chevron-bar-down"></i> <i class="bi-chevron-bar-up"></i> |  | End / Home | Go to end or start of room |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get strong AI help to use the app. |
 | <i class="bi-currency-dollar"></i> |  | Usage | View your usage by month, day, and agent, with costs in US$. Click the button again to close the usage view. |
+| <i class="bi-file-zip"></i> |  | Download zip \* | Download a zip of all your private files |
 | <i class="bi-door-closed"></i> |  | Log out \* | Log out from Ally Chat, returns to the main Allemande home page |
 
 \* only visible after pressing Alt/Option or swiping the input field on mobile.
+\*\* only visible when you have notifications
 
 ## Bottom-Right Controls
 
@@ -1220,7 +1249,7 @@ This is a large screen which takes up the bottom half of the display, and includ
 |  |  | Name | Change your name in the chat |
 |  |  | Artist | An agent to make images when you press the Artist button (default: Illu) |
 |  |  | Writer | An agent to write narrative when your press the Writer button (default: none; try Novi) |
-| <i class="bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi-lightbulb-off"></i> none, <i class="bi-lightbulb"></i> recap of this chat, <i class="bi-lightbulb-fill"></i> also recent chats, <i class="bi-sun-fill"></i> also relevant older chats |
+| <i class="bi-lightbulb-off"></i> |  | Recall | Cycle memory recall mode: <i class="bi-lightbulb-off"></i> none, <i class="bi-lightbulb"></i> recap of this chat, <i class="bi-lightbulb-fill"></i> also recent chats, <i class="bi-sun-fill"></i> also relevant older chats |
 | <i class="bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
 ### <i class="bi-shield"></i> Room Options

@@ -71,17 +71,23 @@ function clean_up_server_events() {
     $e.remove();
 }
 
+function remove_current_script() {
+  if (document.currentScript)
+    document.currentScript.remove();
+}
+
 export function online() {
   // console.log("online");
   if (snapshot)
     return;
+  remove_current_script();
   clearTimeout(offline_timeout);
   offline_timeout = setTimeout(offline, 1000 * offline_timeout_seconds);
   const status = get_status_element();
   //	status.innerText = '🔵';
   status.innerText = "";
   hide(status);
-  clean_up_server_events();
+  // clean_up_server_events();
 }
 
 function offline() {
@@ -2392,7 +2398,7 @@ function img_markdown(img, alt, ctrl) {
 // notifications -------------------------------------------------------------
 
 export function notify() {
-  clean_up_server_events();
+  remove_current_script();
   window.parent.postMessage({ type: "notify" }, ALLYCHAT_CHAT_URL);
 }
 

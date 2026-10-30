@@ -1096,6 +1096,8 @@ export async function set_room(room_new, no_history) {
 
   nsfw_zone_room_changed();
 
+  remove_current_room_from_notifications();
+
   // if (view === "view_edit" && !edit_changed()) {
   //   // just change room, exit the editor
   //   view = "messages";
@@ -5343,7 +5345,6 @@ function edit_last_message() {
 async function download_zip_confirm(ev) {
   ev.preventDefault();
   const a = ev.target.closest("a")
-  console.log("download_zip_confirm href:", a.href);
 
   const confirmed = await Prompts.confirm("Download a zip of all your private files?");
 
@@ -5403,7 +5404,7 @@ async function notify_clicked(ev) {
 
 async function notify_ensure_subscribed() {
 	const reg = await navigator.serviceWorker.ready;
-  let sub = reg.pushManager.getSubscription();
+  let sub = await reg.pushManager.getSubscription();
 
   if (sub)
     return sub;
@@ -5431,10 +5432,14 @@ async function notify_ensure_subscribed() {
   return sub;
 }
 
-// not in use yet
 async function notify_unsubscribe() {
+  const confirmed = await Prompts.confirm("Unsubscribe from push notifications?");
+
+  if (!confirmed)
+    return;
+
 	const reg = await navigator.serviceWorker.ready;
-  let sub = reg.pushManager.getSubscription();
+  const sub = await reg.pushManager.getSubscription();
   await sub.unsubscribe();
   const response = await fetch('/x/unsubscribe', {
     method: 'POST',
@@ -5459,6 +5464,7 @@ function notify_main() {
 		return;
 	}
 	$on($id('notify'), 'click', notify_clicked);
+	$on($id('notify_unsub'), 'click', notify_unsubscribe);
 }
 
 function notifications_click(ev) {
@@ -5471,6 +5477,7 @@ function notifications_click(ev) {
 let notifications = [];
 
 async function setup_notifications(notify) {
+  // console.log("setup_notifications");
   if (notify === undefined) {
     const user_dir = "/users/" + user;
     const notify_response = await fetch(user_dir + "/notifications.txt?" + Date.now());
@@ -5501,8 +5508,12 @@ async function setup_notifications(notify) {
 }
 
 async function remove_current_room_from_notifications() {
-  if (notifications.indexOf(room) >= 0)
+  if (notifications.indexOf(room) >= 0) {
+    // also remove locally because it doesn't always sync up, IDK why, some race condition I guess
+    notifications = notifications.filter(x => x !== room);
+    await setup_notifications(notifications.join("\n"));
     await remove_notifications(room);
+  }
 }
 
 let view_active = true;

@@ -9,6 +9,7 @@ import logging
 from pathlib import Path
 import re
 import asyncio
+import yaml
 
 from watchfiles import Change
 
@@ -17,6 +18,10 @@ import ucm  # type: ignore
 import tasks
 import settings
 import ally_notify
+from ally_room import check_access, Access
+
+PUBLIC_DIRS = ["agents", "scene", "nsfw", "art", "clothes", "macro", "devlog", "sanctuary", "old", "cast", "dev", "voice"]  # move to settings
+NSFW_DIRS = ["nsfw", "sanctuary"]
 
 
 logger = logging.getLogger(__name__)
@@ -63,6 +68,29 @@ async def file_changed(file_type, file_path, change_type, old_size, new_size):
     user_setting_list = ally_notify.notify_who(rel_path)
     logger.info("notify who for %s: %r", rel_path, user_setting_list)
     user_setting_list = [x for x in user_setting_list if x[1] != "off"]
+
+    do_quick_access_control_check = True
+
+    if do_quick_access_control_check:
+        # quick access control check to protect private files
+        top_dir, _rest = rel_path.split("/", 1)
+        if top_dir in PUBLIC_DIRS or top_dir.endswith(".tts"):
+            owner = None
+        else:
+            owner = top_dir
+        if owner:
+            user_setting_list = [x for x in user_setting_list if x[0] == owner]
+
+        # don't notify SFW users on NSFW rooms!
+        if user_setting_list and top_dir in NSFW_DIRS:
+            # TODO make this more efficient?
+            nsfw_dir = Path("/opt/allemande/rooms/nsfw")
+            nsfw_access = yaml.safe_load((nsfw_dir/".access.yml").read_text())
+            nsfw_allow = nsfw_access.get("allow", [])
+            user_setting_list = [x for x in user_setting_list if x[0] in nsfw_allow]
+
+    # full access control check for remaining users
+    user_setting_list = [x for x in user_setting_list if check_access(x[0], rel_path).value & Access.READ.value]
 
     if not user_setting_list:
         return
@@ -115,6 +143,8 @@ async def watch_loop(args):
 
                 if not os.access(file_path, os.W_OK):
                     logger.info("Ignoring change to unwritable file: %r", file_path)
+                if "/ally_chat_cli/" in file_path:
+                    pass
                 elif file_type:
                     task = asyncio.create_task(file_changed(file_type, file_path, change_type, old_size, new_size))
                     tasks.add_task(task, f"file changed: {file_path}")

@@ -31,13 +31,14 @@
 		<a class="button private standard advanced" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
 			<!--<a class="button nsfw nav_nsfw hidden simple standard advanced" href="" title="go to the main NSFW room">nsfw</a>-->
-			<button class="dev option" id="notify">notify</button>
 			<a class="button" href="" id="nav" title="navigation">nav</a>
 			<a class="button" href="" id="pages" title="pages">pages</a>
 			<a class="button hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
 			<button class="hidden" id="agent_new" title="add a new agent">new agent</button>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<button id="room_ops" title="room operations" class="option">room</button>
+			<button class="option" id="notify">notify</button>
+			<button class="option dev hidden" id="notify_unsub">notify_unsub</button>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_nav">
 			<button id="nav_cancel" class="back">back</button>
@@ -73,7 +74,7 @@
 		<input id="room" name="room" class="flex grow">
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small standard advanced dev hidden pc option">?</button>
-			<button class="hidden dev" id="notifications">notifications</button>
+			<button class="hidden" id="notifications">notifications</button>
 			<button id="filter" title="filter media" class="option dev hidden">filter</button>
 			<button id="scroll_end_2" title="end of room: end" class="standard advanced">bot</button>
 			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
@@ -101,7 +102,7 @@
 			<button id="system_message_close" title="dismiss message"></button>
 			<div id="system_message_content"></div>
 		</div>
-		<div id="notifications_list" class="notifications_list hidden dev">
+		<div id="notifications_list" class="notifications_list hidden">
 			<button id="notifications_list_clear" title="clear notifications"></button>
 			<div id="notifications_list_content"></div>
 		</div>
