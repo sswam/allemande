@@ -433,6 +433,7 @@ async def stream(request, path=""):
     # Handle symlink redirects for shortcuts
     if path.is_symlink():
         target = os.readlink(str(path))
+        target = target.replace("$USER", user)
         if target.startswith(("https://", "http://")):
             return Response(status_code=302, headers={"Location": target})
         elif target.startswith("/"):

@@ -382,6 +382,7 @@ class Room:
             raise PermissionError(f"You are not allowed to get options for this room: {self.name}, user: {user}")
         if self.path.is_symlink():
             target = self.path.resolve().relative_to(ROOMS_DIR)
+            target = Path(str(target).replace("$USER", user))
             if target.suffix == EXTENSION:
                 target = target.with_suffix("")
             room2 = Room(str(target))
@@ -714,6 +715,7 @@ def _check_symlink_access(user: str, path: Path, is_symlink: bool) -> tuple[Acce
     if is_symlink:
         try:
             target = path.resolve().relative_to(ROOMS_DIR)
+            target = Path(str(target).replace("$USER", user))
         except ValueError:
             return None
         except FileNotFoundError:
