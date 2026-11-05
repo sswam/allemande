@@ -58,6 +58,8 @@ def send_one(subscription, message, room):
         data=data,
         vapid_private_key=VAPID_PRIVATE_KEY,
         vapid_claims={"sub": f"mailto:admin@{ALLEMANDE_DOMAIN}"},
+        ttl=86400,
+        headers={"Urgency": "high"},
     )
 
 

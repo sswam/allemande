@@ -131,7 +131,7 @@ async def execute_forward(c, generate_agent_response, bot2, agent):
     """Execute forwarding to another agent."""
     logger.info("Forwarding from %s to %s", agent.name, bot2)
     forward_keep_prompts = agent.get("forward_keep_prompts")
-    agent2 = c.agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts, no_over=True)
+    agent2 = c.agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts, no_over=False)  # XXX was True, IDK why
 
     # Allow to override agent settings in the room config
     # TODO should we apply room options for which agent name?  It'll use the original name for now.

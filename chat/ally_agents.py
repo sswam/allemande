@@ -291,12 +291,12 @@ class Agent:
             agent.update(config["agents"][name_lc])
         return agent
 
-    def apply_identity(self, reference: Agent, keep_prompts=False, no_over=True) -> Agent:
+    def apply_identity(self, reference: Agent, keep_prompts=False, no_over=False) -> Agent:
         """Create a new agent based on self with name and other attributes from reference."""
         data = {
             "base": [self.name],
         }
-        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant", "poke_if", "art_model"]:
+        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant", "art_model"]:
             data[key] = deepcopy(reference.get(key))
 
         if no_over:
@@ -321,20 +321,23 @@ class Agent:
         logger.debug("apply_identity: agent: %r", agent)
         return agent
 
-    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):
+    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True, show=None):
         """Get a value from the agent's data"""
+
+        if show is None:
+            show = self.data.get("show", 1)
 
         # use description for system_top or system_bottom
         value3 = None
         if key in ["system_top", "system_bottom"] and key not in self.data:
-            description = self.get("description")
+            description = self.get("description", show=show)
             if description:
-                description_pos = self.get("description_pos", "top")
+                description_pos = self.get("description_pos", "top", show=show)
                 if key == "system_" + description_pos:
                     value3 = "+\n\n" + description
 
-        base = self.base()
-        over = self.over() if with_over else []
+        base = self.base(show=show)
+        over = self.over(show=show) if with_over else []
 
         value = None
 
@@ -347,7 +350,7 @@ class Agent:
                 value2 = value3 or self.data.get(key)
             else:
                 use_over = with_over and obj not in base
-                value2 = obj.get(key, raw=True, with_over=use_over)
+                value2 = obj.get(key, raw=True, with_over=use_over, show=show)
             if value is not None and value2 is not None:
                 value2 = agent_merger.merge(deepcopy(value), value2)
             if value2 is not None and (obj == self or not (key, value2) == ("type","mixin")):
@@ -462,9 +465,9 @@ class Agent:
         if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", [], with_over=with_over):
             # seed = self.get("unp_seed")
             try:
-                logger.info("Applying macros for agent %r key %s", self.name, key)
+                # logger.info("Applying macros for agent %r key %s", self.name, key)
                 value = macro.process_macros(value, macro_vars)
-                logger.info("Macros applied for agent %r key %s: %s", self.name, key, value)
+                # logger.info("Macros applied for agent %r key %s: %s", self.name, key, value)
             except Exception as e:
                 logger.error("Macros error for agent %r key %r: %s %s", self.name, key, type(e).__name__, str(e))
 
@@ -541,13 +544,17 @@ class Agent:
         # logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
-    def base(self):
+    def base(self, show=None):
         """Get the base agents"""
         base_names = self.data.get("base", [])
         if base_names and isinstance(base_names, str):
             base_names = [base_names]
         base = []
         for name in base_names:
+            # A hack to switch base Char -> CharXilu for always making images
+            if show == 2 and name == "Char":
+                # logger.info("  base: switching Char -> CharXilu")
+                name = "CharXilu"
             if name == "super" and self.agents.parent:
                 agent = self.agents.parent.get(self.name)
             else:
@@ -558,14 +565,15 @@ class Agent:
                 logger.debug("Base agent %s not found for %s", name, self.name)
         return base
 
-    def over(self):
+    def over(self, show=None):
         """Get the over agents"""
         over_names = self.get("over", [], with_over=False)
         if over_names and isinstance(over_names, str):
             over_names = [over_names]
 
         # A hack to disable ShowMI mixins, which help a character generate images
-        if not self.get("show", True, with_over=False):
+        if not show or show == 2:
+            # logger.info("  over: excluding ShowMI")
             over_names = [x for x in over_names if not x.startswith("ShowMI")]
 
         over = []
