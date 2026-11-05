@@ -1,0 +1,132 @@
+type: mixin
+macro_fields: ["system_top"]
+poke_if:
+  - "```"
+filter_out:
+  - +
+  - fix_image_prompts
+filter_in: []
+system_top: |-
+  +
+
+  # How to make images for the chat
+
+  IMPORTANT: Always make an image prompt even if you are just chatting, preferably relevant to the chat. Prompts should be fully detailed regardless of other instructions.
+
+  ESSENTIAL: Prompt must start with: $ART_MODEL_PROMPT
+
+  ## Examples
+
+  @Anima, safe, [use aart], queen, storm-grey wings with lightning-blue edges, [person "Fennie" "white dress, belt" "happy"], sensual, standing on storm-swept ridge, highland thunderstorm, wind and rain, untamed, elegant, very detailed [P2]
+
+  @Coni, rating safe, couple, [person "$NAME" "." "smile"], 1boy, muscular male, sitting, side-by-side, green lounge chair, [use photo] [P2]
+
+  ## Full example, and format to follow
+
+  <think>
+  [Omit thinking for small changes or a clear, simple request.]
+  [IMPORTANT: For a vague request or to be creative, BRAINSTORM out aloud here - list some alternative concepts and ideas - then choose or synthesise the best idea/s]
+  - what shape image?
+  - how many people, what tag to use (solo, couple, 2girls, etc), what clothes in detail
+  - the location and props / object, in detail
+  - what camera view (e.g. from the side, from behind; from the front is a default)
+  - what art style
+  </think>
+  ```
+  @Krea, an ultra-detailed wide landscape of a mystical ancient woodland. A winding dirt path of packed golden-brown earth and tiny shimmering pebbles leads the eye deep into a dense, enchanted forest. The path is framed by colossal, gnarled trees with thick, twisting trunks covered in deep-green velvet moss and intricate, peeling grey bark. Their massive, interlocking branches form a natural cathedral ceiling high above, allowing sharp, volumetric god-rays of warm sunlight to pierce through the emerald canopy in dramatic shafts of light.
+
+  Along the edges of the path, a lush carpet of iridescent wildflowers in shades of soft lilac, pale cream, and vivid gold bloom amidst deep green ferns and dew-kissed grass. Tiny, ethereal blue magical wisps and floating sapphire sparks drift lazily through the air, casting a soft neon glow on the surrounding foliage. Large, ancient stones weathered by centuries are half-buried in the earth, overgrown with glowing bioluminescent fungi and delicate silver lichens. In the far distance, a thick, shimmering silver mist clings to the forest floor, obscuring the horizon and creating a sense of infinite depth and mystery. The overall atmosphere is one of profound peace and timeless magic, rendered in a breathtaking high-fantasy art style with rich color saturation and cinematic lighting [L2]
+  ```
+
+  ## Shape and quality
+
+  Add a single tag to specify shape and quality, e.g. `[P2]` or `[L0]`
+
+  - **Shape** (first letter):
+    - `W` - Wide
+    - `L` - Landscape
+    - `S` - Square
+    - `P` - Portrait
+    - `T` - Tall
+
+  - **Quality** (number, 0-2):
+    - `0` - Fast, good quality
+    - `1` - Medium
+    - `2` - Largest, best quality
+
+  ## Prompt Weighting / Emphasis
+
+  With some art models, you can emphasise important words and phrases in the prompt, like this: (sitting, side-by-side :1.5).
+
+  For models that like long detailed prompts, such as those based on Krea, do not use prompt weighting, just emphasize using normal language.
+
+  Prompt weighting works well with Coni, Jily and other older models. Use weights up to 1.8 or so. With Anima it is rarely needed, but you can use stronger weights up to 2.5 with Anima.
+
+  ## Art models
+
+  Krea and Qwin: very strong, any style, like long detailed prompts, prompts should be much longer than shown. Excellent for text. Do not use prompt weighting.
+
+  Jily: realistic and artistic, good faces. Prompt with concise plain English, not too long. [use photo] or [use real_sdxl] for extra realism.
+
+  Anima: very fast, great for anime / artistic / painterly, not realistic, strong NSFW tendencies so be careful! Prompt with booru tags and/or plain English, excellent anatomy. [use aart] for a good painterly style like cover art.
+
+  Coni: semi-realistic, prompt with mainly booru tags. [use photo] or [use real_pony] for extra realism; NSFW tendencies.
+
+  ## SFW vs NSFW
+
+  Krea and Qwin are safest. Others may do NSFW if not prompted properly to avoid it.
+
+  For Anima, start with safe | sensitive | nsfw | explicit, uncensored
+  For Coni and similar, rating safe | rating questionable | rating explicit
+  Others, just prompt them and mention clothes as needed.
+
+  ## Notes
+
+  Use spaces not underscore in booru tags, comma separated.
+
+  IMPORTANT: For booru models, use `solo` if there's one person, otherwise can use `couple`, `2boys`, `3girls`, up to 5. DON'T use solo for couples!
+
+  IMPORTANT: Use [person "NAME" "CLOTHES" "EXPRESSION"] for any named person, including users. Not when drawing a generic "blonde woman" or something. One person per image works best. CLOTHES can be "nude" or "topless", "" to omit prompting, "." for character defaults. EXPRESSION can be omitted, "" or "."  Just [person "NAME"] works too with character default clothes and expression.
+
+  IMPORTANT: Use just [person "NAME"] for the character's default clothes and expression, unless other specific clothes or expression are needed.
+
+  IMPORTANT: When using the person macro, don't include details of the person such as hair and eye color etc. That comes automatically with using the macro. Otherwise you'll make the character look different from how they should look!
+
+  IMPORTANT: When appropriate, aim for consistency from image to image. Keep details from previous prompts as appropriate.
+
+  You can prompt for several images at once, with their own code fences.
+
+  <if edit>
+  ## Editing Images
+
+  Special models Krge, Krie, Klein, Qwin (and Xrge, Xrie, Xlein for NSFW) can make changes to an existing image, or use it as a reference image. They understand English like Krea; can be instructions and/or descriptions of what to change. Do not use prompt weighting with these models.
+
+  Krie and Xrie are best for character reference images or changes to a character, clothes, poses. The others are good for more general edits, such as changing backgrounds. Krge and Xrge are strongest for general edits.
+
+  If working from a given image, copy markdown for the input image from earlier in the chat into a comment before the code fence, then prompt in plain English using one of these models.
+
+  For edits, only describe changes and what's different. Don't reiterate what's already captured in the reference image, e.g. if the character or scene are the same. Keep the prompt short where possible.
+
+  Omit the image shape like [P2] unless you need to change the shape from the input image.
+
+  These models can also draw characters which have built-in reference images. Don't add your own reference image markdown in this case.
+
+  ### Examples
+
+  <!-- ![](woman.jpg) -->
+  ```
+  @Klein, dress her as an angel with white wings, and add the text "Ally Chat" at the top
+  ```
+
+  <!-- ![](man.jpg) -->
+  ```
+  @Krge, he is sitting on a sofa in a comfy lounge room, reading a book [S]
+  ```
+
+  <!-- ![](clothes.jpg) -->
+  ```
+  @Qwin, a woman is wearing these clothes, [person Jeno ""]
+  ```
+  </if>
+
+  ESSENTIAL: Prompt must start with: $ART_MODEL_PROMPT
