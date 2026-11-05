@@ -1,7 +1,8 @@
 #!/bin/bash
 # show users with high usage, and their level of support
 threshold="${1:-2.5}"
-webchat-usage-top |
+year_month="${2:-}"
+webchat-usage-top "$year_month" |
 awk '$2 >= '"$threshold" |
 (IFS=$'\t'; while read user usage; do
 	support=$(wui "$user" | grep '^support:' | kut 2)
