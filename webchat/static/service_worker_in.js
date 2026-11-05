@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "1.0.997";
+const VERSION = "1.0.1010";
 
 const DEBUG = false;
 
@@ -62,7 +62,7 @@ const CORS_URLS_TO_CACHE = {
     "/ally_highlight.js",
     "/process_messages.js",
     "/room.js",
-    "/voice.js",
+//    "/voice.js",
     // only needed for help system, could load them specifically there?
     "/icons.js",
 //    "/icons.css",
@@ -201,6 +201,9 @@ async function sw_push(event) {
     body: data.body,
     icon: ALLEMANDE_LOGIN_URL + "/icon.png",
     badge: ALLEMANDE_LOGIN_URL + "/icon.png",
+    // overwrite old / stale notifications for the same room
+    tag: data.room,
+    renotify: true,
     data: {
       room: data.room,
 //      url: "/" + query_to_hash(data.room),

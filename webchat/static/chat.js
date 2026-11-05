@@ -3187,8 +3187,12 @@ let voice_send_pending = false;
 const vad_options = {
   redemptionMs: 1400,
   preSpeechPadMs: 800,
+  positiveSpeechThreshold: 0.5,
+  negativeSpeechThreshold: 0.45,
+  minSpeechMs: 400,
   onSpeechStart: () => {
     console.log("Speech start detected");
+    active_set("content", 1);
     send_to_room_iframe({ type: "vad_active", active: true });
     if (voice_send_timeout) {
       defer_voice_send_timeout();
@@ -3196,6 +3200,7 @@ const vad_options = {
   },
   onSpeechEnd: (audio) => {
     console.log("Speech end detected");
+    active_set("content", -1);
     send_to_room_iframe({ type: "vad_active", active: false });
     if (voice_send_timeout) {
       defer_voice_send_timeout();
@@ -3203,6 +3208,8 @@ const vad_options = {
     vad_trim_encode_and_upload_audio(audio);  // don't wait
   },
   onVADMisfire: () => {
+    console.log("VAD misfire");
+    active_set("content", 0);
     send_to_room_iframe({ type: "vad_active", active: false });
     if (voice_send_pending)
       start_voice_send_timeout();
@@ -3231,6 +3238,7 @@ async function vad_start_or_pause() {
     myvad.start();
   } else {
     console.log("VAD paused");
+    active_set("content", 0);
     myvad.pause();
     clear_voice_send_timeout();
   }
@@ -3279,6 +3287,8 @@ async function vad_trim_encode_and_upload_audio(audio) {
 
   const added_text = await add_upload_file_link(upload_file(mediaBlob, fileName, speech_to_text));
 
+  active_set("content", 0);
+
   // auto-send after a timeout, if enabled; also clear this on typing or losing focus
   if (!(added_text || voice_send_pending))
     return;
@@ -3315,8 +3325,8 @@ function vad_trim_audio(audio) {
   const sampleRate = 16000;
 
   // 2. Define safety "fudge factor" cushions (in milliseconds)
-  const frontCushionMs = 200; // Leave 200ms of context at the start
-  const tailCushionMs = 250;  // Leave 250ms of context at the end
+  const frontCushionMs = 500; // Leave this much context at the start
+  const tailCushionMs = 250;  // Leave this much context at the end
 
   // 3. Calculate sample positions to slice
   // Calculate how many samples to strip off the start
@@ -3996,7 +4006,7 @@ async function get_options(notify_only) {
   const art_model = data?.agents?.all?.art_model ?? (room_nsfw ? config.ART_MODEL_NSFW : config.ART_MODEL_SFW);
   const artist = data?.artist ?? (room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW);
   const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
-  const show = data?.agents?.all?.show ?? true;
+  const show = data?.agents?.all?.show ?? 1;
   const think = data?.agents?.all?.think ?? false;
   const short = data?.agents?.all?.short ?? false;
 
@@ -4029,6 +4039,7 @@ async function get_options(notify_only) {
   active_set("opt_memorize", memorize);
 
   opt_recall_update_button(recall);
+  opt_show_update_button(show);
   opt_artist_changed();
   opt_writer_changed();
   opt_images_apply();
@@ -4208,17 +4219,32 @@ function opt_writer_changed() {
 
 
 async function opt_show(ev) {
-  const show = active_toggle("opt_show")
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  let show = active_get("opt_show");
+  show = (show + delta + 3) % 3;
+  active_set("opt_show", show)
+  opt_show_update_button(show);
   await set_options({
     room: room,
     options: {
       agents: {
         all: {
-          show: Boolean(show),
+          show: show,
         }
       }
     }
   });
+}
+
+function opt_show_update_button(show) {
+  const $opt_show = $id('opt_show');
+  if (show == 0) {
+    setTitle($opt_show, "characters don't show images");
+  } else if (show == 1) {
+    setTitle($opt_show, "characters sometimes show images");
+  } else if (show == 2) {
+    setTitle($opt_show, "characters always show images");
+  }
 }
 
 async function opt_think(ev) {
