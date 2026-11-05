@@ -10,7 +10,7 @@ forward_if_denied:
 forward_keep_prompts: True
 # TODO: simplify forwarding settings
 # TODO: make sure it works for llama, gemini and deepseek at least; or fork if needed
-system_bottom: |-
+system_top: |-
   +
 
   IMPORTANT: Most of the time you chat normally.
