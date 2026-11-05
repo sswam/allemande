@@ -1,6 +1,9 @@
-[if gender="boy" _not]
-	[sets gender=girl]
+[if gender="boy"]
+	[sets pronoun=He]
 [/if]
+[else]
+	[sets gender=girl pronoun=She]
+[/else]
 
 [if pony=1]
 
@@ -54,18 +57,18 @@
 [set chin][choose]strong|weak|square|pointed|round|cleft[/choose][/set]
 [set cheekbones][choose]|high|low|prominent|subtle[/choose][/set]
 [set ears][choose]small|protruding|close-set[/choose][/set]
-[##][set build][choose]plump|skinny|athletic|muscular[/choose][/set][/##]
+[set build][choose]plump|slender|skinny|athletic|muscular[/choose][/set]
 [set build][choose]skinny[/choose][/set]
 [set hair][choose]very long hair|long hair|medium hair|short hair[/choose][/set]
 [set char_height][choose]tall|short[/choose][/set]
 
-[use race, 90 1.5 1.8] [use nationality, 40 1.5 1.8]
+[get pronoun] is [use race, 100 1.5 1.8] [use nationality, 40 1.5 1.8].
 
 [##]BREAK[/##]
 
-[opt 70 1.0 1.7][get hair], [/opt]
+[opt 70 1.0 1.7][get pronoun] has [get hair], [/opt]
 [use hairstyle, 70 1.0 1.7]
-[opt 60 1.0 1.7][get face_shape] face, [/opt]
+[opt 60 1.0 1.7][get pronoun] has a [get face_shape] face, [/opt]
 [opt 60 1.0 1.7][get forehead] forehead, [/opt]
 [opt 60 1.0 1.7][get eyebrows] eyebrows, [/opt]
 [opt 60 1.0 1.7][get nose] nose, [/opt]
@@ -73,17 +76,17 @@
 [opt 60 1.0 1.7][get chin] chin, [/opt]
 [opt 60 1.0 1.7][get cheekbones] cheekbones, [/opt]
 [opt 60 0.5 1.0][get ears] ears, [/opt]
-[opt 50 1.0 1.7][get build], [/opt]
-[opt 60 1.0 1.7][get char_height], [/opt]
+[opt 50 1.0 1.7][get pronoun] is [get build], [/opt]
+[opt 50 1.0 1.7][get pronoun] is [get char_height], [/opt]
 
-[opt 20 1.0 1.8] freckles, [/opt]
-[opt 20 1.0 1.8] dimple, [/opt]
+[opt 20 1.0 1.8] [get pronoun] has freckles, [/opt]
+[opt 20 1.0 1.8] [get pronoun] has dimples, [/opt]
 [/else]
 
 [##]BREAK[/##]
 
 [if gender="boy"]
-	[use name_given_boy 100 1.2 1.7] [use surname 90 1.2 1.7],
+	His name is [use name_given_boy 100 1.2 1.7] [use surname 90 1.2 1.7],
 	[if pony=1]
 		[use char_boy, 100 0.9 1.7]
 		[use char_boy, 90 0.9 1.7]
@@ -92,7 +95,7 @@
 	[/if]
 [/if]
 [else]
-	[use name_given_girl 100 1.2 1.7] [use surname 90 1.2 1.7],
+	Her name is [use name_given_girl 100 1.2 1.7] [use surname 90 1.2 1.7],
 	[if pony=1]
 		[use char_girl, 100 0.9 1.7]
 		[use char_girl, 90 0.9 1.7]

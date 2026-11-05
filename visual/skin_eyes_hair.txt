@@ -1,3 +1,6 @@
+[if pony=1 _not]
+with
+[/if]
 [choose _weighted]
 [get skin_light]     | {use ./eyes_any,} {use ./hair_any,}
 [get skin_dark]      | (dark skin, dark-skinned [get gender2]:1.5), {use ./eyes_dark,} {use ./hair_dark,}

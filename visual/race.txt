@@ -6,7 +6,7 @@
 [/else]
 
 [choose _weighted]
-20|Caucasian, {use ./seh_light,}
+80|Caucasian, {use ./seh_light,}
 20|African, {use ./seh_dark,}
 20|Asian, {use ./seh_medium,}
 20|Hispanic, [get latin], {use ./seh_medium,}
