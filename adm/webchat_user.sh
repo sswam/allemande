@@ -117,6 +117,7 @@ Pass: $generated_pass
 - Please explore private chat with your first AI. Then press ? and read the intro.
 - Try joining a group chat too. We're friendly and we like to help new users!
 - You can use up to \$3/month of AI for free. Check your usage with the \$ button.
+- You can join our Discord if you like: https://allemande.ai/s/discord
 
 === Please Contribute! ===
 
