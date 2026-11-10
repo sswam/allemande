@@ -484,7 +484,7 @@ MODELS = {
     },
     "gemma-4-31b": {
         "aliases": ["gemma4", "gem"],
-        "vendor": "openrouter",
+        "vendor": "nanogpt",
         "id": "google/gemma-4-31b-it",
         # "vendor": "venice",
         # "id": "google-gemma-4-31b-it",

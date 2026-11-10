@@ -1,4 +1,5 @@
-type: openrouter
-model: gemma4:coreweave/fp4
+type: nanogpt
+model: gemma4
+# model: gemma4:coreweave/fp4
 # type: venice
 # model: gemma4

@@ -13,5 +13,6 @@ over:
   - Think
 filter_in:
   - clean_up_mentions
-  - remove_images
   - remove_code
+# - remove_images
+# don't "remove_images", because it kills vision at the moment, and a bit hard to fix!

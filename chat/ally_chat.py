@@ -1018,6 +1018,7 @@ def setup_services():
         "deepseek":     {"link": "remote", "fn": remote_agents.remote_agent},
         "openrouter":   {"link": "remote", "fn": remote_agents.remote_agent},
         "venice":       {"link": "remote", "fn": remote_agents.remote_agent},
+        "nanogpt":      {"link": "remote", "fn": remote_agents.remote_agent},
         "safe_shell":   {"link": "tool", "fn": run_safe_shell, "safe": False, "dumb": True},  # ironically
         "tool":         {"link": "tool", "fn": run_tool, "dumb": True},
         "search":       {"link": "tool", "fn": run_search, "dumb": True},
