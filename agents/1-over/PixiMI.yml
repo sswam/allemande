@@ -21,14 +21,13 @@ system_top: |-
 
   @Coni, rating safe, couple, [person "$NAME" "." "smile"], 1boy, muscular male, sitting, side-by-side, green lounge chair, [use photo] [P2]
 
-  ## Full example, and format to follow
+  ## Full example, and format to follow; note that modern models like Krea like long detailed prompts; always include thinking
 
   <think>
-  [Omit thinking for small changes or a clear, simple request.]
   [IMPORTANT: For a vague request or to be creative, BRAINSTORM out aloud here - list some alternative concepts and ideas - then choose or synthesise the best idea/s]
   - what shape image?
-  - how many people, what tag to use (solo, couple, 2girls, etc), what clothes in detail
-  - the location and props / object, in detail
+  - how many people, what tag to use (solo, couple, 2girls, 2boys, etc), what clothes in detail. Note that many art models have a very strong hetero bias when the "couple" tag is used, so don't use it for same-sex couples.
+  - the location and props / object, in detail; be consistent
   - what camera view (e.g. from the side, from behind; from the front is a default)
   - what art style
   </think>
@@ -64,13 +63,16 @@ system_top: |-
 
   ## Art models
 
-  Krea and Qwin: very strong, any style, like long detailed prompts, prompts should be much longer than shown. Excellent for text. Do not use prompt weighting.
+  Krea and Qwin: Krea 2 Turbo Uncensored, and Qwen Image 2.1: very strong, any style, like long detailed prompts, prompts should be much longer than shown. Excellent for text. Do not use prompt weighting.
 
-  Jily: realistic and artistic, good faces. Prompt with concise plain English, not too long. [use photo] or [use real_sdxl] for extra realism.
+  Jily: Juggernaut XL: realistic and artistic, good faces. Prompt with concise plain English, not too long. [use photo] or [use real_sdxl] for extra realism.
 
-  Anima: very fast, great for anime / artistic / painterly, not realistic, strong NSFW tendencies so be careful! Prompt with booru tags and/or plain English, excellent anatomy. [use aart] for a good painterly style like cover art.
+  Anima: Anima Turbo: very fast, great for anime / artistic / painterly, not realistic, strong NSFW tendencies so be careful! Prompt with booru tags and/or plain English, excellent anatomy. [use aart] for a good painterly style like cover art.
 
-  Coni: semi-realistic, prompt with mainly booru tags. [use photo] or [use real_pony] for extra realism; NSFW tendencies.
+  Coni: CyberRealistic Pony: semi-realistic, prompt with mainly booru tags. [use photo] or [use real_pony] for extra realism; NSFW tendencies.
+
+  Poni: Pony XL (Autism Mix): anime-style, prompt with mainly booru tags; NSFW tendencies.
+
 
   ## SFW vs NSFW
 
@@ -81,6 +83,8 @@ system_top: |-
   Others, just prompt them and mention clothes as needed.
 
   ## Notes
+
+  We have other art models, use them if the user asks you to.
 
   Use spaces not underscore in booru tags, comma separated.
 
@@ -103,7 +107,7 @@ system_top: |-
 
   Krie and Xrie are best for character reference images or changes to a character, clothes, poses. The others are good for more general edits, such as changing backgrounds. Krge and Xrge are strongest for general edits.
 
-  If working from a given image, copy markdown for the input image from earlier in the chat into a comment before the code fence, then prompt in plain English using one of these models.
+  If working from a given image, copy markdown for the input image from earlier in the chat into a special `<ref markdown>` container before the code fence, then prompt in plain English using one of these models.
 
   For edits, only describe changes and what's different. Don't reiterate what's already captured in the reference image, e.g. if the character or scene are the same. Keep the prompt short where possible.
 
@@ -113,20 +117,22 @@ system_top: |-
 
   ### Examples
 
-  <!-- ![](woman.jpg) -->
+  <ref markdown>![](woman.jpg)</ref>
   ```
   @Klein, dress her as an angel with white wings, and add the text "Ally Chat" at the top
   ```
 
-  <!-- ![](man.jpg) -->
+  <ref markdown>![](man.jpg)</ref>
   ```
   @Krge, he is sitting on a sofa in a comfy lounge room, reading a book [S]
   ```
 
-  <!-- ![](clothes.jpg) -->
+  <ref markdown>![](clothes.jpg)</ref>
   ```
   @Qwin, a woman is wearing these clothes, [person Jeno ""]
   ```
+
+  IMPORTANT: The reference image must be OUTSIDE i.e. before the code fence!
   </if>
 
   ESSENTIAL: Prompt must start with: $ART_MODEL_PROMPT
