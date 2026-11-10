@@ -107,45 +107,36 @@ add-user() {
 		cat <<END
 === Welcome to Ally Chat! ===
 
+Please read this whole message, it's all important.
+
 https://$ALLEMANDE_DOMAIN
 User: $user
 Pass: $generated_pass
 
 === Getting Started ===
 
-- There's one content rule: Keep it legal, specifically no NCII or CSAM images.
-- Please explore private chat with your first AI. Then press ? and read the intro.
-- Try joining a group chat too. We're friendly and we like to help new users!
-- You can use up to \$3/month of AI for free. Check your usage with the \$ button.
-- You can join our Discord if you like: https://allemande.ai/s/discord
+- Try private chat first. Then press ? and read the intro.
+- Say hi in group chat - if other people aren't online, check back later!
+- Press \$ to check your usage, press \$ again to close.
+- You can join r/AllyChat, r/AllyChatX (NSFW), https://allemande.ai/s/discord
 
-=== Please Contribute! ===
+=== Contribute! ===
 
-- You can help: join group chats, share your work, give feedback, join our Patreon.
+- You get \$3/month of AI for free - approx 2,000 AI messages and images.
+- If you're broke like me, join group chat, give feedback, share images... that helps!
+- If you have a job, please support on Patreon from \$3 per month. :) You can afford that.
+
 $patreon_links
 
 === Terms of Use ===
 
-You are responsible for your own safety and behaviour in Ally Chat.
+- No NSFW images of real people without their permission (NCII).
+- No NSFW images of people under 18 (CSAM).
+- Anything else is okay.
 
-The only content rule is to keep it legal:
+You can read more at https://allemande.ai/terms.html but it's boring.
 
-- No NCII (NSFW images of real people without consent).
-- No CSAM (underage NSFW images).
-- Literally anything else is okay.
-
-We have a friendly and respectful international community,
-including men, women, non-binary, LGBTQIA+ users, and people with disabilities.
-
-Our group chats are good fun! This is the best way to learn the app properly and to get support.
-
-We like to have fun, including playful banter, but we don't allow unwanted bullying or abuse in the main group chats.
-
-Please log in and try the app within 2 weeks. We may remove inactive accounts after a month, but can restore accounts on request.
-
-You can read more detailed Terms of Use at https://allemande.ai/terms.html
-
-Please confirm that you agree.
+All good?  Please reply to confirm!
 END
 	done
 
