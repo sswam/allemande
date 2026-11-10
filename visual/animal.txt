@@ -1,0 +1,200 @@
+[choose]
+aardvark
+african bush elephant
+african wild dog
+albatross
+alligator
+alpaca
+anaconda
+arctic fox
+arctic wolf
+armadillo
+axolotl
+baboon
+bactrian camel
+badger
+bald eagle
+barn owl
+bat
+bear
+beaver
+bighorn sheep
+bison
+blackbird
+blue jay
+blue whale
+boa constrictor
+bobcat
+bonobo
+brown bear
+buzzard
+caiman
+canary
+cape buffalo
+capybara
+caracal
+cardinal
+cassowary
+cat
+chameleon
+cheetah
+chicken
+chimpanzee
+chinchilla
+chipmunk
+cobra
+cockatiel
+cockatoo
+collared peccary
+condor
+cow
+coyote
+crocodile
+crow
+deer
+dingo
+dinosaur
+dog
+donkey
+duck
+eagle
+echidna
+elk
+emu
+falcon
+fennec fox
+ferret
+fisher
+flamingo
+flying fox
+frog
+gazelle
+gecko
+genet
+giant anteater
+giant panda
+giraffe
+goat
+golden monkey
+goose
+gorilla
+gray wolf
+green anaconda
+grizzly bear
+groundhog
+guinea pig
+hamster
+hare
+hawk
+hedgehog
+hippopotamus
+horse
+hummingbird
+hyrax
+iguana
+impala
+jaguar
+kangaroo
+kingfisher
+kiwi
+koala
+komodo dragon
+kookaburra
+least weasel
+lemur
+leopard
+lion
+lizard
+llama
+lynx
+macaw
+magpie
+manatee
+mandrill
+marmot
+meerkat
+mink
+mole
+mongoose
+monkey
+moose
+mountain goat
+mountain lion
+mouse
+mule
+muskox
+narwhal
+numbat
+ocelot
+okapi
+opossum
+orangutan
+ostrich
+owl
+pangolin
+panther
+parrot
+peacock
+pelican
+penguin
+pig
+pigeon
+platypus
+polar bear
+porcupine
+possum
+prairie dog
+pronghorn
+puffin
+puma
+python
+quokka
+rabbit
+raccoon
+rat
+rattlesnake
+raven
+red fox
+red panda
+reindeer
+rhinoceros
+river otter
+roadrunner
+rooster
+salamander
+saltwater crocodile
+seagull
+seal
+sea lion
+serval
+sheep
+skunk
+sloth
+snow leopard
+spotted hyena
+squirrel
+stoat
+stork
+sun bear
+swan
+tapir
+tasmanian devil
+tiger
+toad
+tortoise
+toucan
+turtle
+vulture
+walrus
+warthog
+water buffalo
+whale
+wildebeest
+wild turkey
+wolf
+wolverine
+wombat
+woodpecker
+yak
+zebra
+[/choose]
