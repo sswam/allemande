@@ -93,6 +93,14 @@ lazy(
     ),
 )
 
+lazy(
+    "openai",
+    nanogpt_async_client=lambda openai: openai.AsyncOpenAI(
+        base_url="https://api.nano-gpt.com/api/v1",
+        api_key=os.environ.get("NANOGPT_API_KEY"),
+    ),
+)
+
 lazy("vertexai.preview.tokenization", _as="google_tokenization")
 
 lazy("transformers", "AutoTokenizer")
@@ -556,9 +564,16 @@ async def achat_openrouter(opts: Options, messages):
     """Chat with OpenRouter models asynchronously."""
     return await achat_openai(opts, messages, client=openrouter_async_client, variant="openrouter")
 
+
 async def achat_venice(opts: Options, messages):
     """Chat with Venice models asynchronously."""
     return await achat_openai(opts, messages, client=venice_async_client, variant="venice")
+
+
+async def achat_nanogpt(opts: Options, messages):
+    """Chat with NanoGPT models asynchronously."""
+    return await achat_openai(opts, messages, client=nanogpt_async_client, variant="nanogpt")
+
 
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
@@ -803,6 +818,8 @@ async def allm_chat(opts: Options, messages):
         return await achat_openrouter(opts, messages)
     if vendor == "venice":
         return await achat_venice(opts, messages)
+    if vendor == "nanogpt":
+        return await achat_nanogpt(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
