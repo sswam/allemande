@@ -10,7 +10,7 @@ over:
 lines_force: 0
 # lines: 50
 specialist: true
-# narrator: soft
+narrator: soft
 age: 20
 # period: 14
 visual:
