@@ -50,6 +50,7 @@ lazy(
     perplexity_async_client=lambda openai: openai.AsyncOpenAI(
         base_url="https://api.perplexity.ai",
         api_key=os.environ.get("PERPLEXITY_API_KEY"),
+        default_headers={"X-Pplx-Integration": "allemande"},
     ),
 )
 lazy(

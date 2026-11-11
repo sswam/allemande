@@ -72,3 +72,11 @@ def test_replace_citations_with_parentheses():
     cites = ["http://example.com/paper(1)"]
     expected = "Text [[1]](http://example.com/paper%281%29) with citation."
     assert llm.replace_citations(content, cites) == expected
+
+
+def test_perplexity_client_sends_integration_header(monkeypatch):
+    """Test the Perplexity client identifies Allemande to Perplexity's API."""
+    monkeypatch.setenv("PERPLEXITY_API_KEY", "test-key")
+    client = llm.perplexity_async_client
+    assert client.base_url.host == "api.perplexity.ai"
+    assert client.default_headers["X-Pplx-Integration"] == "allemande"
