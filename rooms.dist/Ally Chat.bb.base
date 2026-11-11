@@ -1,7 +1,6 @@
 <ul class="line">
     <li class="noshuf">devops:</li>
     <li><a href="https://chat.allemande.ai/#dev/chat"><i class="bi bi-braces-asterisk" title="Development"></i><span class="alt"> Development</span></a></li>
-    <li><a href="https://allemande.ai/s/discord"><i class="bi bi-discord" title="Discord"></i><span class="alt"> Discord</span></a></li>
     <li><a href="https://github.com/sswam/allemande"><i class="bi bi-github" title="Github"></i><span class="alt"> Github</span></a></li>
 </ul>
 <ul class="line">
