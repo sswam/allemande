@@ -427,7 +427,7 @@ async def local_agent(c, agent, _query) -> str:
             if pos_neg[1].startswith("-"):
                 pos_neg[1] = re.sub(r"^-\s*", "", pos_neg[1])
             elif neg_default not in pos_neg[1]:
-                pos_neg[1] = neg_default + " " + pos_neg[1]
+                pos_neg[1] = neg_default + ", " + pos_neg[1]
             fulltext2 = "[set negative_prompt] " + pos_neg[1] + " [/set] " + pos_neg[0]
             fulltext2 += " NEGATIVE [get negative_prompt]"
 
@@ -445,7 +445,7 @@ async def local_agent(c, agent, _query) -> str:
             # support character reference image REF="..."
             # TODO check and enforce access control?
             fulltext2, ref_image = extract_ref(fulltext2)
-            logger.info("extract_ref: %s, %s", fulltext2, ref_image)
+            logger.debug("extract_ref: %s, %s", fulltext2, ref_image)
             allow_ref_image = agent.get("allow_ref_image", False) or "REF=" in fulltext  # can override if REF= in original prompt
             if not c.images and ref_image and allow_ref_image:
                 c.images = [str(safe_join(PATH_ROOMS, ref_image))]
