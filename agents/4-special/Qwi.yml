@@ -1,4 +1,4 @@
-base: Qwi21
+base: Qwin21
 # image_prompt_template: "%s"
 image_prompt_group_nouns: True
 image_prompt_map:
