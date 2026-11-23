@@ -613,8 +613,8 @@ async def run_safe_shell(c, agent, query, direct: bool=False) -> str:
     except (TypeError, KeyError):
         raise ValueError(f"Agent {name} has no command")
 
-    query = chat.clean_prompt([query], name, c.args.delim) + "\n"
-    logger.debug("query: %s", query)
+    query = chat.clean_prompt([query], name, c.args.delim).rstrip() + "\n"
+    logger.debug("query: [%s]", query)
 
     if direct:
         # tool must exist under PATH_TOOLS
