@@ -35,8 +35,8 @@ portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME pro
 
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
-# MAX_PIXELS = 1280 * 1280
 MAX_PIXELS = 1024 * 1024 * 1.2  # allow larger image sizes for modern models
+# MAX_PIXELS = 1600 * 1600 * 1.2  # allow larger image sizes for modern models
 # MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 MAX_HIRES_PIXELS = (1024 * 2.8125) ** 2
 
@@ -51,7 +51,7 @@ MAX_STEPS = 150  # 30
 
 TIME_EPSILON = 0.001  # a small time to add to distinguish job order
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 60 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME = 60  # 60 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
 JOB_PRIVATE_PENALTY = 1  # 2  -  1 means disabled
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
@@ -59,6 +59,7 @@ MAX_JOB_PENALTY = 2
 MAX_JOB_DELAY = 1020  # 17 minutes, after that the client might timeout
 MAX_QUEUE_DELAY = 4800  # 80 minutes, don't schedule extra jobs beyond that point
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
+MAX_JOBS_PER_USER = 4
 
 # Hacky support for special occasions!  i.e. Halloween
 SPECIAL_OCCASION_ENABLE = False
@@ -489,9 +490,9 @@ def estimate_job_weight(job: ImageJob) -> float:
 
     config = job.config
 
-    # multiply based on steps
+    # multiply based on steps  XXX  disabled for the moment
     steps = config.get("steps", MIN_STEPS)
-    job_weight *= steps / MIN_STEPS
+    # job_weight *= steps / MIN_STEPS
 
     log("job_weight 2: %.2f", job_weight)
 
@@ -523,9 +524,9 @@ def estimate_job_weight(job: ImageJob) -> float:
     if config.get("preset") == "anima" and steps <= 12 and not config.get("refiner"):
         job_weight = 0
 
-    # multiply by 2 if using Krea 2 Identity Edit!
-    if "<lora:krea2_identity_edit" in job.prompt:
-        log("*** using krea2_identity_edit")
+    # multiply by 2 if using Krea 2 Edit!
+    if "<lora:krea2_identity_edit" in job.prompt or "<lora:krea2_general_edit" in job.prompt:
+        log("*** using krea2 edit lora")
         job_weight *= 2
 
     # multiply by 2 if using a refiner!
@@ -595,6 +596,7 @@ async def enqueue_image_jobs(
     logger.debug("calc priority: %r jobs in queue, active job: %r", len(get_queue_jobs()), bool(job is not None))
     priority = current_time
     last_job = None
+    user_job_count = 0
     for j in ([] if job is None else [job]) + get_queue_jobs():
         if not j:
             continue
@@ -606,6 +608,7 @@ async def enqueue_image_jobs(
         priority += j.duration_estimate or TIME_EPSILON
         logger.debug("    - added that job's duration %r giving %r", j.duration_estimate, priority - current_time)
         last_job = j
+        user_job_count += 1
 
     # If would schedule earlier than the user's last job, go after it!
     if last_job and priority < last_job.priority:
@@ -625,6 +628,8 @@ async def enqueue_image_jobs(
     # Enqueue each image job
     for i in range(count):
         # logger.info("enqueuing job %d/%d for user %s with jobs count %s", i + 1, count, user, user_usage.get(user, 0))
+
+        user_job_count += 1
 
         new_job = ImageJob(
             priority = priority,
@@ -656,7 +661,7 @@ async def enqueue_image_jobs(
             priority += (new_job.duration_estimate or TIME_EPSILON) / 2
             new_job.priority = priority
 
-        if priority - current_time > MAX_QUEUE_DELAY:
+        if priority - current_time > MAX_QUEUE_DELAY or user_job_count > MAX_JOBS_PER_USER:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
             logger.info("skipping new job: priority %.0f > %.0f seconds", priority, MAX_QUEUE_DELAY)
             await complete_batch(new_job)
