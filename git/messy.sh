@@ -9,7 +9,7 @@
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="gc"      # default model  # gp
+model="gemma4"      # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -19,7 +19,7 @@ review="review.$timestamp.$$.txt"
 
 # Associative arrays mapping model codes to names and options
 declare -A model_names=(
-    ["gc"]="Grok Code Fast"
+    ["gemma4"]="Gemma 4 31B"
     ["5"]="GPT-5"
     ["5m"]="GPT-5-mini"
     ["4"]="GPT-4.1"
@@ -34,7 +34,7 @@ declare -A model_names=(
 )
 
 declare -A option_model_codes=(
-    ["G"]="gc"
+    ["G"]="gemma4"
     ["5"]="5"
     ["s"]="5m"
     ["3"]="4m"
