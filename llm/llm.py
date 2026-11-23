@@ -96,7 +96,8 @@ lazy(
 lazy(
     "openai",
     nanogpt_async_client=lambda openai: openai.AsyncOpenAI(
-        base_url="https://api.nano-gpt.com/api/v1",
+#        base_url="https://api.nano-gpt.com/api/v1",
+        base_url="https://api.nano-gpt.com/api/v1thinking",
         api_key=os.environ.get("NANOGPT_API_KEY"),
     ),
 )
