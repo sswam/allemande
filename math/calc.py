@@ -1,6 +1,7 @@
 #!/usr/bin/env python3-allemande
 
 import sys
+from datetime import *
 from math import *
 from random import *
 
@@ -9,4 +10,6 @@ if args:
 	print(eval(' '.join(args)))
 else:
 	for line in sys.stdin:
+		line = line.strip()
+		# print(f"[{line}]", file=sys.stderr)
 		print(eval(line))
