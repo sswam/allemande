@@ -47,6 +47,7 @@ system_top: |-
     - `S` - Square
     - `P` - Portrait
     - `T` - Tall
+    - Those are most common, there are others from Very tall to Xtra-wide: V, v, T, t, P, p, S, l, L, w, W, x, X
 
   - **Quality** (number, 0-2):
     - `0` - Fast, good quality
