@@ -13,7 +13,7 @@ HELP_MODEL_NSFW := flashi
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/intro_nsfw.bb ../rooms/guide_nsfw.bb ../rooms/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb summaries.md models.tsv # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/intro_nsfw.bb ../rooms/guide_nsfw.bb ../rooms/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/models.bb ../rooms/art-models.bb ../rooms/nsfw/krea2-lora.bb ../rooms/terms.bb summaries.md models.tsv # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
@@ -122,5 +122,20 @@ agent_colours.css: agent_colours.tsv
 
 models.tsv: guide.md
 	<$< sed -n '/^#### Language Models/,/^Input and output costs/p' | grep '^|' | markdown-table-to-tsv | grep . | tail -n +2 >$@
+
+../rooms/models.bb: guide.md
+	rm -f $@ ../rooms/models.html
+	(sleep 0.5; <$< sed -n '/^#### Language Models/,/^Input and output costs/p' | grep '^|' >$@ ;\
+		chmod a-w $@ )
+
+../rooms/art-models.bb: nsfw/guide_nsfw.md
+	rm -f $@ ../rooms/art-models.html
+	(sleep 0.5; <$< sed -n '/^#### Image Models/,/^[A-Za-z]/p' | grep '^|' >$@ ;\
+		chmod a-w $@ )
+
+../rooms/nsfw/krea2-lora.bb: ~/my/allemande/krea2-loras.txt
+	rm -f $@ ../rooms/nsfw/krea2-lora.html
+	(sleep 0.5; <$< tsv2markdown >$@ ;\
+		chmod a-w $@ )
 
 .PHONY: default up

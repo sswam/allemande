@@ -665,7 +665,6 @@ digraph ArtModels {
     "F2K" [label=<<b>F2K</b><br/><font point-size="10">Flux 2 Klein</font>>]
     "Anima" [label=<<b>Anima</b><br/><font point-size="10">Anima</font>>]
     "Kroma" [label=<<b>Kroma</b><br/><font point-size="10">Kroma v0.3.1 OPD</font>>]
-    "Krome" [label=<<b>Krome</b><br/><font point-size="10">Kroma v0.3.1 OPD + Identity Edit</font>>]
     "Moss" [label=<<b>Moss</b><br/><font point-size="10">MOSS Image SFT</font>>]
 
     "ArtModels" -> "Krea2"
@@ -674,7 +673,6 @@ digraph ArtModels {
     "ArtModels" -> "F2K"
     "ArtModels" -> "Anima"
     "ArtModels" -> "Kroma"
-    "ArtModels" -> "Krome"
     "ArtModels" -> "Moss"
 }
 ```
@@ -1068,7 +1066,7 @@ There are a few variant art model agents with extra features:
 - Klein - F2K, but translates Pony-style prompts to work better
 - Qwin - Qwin21, but translates Pony-style prompts to work better
 
-#### Censorship
+### Censorship
 
 Ally Chat is against censorship, but some models are censored by their creators to different degrees.
 
