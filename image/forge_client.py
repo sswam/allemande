@@ -91,18 +91,30 @@ def img2img_resize_and_pad(image_path: str, width: int, height: int, pad_color: 
     Resize image to fit within (width, height) without distortion,
     padding extra space with pad_color. Returns base64-encoded PNG string.
     """
+    def encode_image(img: Image.Image) -> str:
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
     with Image.open(image_path) as img:
+        logger.info("img2img_resize_and_pad from %s, %s to %s, %s", img.width, img.height, width, height)
         img = img.convert("RGB")
-        img.thumbnail((width, height), Image.LANCZOS)
+
+        if img.width == width or img.height == height:
+            return encode_image(img)
+
+        # Calculate scale factor to fit within target dimensions (both up and down)
+        scale = min(width / img.width, height / img.height)
+        new_w = round(img.width * scale)
+        new_h = round(img.height * scale)
+        img = img.resize((new_w, new_h), Image.LANCZOS)
 
         padded = Image.new("RGB", (width, height), pad_color)
         paste_x = (width - img.width) // 2
         paste_y = (height - img.height) // 2
         padded.paste(img, (paste_x, paste_y))
 
-        buffer = io.BytesIO()
-        padded.save(buffer, format="PNG")
-        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+        return encode_image(padded)
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
