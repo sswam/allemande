@@ -265,12 +265,6 @@ async def follow(
             active_streams[path] = set()
         active_streams[path].add(current_task)
 
-    state = StreamState(user)
-    stream_states[stream_id] = state
-
-    if ext == ".html" and follow_flag:
-        presence_add(user, room_path)
-
     async with atail.AsyncTail(
         filename=file, wait_for_create=True, all_lines=True, follow=follow_flag, rewind=follow_flag, rewind_string=rewind_string, restart=follow_flag
     ) as queue1:
@@ -282,6 +276,12 @@ async def follow(
                 )
 
             try:
+                state = StreamState(user)
+                stream_states[stream_id] = state
+
+                if ext == ".html" and follow_flag:
+                    presence_add(user, room_path)
+
                 while True:
                     line = await queue2.get()  # pyrefly: ignore
                     queue2.task_done()  # pyrefly: ignore
