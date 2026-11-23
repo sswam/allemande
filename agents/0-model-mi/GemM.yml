@@ -1,5 +1,8 @@
 type: nanogpt
 model: gemma4
+
+# type: openrouter
 # model: gemma4:coreweave/fp4
+
 # type: venice
 # model: gemma4
