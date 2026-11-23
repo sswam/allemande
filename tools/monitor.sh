@@ -221,7 +221,7 @@ check_vm() {
 check_ping() {
 	local host
 	for host in $ping_host; do
-		if ping -W 1 -c 1 "$host" &>/dev/null; then
+		if ping -W 2 -c 2 "$host" &>/dev/null; then
 			info "INFO: Server can ping %s" "$host"
 		else
 			info "INFO: Server cannot ping %s" "$host"
