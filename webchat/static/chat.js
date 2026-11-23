@@ -524,10 +524,13 @@ export async function send_continue(n) {
 
 // error indicator for buttons -----------------------------------------------
 
-async function flash($el, className) {
-  $el.classList.add(className);
-  await $wait(300);
-  $el.classList.remove(className);
+async function flash($el, className, count = 1) {
+  for (let i = 0; i < count; i++) {
+    $el.classList.add(className);
+    await $wait(300);
+    $el.classList.remove(className);
+    if (i < count - 1) await $wait(300);
+  }
 }
 
 export async function error(id) {
@@ -5518,8 +5521,11 @@ async function setup_notifications(notify) {
     active_reset("notifications");
     return;
   }
-  active_set("notifications");
   show("notifications");
+  if (!active_get("notifications")) {
+    await flash($id("notifications"), "active", 3);
+  }
+  active_set("notifications");
   notifications = notify.trim().split('\n');
   for (const room of notifications) {
     const a = document.createElement('a');
