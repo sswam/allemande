@@ -335,7 +335,7 @@ def sub(text_input: str, configs: list[dict[str, str]],
 
     text = text_input
 
-    logger.info("soma input:  %s", text_input)
+    logger.debug("soma input:  %s", text_input)
 
     for depth in range(max_depth):
         original = text
@@ -347,7 +347,7 @@ def sub(text_input: str, configs: list[dict[str, str]],
         if text == original:
             break
 
-        logger.info("soma change: %s", text)
+        logger.debug("soma change: %s", text)
     else:
         logger.warning("Max recursion depth (%d) reached in soma", max_depth)
 
