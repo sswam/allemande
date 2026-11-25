@@ -17,7 +17,7 @@ import conductor
 import chat
 import bb_lib
 import ally_markdown
-from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT, PATH_ROOMS, GPU_COST_PER_SECOND
+from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT, PATH_ROOMS, GPU_COST_PER_SECOND, GPU_COST_DISCOUNT_BY_ROOM
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
 import ally_room
@@ -577,7 +577,9 @@ async def local_agent(c, agent, _query) -> str:
 
     output_count += len(response)
 
-    cost = duration * GPU_COST_PER_SECOND
+    discount = GPU_COST_DISCOUNT_BY_ROOM.get(room.name, 1)
+
+    cost = duration * GPU_COST_PER_SECOND * discount
 
     usage_log(c.responsible_human, t0, duration, service, model_name, agent.name, room.name, input_count, output_count, cost, "")
 

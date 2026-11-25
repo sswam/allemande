@@ -57,6 +57,10 @@ STT_TIMEOUT = 60  # 1 minute
 STT_MAX_LENGTH = 300  # 5 minutes
 
 GPU_COST_PER_SECOND = 0.005 / 60  # 0.5c / minute
+GPU_COST_DISCOUNT_BY_ROOM = {
+    "Ally Chat": 0.5,
+    "nsfw/nsfw": 0.5,
+}
 
 ART_MODEL_PROMPT_DEFAULT = "`@Coni` or `@Anima` or another art model"  # TODO use the following instead, somehow
 # ART_MODEL_PROMPT_DEFAULT = "`@Krea` or `@Kroma` or another art model"  # TODO use the following instead, somehow
