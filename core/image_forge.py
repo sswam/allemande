@@ -86,6 +86,11 @@ USER_PRIORITY = {
 USER_ALLOW_PRIVATE = set(USERS_SUPPORTER + USERS_VIP)
 ALLOW_PRIVATE_ALL = True
 
+PRIORITY_ADJUST_BY_ROOM = {
+    "Ally Chat": 0.5,
+    "nsfw/nsfw": 0.5,
+}
+
 SHAPE_GEOMETRY = {
     "E": (("512", "512"), ("640", "640")),
     "S": (("768", "768"), ("1024", "1024")),
@@ -575,6 +580,8 @@ async def enqueue_image_jobs(
     job_base_time = JOB_BASE_TIME
     if is_private:
         job_base_time *= JOB_PRIVATE_PENALTY
+    priority_adjust = PRIORITY_ADJUST_BY_ROOM.get(room or "", 1)
+    job_base_time *= priority_adjust
 
     current_time = time.time()
 
