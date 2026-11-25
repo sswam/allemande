@@ -13,6 +13,10 @@ else
 	(cd ngx-http-auth-jwt-module; git pull)
 fi
 
+if [ -e /etc/apt/preferences.d/nginx ]; then
+	move-rubbish /etc/apt/preferences.d/nginx
+fi
+
 if [ -z "$NGINX_VERSION" ]; then
 	NGINX_VERSION=$(
 		apt-cache policy nginx |
@@ -66,3 +70,16 @@ debuild -b -us -uc
 cd ..
 
 sudo apt-get install "./nginx_${NGINX_VERSION_ALLY}_$ARCH.deb" "./nginx-common_${NGINX_VERSION_ALLY}_all.deb"
+
+cat <<END | sudo tee /etc/apt/preferences.d/nginx
+Package: nginx
+Pin: version $NGINX_VERSION_ALLY
+Pin-Priority: 1000
+
+Package: nginx-common
+Pin: version $NGINX_VERSION_ALLY
+Pin-Priority: 1000
+
+END
+
+apt-cache policy nginx
