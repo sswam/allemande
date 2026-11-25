@@ -11,6 +11,9 @@ from pathlib import Path
 from datetime import datetime
 
 
+VERSION = "1.0.1"
+
+
 def format_cost(cost: float) -> str:
     """Format cost to 8 d.p., stripping trailing zeros and decimal point."""
     return f"{cost:.8f}".rstrip("0").rstrip(".")
@@ -24,6 +27,7 @@ def main() -> None:
     parser.add_argument("-m", "--model", help="Filter by model (case-insensitive)")
     parser.add_argument("-s", "--service", help="Filter by service (case-insensitive)")
     parser.add_argument("-u", "--user", help="Read from current usage file for user")
+    parser.add_argument("-d", "--daily", action="store_true", help="Show total usage by date")
     args = parser.parse_args()
 
     date0 = args.date0
@@ -34,6 +38,7 @@ def main() -> None:
 
     total_cost = 0.0
     agents: dict = defaultdict(lambda: {"name": "", "cost": 0.0, "models": set()})
+    daily: dict = defaultdict(float)
 
     if args.user:
         now = datetime.now()
@@ -66,14 +71,24 @@ def main() -> None:
         except ValueError:
             continue
 
+        date = timestamp[:10]
         total_cost += cost
-        key = agent.lower()
-        if not agents[key]["name"]:
-            agents[key]["name"] = agent
-        agents[key]["cost"] += cost
-        agents[key]["models"].add(model)
+        daily[date] += cost
+
+        if not args.daily:
+            key = agent.lower()
+            if not agents[key]["name"]:
+                agents[key]["name"] = agent
+            agents[key]["cost"] += cost
+            agents[key]["models"].add(model)
 
     print(format_cost(total_cost))
+
+    if args.daily:
+        for date in sorted(daily):
+            print(f"{date}\t{format_cost(daily[date])}")
+        return
+
     for _key, data in sorted(agents.items(), key=lambda x: x[1]["cost"], reverse=True):
         models_str = ", ".join(sorted(data["models"]))
         print(f"{data['name']}\t{format_cost(data['cost'])}\t{models_str}")
